@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Plain English Builder"
+  short_description: "Explore your idea and make a complete build plan"
+  default_prompt: "Use $bg-plain-english-builder to reuse recorded decisions, cover unresolved product choices and prepare the clickable prototype and complete plan; the lead asks and decides while bounded workers research, prototype and plan in detail."
+policy:
+  allow_implicit_invocation: true

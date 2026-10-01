@@ -1,0 +1,11 @@
+#!/bin/sh
+# BGZFLOW tool shim. POSIX sh; also runs under Git Bash on Windows.
+# Runs tools/bg-route/bg-route.mjs with Node 18 or newer.
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 127
+script="$here/../bg-route/bg-route.mjs"
+if command -v cygpath >/dev/null 2>&1; then script=$(cygpath -w "$script"); fi
+if command -v node >/dev/null 2>&1 && node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 18 ? 0 : 1)' >/dev/null 2>&1; then
+  exec node "$script" "$@"
+fi
+echo "bg-route: Node 18 or newer was not found on PATH" >&2
+exit 127

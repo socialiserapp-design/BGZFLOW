@@ -1,0 +1,11 @@
+{
+  "scope": "One real sanitized fixture request, two admission noul questions; remaining judgment tests mocked",
+  "model": "jev-1.13.0",
+  "usage": {"input_tokens":460,"output_tokens":38},
+  "reportedMonetaryCost": null,
+  "reportedApiElapsedSeconds": 0.468,
+  "wrappedElapsedMs": 1714,
+  "answers": {"tests_goal":0.91,"claim_output":0.96},
+  "gateDecision": "pass",
+  "limitations": ["Fixture only", "No candidate approval or release authority", "No classifier-accuracy or financial-savings claim"]
+}

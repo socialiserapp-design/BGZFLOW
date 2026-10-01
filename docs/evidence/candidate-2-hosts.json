@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "testedImplementationCommit": "50f6464b5b295fe648904bbd4eb1b15fd218b13f",
+  "installedGateSha256": "b7d2cd85c48ae64e2ba529df8ab5fa49789a1af290ac3d9908e85805fad702fc",
+  "scope": "Local-source clone, local scratch marketplace and disposable homes; no live setup, worker provider or production release used",
+  "hosts": {"claude": "2.1.284", "codex": "0.159.0", "grok": "1.0.44 (5b807183dd79)"},
+  "checks": [
+    {"name": "Claude plugin manifest strict validation", "exitCode": 0, "errors": 0, "warnings": 0},
+    {"name": "Claude marketplace strict validation", "exitCode": 0, "errors": 0, "warnings": 0},
+    {"name": "Claude local marketplace add", "exitCode": 0},
+    {"name": "Claude install", "exitCode": 0, "installedVersion": "0.2.0"},
+    {"name": "Claude uninstall", "exitCode": 0},
+    {"name": "Installed hook bad dispatch", "exitCode": 0, "decision": "deny", "milliseconds": 910},
+    {"name": "Installed hook valid dispatch", "exitCode": 0, "decision": "allow", "milliseconds": 922},
+    {"name": "Installed hook unready release", "exitCode": 0, "decision": "deny", "milliseconds": 814},
+    {"name": "Installed hook ready release", "exitCode": 0, "decision": "allow", "milliseconds": 598},
+    {"name": "Codex local marketplace add", "exitCode": 0},
+    {"name": "Codex install", "exitCode": 0, "installedVersion": "0.2.0"},
+    {"name": "Grok validate only", "exitCode": 0}
+  ],
+  "retainedOptionalFailure": {"command": "claude plugin details NAME --json", "exitCode": 1, "reason": "This CLI does not support --json on details; required validation, install and uninstall passed"},
+  "limitations": ["Remote-source install not exercised", "Provider entitlement and percentage allowance unproven", "Smoke results validate local coordination fixtures rather than real provider work or deployment"]
+}

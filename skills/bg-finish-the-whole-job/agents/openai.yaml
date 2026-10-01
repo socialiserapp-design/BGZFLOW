@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Finish the Whole Job"
+  short_description: "Deliver one tested, integrated candidate"
+  default_prompt: "Use $bg-finish-the-whole-job to keep existing work, dispatch through the worker route, integrate exact contributions and return one tested candidate for a fresh independent check."
+policy:
+  allow_implicit_invocation: true

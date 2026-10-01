@@ -1,0 +1,19 @@
+---
+description: "Test the complete candidate and whole journey once, then independently review it"
+argument-hint: "[exact candidate; default: recorded integration candidate]"
+disable-model-invocation: true
+---
+
+Candidate: $ARGUMENTS
+
+**Gate:** use `swarm-gate status` and `${CLAUDE_PLUGIN_ROOT}/docs/swarm-gate.md`. Reuse the active ledger or `/swarm` phase 0's single resource/usage question and `start`. Collect all jobs/pieces through `record`, then `record candidate`. Use `check-suite`, `check-rehearsal`, `check-review` immediately before their stages, in that order; `record result` saves each exact-SHA result/exit/evidence. Check briefs use KIND check, CHECK suite/rehearsal/review, READ_ONLY true, OWNS [], quality skills, fast checks only and proof handback. Explain the explicitly gated CHECK stage as the exception to builders' fast-check rule. Non-Claude leads reserve jobs with `dispatch`. Retain stable findings and exact-candidate closure proof; repairs use `record fix-wave`.
+
+You are the lead. Read `${CLAUDE_PLUGIN_ROOT}/skills/bg-finish-the-whole-job/references/swarm-rules.md` and load `${CLAUDE_PLUGIN_ROOT}/skills/bg-check-it-before-release/SKILL.md` and `${CLAUDE_PLUGIN_ROOT}/skills/bg-efficiency/SKILL.md`.
+
+0. **Resources.** Follow shared rules 1–4. Reuse this swarm's approval; if absent, run `node "${CLAUDE_PLUGIN_ROOT}/tools/swarm-resources/swarm-resources.mjs" --swarm <task-id>`, ask once and save the explicit set. Allocate whole tests/checker areas across all approved suitable resources within capacity.
+1. **Require completeness.** Recover requirements, wave-0 contracts/acceptance, decisions, every contribution and integration proof. If a piece is still building, report it and stop. Pin one immutable complete SHA/configuration/environment and the dispatch checkpoint, including approval, limits/reserve, owners, jobs/exact cwd, findings and persistent wave count; never review individual contributions.
+2. **Freeze and rehearse.** Run the combined full suite once via bg-heavy. Rehearse the exact SHA on preview, staging or hidden production with matching runtime, bindings, database version, secrets and real provider accounts; money in test mode. Run all scripted golden journeys and one rollback. Record `rehearsal` output/exits/rollback evidence. Repair real errors in the same job and rerun rehearsal until passing.
+3. **Review once per release ID.** The lead uses `check-review` then one fresh read-only worker with CHECK review, RELEASE_ID and REVIEW_TARGET candidate. Reject a second review or repair target. Only reproduced wrong money, data loss, security/privacy or missing rollback blocks. Reviewer design and all other findings go after-launch.
+4. **Decide from rehearsal and blockers.** Record review completion and categorized findings; no ready verdict is needed. Repairs keep stable IDs and the same owner, within two waves, and are proved by a new exact-SHA rehearsal; never re-review. For customer-visible changes the final step is the founder checking the verified build on a phone/capable device; only their approved-design mismatch blocks on design. Launch small within authority, watch live errors for one hour, fix forward/rollback, then widen.
+
+**Mailbox:** For every active worker, run `bg-mail watch --project <project> --to lead` in the background beside that job's native `status --wait`. Every brief says never end a job just to ask: post with `bg-mail`, give a safe default, keep working where safe and wait in the same job only when required. Reply immediately, then rearm the mailbox watch while the job remains active.

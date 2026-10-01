@@ -1,0 +1,7 @@
+{
+  "name": "bgzflow",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/test-all.mjs"
+  }
+}

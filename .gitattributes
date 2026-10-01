@@ -1,0 +1,6 @@
+* text=auto eol=lf
+# Private build inputs never enter release archives.
+context/ export-ignore
+CLOUD-BRIEF.md export-ignore
+.bgzflow/ export-ignore
+overlay/ export-ignore

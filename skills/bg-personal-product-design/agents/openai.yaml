@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Personal Product Design"
+  short_description: "Design varied, approved experiences on every surface"
+  default_prompt: "Use $bg-personal-product-design to recover product decisions, render at least eight distinct directions for a new look, lock the approved tokens and verify complete web, desktop, native and chat flows."
+policy:
+  allow_implicit_invocation: true

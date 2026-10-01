@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "providers": {},
+  "preference": [],
+  "autoAdoptNewFlagship": false,
+  "modelUpdates": {"enabled": false},
+  "escalation": {"enabled": true, "crossFamilyDiagnosis": false},
+  "jev": {
+    "enabled": false,
+    "command": [],
+    "timeoutMs": 2000,
+    "maxMessageChars": 2000,
+    "enforcement": {"admission":true,"retries":true,"duplicate":true,"brief":true,"classification":true,"stop":true,"journey":true}
+  }
+}
