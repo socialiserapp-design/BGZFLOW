@@ -1,0 +1,16 @@
+#!/bin/sh
+# BGZFLOW tool shim. POSIX sh; also runs under Git Bash on Windows.
+# Finds a working Python 3.10 or newer (python3, python, or the py launcher) and runs tools/notes-map/notes-map.py.
+# A candidate must actually run: on some Windows machines python3 is a Store stub that only prints a hint.
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 127
+script="$here/../notes-map/notes-map.py"
+if command -v cygpath >/dev/null 2>&1; then script=$(cygpath -w "$script"); fi
+PYTHONUTF8=1
+PYTHONIOENCODING=utf-8
+export PYTHONUTF8 PYTHONIOENCODING
+works() { "$@" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1; }
+if command -v python3 >/dev/null 2>&1 && works python3; then exec python3 "$script" "$@"; fi
+if command -v python >/dev/null 2>&1 && works python; then exec python "$script" "$@"; fi
+if command -v py >/dev/null 2>&1 && works py -3; then exec py -3 "$script" "$@"; fi
+echo "notes-map: Python 3.10 or newer was not found (tried python3, python, py -3)" >&2
+exit 127

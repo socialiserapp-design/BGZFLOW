@@ -1,0 +1,207 @@
+BGZFLOW hooks on Codex for Windows: experiment result, 2026-09-29
+
+Question: do plugin hooks fire on Codex for Windows with no .cmd, .bat or .ps1 shim?
+Answer: yes. A throwaway plugin whose hooks.json used the command form shipped in hooks/hooks.json,
+    node "${CLAUDE_PLUGIN_ROOT}/hooks/<script>.mjs"
+was installed with the official marketplace add and plugin add commands. Its hooks ran on SessionStart,
+UserPromptSubmit, PreToolUse, PostToolUse and Stop (a user-level hook also ran on SessionEnd). Each hook received
+the documented JSON on stdin and exited 0.
+
+How Codex starts a hook on Windows (from the run below, "launched by" lines):
+  1. Codex replaces ${CLAUDE_PLUGIN_ROOT} (and ${PLUGIN_ROOT}) in the command text with the installed plugin folder.
+     A folder name with spaces works because the shipped command quotes the path.
+  2. Codex then runs the text through Windows PowerShell with -NoProfile -Command, so a plain `node "<path>"` needs no wrapper file.
+  3. Node must be on PATH. The hook's working folder is the project folder, so relative script paths do not work.
+
+Command forms tried in the run (SessionStart):
+  works   node "${CLAUDE_PLUGIN_ROOT}/hooks/x.mjs"      (shipped form; also ${PLUGIN_ROOT})
+  works   node "<absolute path>/hooks/x.mjs"
+  works   node -e "import(...process.env.CLAUDE_PLUGIN_ROOT...)"   (environment variable read by Node)
+  works   the commandWindows field, which takes over from command on Windows
+  works   PowerShell-only syntax such as $env:CLAUDE_PLUGIN_ROOT (not portable, so not used)
+  fails   node "%CLAUDE_PLUGIN_ROOT%\hooks\x.mjs"     (cmd-style percent signs are not expanded)
+  fails   node hooks/x.mjs                              (relative to the project folder, not the plugin)
+
+Trust: run P3 installed the same plugin without the hook-trust bypass flag and no plugin hook ran, so on Codex
+a user must review and trust the plugin's hooks first (the runs that fired used the bypass flag in a throwaway home).
+
+Setup: Codex CLI 0.159.0, Node 24, Windows 11. A throwaway Codex home (folder name with a space) with a local
+marketplace and a mock model server on the loopback address; `codex exec --json`. Nothing outside the throwaway
+folders was touched. Paths below are shortened to <tmp> and <home>; environment values were removed, names kept.
+
+Runs: P4 = plugin hooks with all six events, U1 = user-level hooks that deny or block a tool call,
+P3 = the same plugin without the trust bypass.
+
+==============================================================================
+E2E run P4   codex exit=0 timedOut=False codex-seconds=21.3   bypassTrust=True
+codex home folder (a throwaway folder whose name contains a space): <tmp>\e2e\homes\home with space P4
+workdir=<tmp>\e2e\work\P4  mock=127.0.0.1:63670  plugin=probe-plugin
+install: marketplace add exit=0, plugin add exit=0 (details: <tmp>\e2e\out\P4\plugin-install.txt)
+artifacts: <tmp>\e2e\out\P4  (codex-stdout.jsonl, spy\, hooks\, req\, samples\)
+codex stderr: 
+==============================================================================
+-- codex --json events:
+   thread.started x1, item.completed/error x6, turn.started x1, item.started/command_execution x1, item.completed/command_execution x1, item.completed/agent_message x1, turn.completed x1
+   note: `--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation.
+   note: `--dangerously-bypass-hook-trust` is enabled. Enabled hooks may run without review for this invocation.
+   note: clamping SessionEnd hook timeout to 3s in <tmp>\e2e\homes\home with space P4\hooks.json
+   note: clamping Interrupt hook timeout to 3s in <tmp>\e2e\homes\home with space P4\hooks.json
+   note: Model metadata for `mock-model` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.
+   note: Exceeded skills context budget. All skill descriptions were removed and 2 additional skills were not included in the model-visible skills list.
+-- hook events that fired (19 hook process(es)):
+   SessionStart: 10  [p3-COMMAND-launcher, p4-COMMAND-ps-env-claude, t1-p1-COMMAND-posix-brace-claude, spy-SessionStart, t1-p5-COMMAND-posix-brace-plugin, p13-COMMANDWINDOWS-posix-brace-claude, p0-absolute-path-sanity, p8-COMMANDWINDOWS-ps-env-claude, p7-COMMAND-ps-env-plugin, p9-COMMANDWINDOWS-launcher]
+   UserPromptSubmit: 2  [pu-ups-ctx, spy-UserPromptSubmit]
+   PreToolUse: 2  [spy-PreToolUse, pu-pretool-observe]
+   PostToolUse: 2  [pu-posttool-observe, spy-PostToolUse]
+   Stop: 2  [pu-stop-empty, spy-Stop]
+   SessionEnd: 1  [spy-SessionEnd]
+-- hook processes (stdin keys / cwd as seen by each hook; "stdout" = what a probe handler emitted, real hooks: see replay section):
+   [hook:p3-COMMAND-launcher] SessionStart exit=0 stdin_ended=true ms=13 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:p4-COMMAND-ps-env-claude] SessionStart exit=0 stdin_ended=true ms=39 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:t1-p1-COMMAND-posix-brace-claude] SessionStart exit=0 stdin_ended=true ms=11 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+      launched by: powershell.exe :: "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -Command "node \"<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1/hooks/x.mjs\" label:t1-p1-COMMAND-posix-brace-claude"
+   [spy:spy-SessionStart] SessionStart exit=0 stdin_ended=true ms=67 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+      launched by: powershell.exe :: "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -Command "node \"<tmp>\e2e\hookprobe.mjs\" --out \"<tmp>\e2e\out\P4\spy\" --label spy-SessionStart --parents"
+   [hook:t1-p5-COMMAND-posix-brace-plugin] SessionStart exit=0 stdin_ended=true ms=30 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+      launched by: powershell.exe :: "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -Command "node \"<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1/hooks/x.mjs\" label:t1-p5-COMMAND-posix-brace-plugin"
+   [hook:p13-COMMANDWINDOWS-posix-brace-claude] SessionStart exit=0 stdin_ended=true ms=33 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:p0-absolute-path-sanity] SessionStart exit=0 stdin_ended=true ms=42 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:p8-COMMANDWINDOWS-ps-env-claude] SessionStart exit=0 stdin_ended=true ms=26 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:p7-COMMAND-ps-env-plugin] SessionStart exit=0 stdin_ended=true ms=34 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:p9-COMMANDWINDOWS-launcher] SessionStart exit=0 stdin_ended=true ms=8 keys=session_id,transcript_path,cwd,hook_event_name,model,permission_mode,source
+   [hook:pu-ups-ctx] UserPromptSubmit exit=0 stdin_ended=true ms=10 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,prompt
+      stdout: {"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"MARKER_PLUGIN_UPS_TEXT"}}
+   [spy:spy-UserPromptSubmit] UserPromptSubmit exit=0 stdin_ended=true ms=32 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,prompt
+   [spy:spy-PreToolUse] PreToolUse exit=0 stdin_ended=true ms=19 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_use_id
+   [hook:pu-pretool-observe] PreToolUse exit=0 stdin_ended=true ms=7 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_use_id
+   [hook:pu-posttool-observe] PostToolUse exit=0 stdin_ended=true ms=34 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_response,tool_use_id
+   [spy:spy-PostToolUse] PostToolUse exit=0 stdin_ended=true ms=20 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_response,tool_use_id
+   [hook:pu-stop-empty] Stop exit=0 stdin_ended=true ms=23 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,stop_hook_active,last_assistant_message
+   [spy:spy-Stop] Stop exit=0 stdin_ended=true ms=82 keys=session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,stop_hook_active,last_assistant_message
+   [spy:spy-SessionEnd] SessionEnd exit=0 stdin_ended=true ms=23 keys=session_id,transcript_path,cwd,hook_event_name,reason
+-- hook working directory: <tmp>\e2e\work\P4
+-- env names CODEX_/PLUGIN_/CLAUDE_ seen by user-level (spy) hooks: CODEX_HOME,CODEX_MANAGED_BY_NPM,CODEX_MANAGED_PACKAGE_ROOT
+-- env names CODEX_/PLUGIN_/CLAUDE_ seen by plugin hooks:          CLAUDE_PLUGIN_DATA,CLAUDE_PLUGIN_ROOT,CODEX_HOME,CODEX_MANAGED_BY_NPM,CODEX_MANAGED_PACKAGE_ROOT,PLUGIN_DATA,PLUGIN_ROOT
+-- PLUGIN_ROOT was set (value omitted: the installed plugin cache folder)
+   PLUGIN_DATA was set (value omitted: the installed plugin data folder)
+   CLAUDE_PLUGIN_ROOT was set (value omitted: the installed plugin cache folder)
+-- stdin samples saved in <tmp>\e2e\out\P4\samples: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Stop, SessionEnd
+-- hook-injected model text (rollout items tagged hooks.additional_context):
+   role=developer: MARKER_PLUGIN_UPS_TEXT
+-- mock model requests (POST /responses): input items excluding the base skills/environment blobs:
+   req-001.json: 4 input items; tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,web_search
+      #3 user: hello
+      #4 developer: MARKER_PLUGIN_UPS_TEXT
+   req-002.json: 6 input items; tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,web_search
+      #3 user: hello
+      #4 developer: MARKER_PLUGIN_UPS_TEXT
+      #5 function_call exec_command {"cmd":"echo e2e-tool-call-ran","login":false,"yield_time_ms":5000}
+      #6 function_call_output: Chunk ID: 744d19 Wall time: 1.0916 seconds Process exited with code 0 Original token count: 5 Output: e2e-tool-call-ran
+-- replay of the plugin's real hook commands (root=<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1); exit/stdout below are REAL for these hooks:
+   SessionStart: exit=0 1761ms cmd=node "<tmp>\e2e/probe/probe-plugin/hooks/x.mjs" label:p0-absolute-path-sanity
+   SessionStart: exit=0 4965ms cmd=node "<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1/hooks/x.mjs" ...
+   SessionStart: exit=1 854ms cmd=node "%CLAUDE_PLUGIN_ROOT%\hooks\x.mjs" label:p2-COMMAND-cmd-percent-claude
+      stderr: node:internal/modules/cjs/loader:1459 throw err; ^ Error: Cannot find module '<tmp>\e2e\work\P4\%CLAUDE_PLUGIN_ROOT%\hooks\x.mjs' at Module._resolveFilename ...
+   SessionStart: exit=0 981ms cmd=node -e "import(require('url').pathToFileURL(process.env.CLAUDE_PLUGIN_ROOT+'/hooks/x.mjs').href)" label:p3-COMMAND-launcher
+   SessionStart: exit=0 1158ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:p4-COMMAND-ps-env-claude
+   SessionStart: exit=0 3989ms cmd=node "<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1/hooks/x.mjs" ...
+   SessionStart: exit=1 910ms cmd=node "%PLUGIN_ROOT%\hooks\x.mjs" label:p6-COMMAND-cmd-percent-plugin
+      stderr: node:internal/modules/cjs/loader:1459 throw err; ^ Error: Cannot find module '<tmp>\e2e\work\P4\%PLUGIN_ROOT%\hooks\x.mjs' at Module._resolveFilename (node:i...
+   SessionStart: exit=0 849ms cmd=node "$env:PLUGIN_ROOT/hooks/x.mjs" label:p7-COMMAND-ps-env-plugin
+   SessionStart: exit=0 909ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:p8-COMMANDWINDOWS-ps-env-claude
+   SessionStart: exit=0 976ms cmd=node -e "import(require('url').pathToFileURL(process.env.CLAUDE_PLUGIN_ROOT+'/hooks/x.mjs').href)" label:p9-COMMANDWINDOWS-launcher
+   SessionStart: exit=1 821ms cmd=node "%CLAUDE_PLUGIN_ROOT%\hooks\x.mjs" label:p12-COMMANDWINDOWS-cmd-percent-claude
+      stderr: node:internal/modules/cjs/loader:1459 throw err; ^ Error: Cannot find module '<tmp>\e2e\work\P4\%CLAUDE_PLUGIN_ROOT%\hooks\x.mjs' at Module._resolveFilename ...
+   SessionStart: exit=0 756ms cmd=node "<tmp>\e2e\homes\home with space P4\plugins\cache\e2e-local\probe-plugin\0.0.1/hooks/x.mjs" ...
+   SessionStart: exit=1 833ms cmd=node hooks/x.mjs label:p10-COMMAND-relative-path
+      stderr: node:internal/modules/cjs/loader:1459 throw err; ^ Error: Cannot find module '<tmp>\e2e\work\P4\hooks\x.mjs' at Module._resolveFilename (node:internal/module...
+   SessionStart: exit=1 742ms cmd=node "<tmp>\e2e\homes\home with space P4\plugins\data\e2e/../x.mjs" label:p14-COMMAND-plugin-data...
+      stderr: node:internal/modules/cjs/loader:1459 throw err; ^ Error: Cannot find module '<tmp>\e2e\homes\home with space P4\plugins\data\x.mjs' at Module._resolveFilena...
+   UserPromptSubmit: exit=0 955ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:pu-ups-ctx mode:ctx=MARKER_PLUGIN_UPS_TEXT
+      stdout: {"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"MARKER_PLUGIN_UPS_TEXT"}}
+   PreToolUse[Bash]: exit=0 892ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:pu-pretool-observe
+   PostToolUse[Bash]: exit=0 830ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:pu-posttool-observe
+   Stop: exit=0 731ms cmd=node "$env:CLAUDE_PLUGIN_ROOT/hooks/x.mjs" label:pu-stop-empty
+==============================================================================
+total wall time: 49s
+
+==============================================================================
+E2E run U1   codex exit=0 timedOut=False seconds=18.7
+codex home folder (a throwaway folder whose name contains a space): <tmp>\e2e\homes\home with space U1
+workdir=<tmp>\e2e\work\U1  mock=127.0.0.1:59389  plugin=  bypassTrust=True
+install: no plugin
+artifacts: <tmp>\e2e\out\U1
+==============================================================================
+-- codex --json event types:
+   item.completed/agent_message x1
+   item.completed/command_execution x1
+   item.completed/error x4
+   item.started/command_execution x1
+   thread.started x1
+   turn.completed x1
+   turn.started x1
+-- codex stderr (first 12 lines):
+   WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir "<tmp>\" (codex_home: AbsolutePathBuf("<tmp>\e2e\homes\home with space U1"))
+   Reading additional input from stdin...
+   2026-09-29T18:53:58.390205Z ERROR codex_core::tools::router: error=Command blocked by PreToolUse hook: DENIED_BY_PRETOOL_HOOK. Command: node -e "require('fs').writeFileSync(process.env.E2E_OUT+'/ran-DENYME.txt','x')" DENYME
+   2026-09-29T18:54:08.004794Z ERROR codex_core::tools::router: error=BLOCKED_BY_POSTTOOL_HOOK
+   
+-- user-level spy hooks (stdin/cwd/env as seen by a hook process) (0 hook process(es)):
+-- plugin probe hooks writing to $E2E_OUT (3 hook process(es)):
+   [t4d-pre-deny] event=PreToolUse mode=denyif=DENYME:DENIED_BY_PRETOOL_HOOK exit=0 cwd=<tmp>\e2e\work\U1
+      stdin keys: session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_use_id   stdin_ended=True
+      env CODEX_/PLUGIN_/CLAUDE_ names: CODEX_HOME,CODEX_MANAGED_BY_NPM,CODEX_MANAGED_PACKAGE_ROOT
+      printed stdout: {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"DENIED_BY_PRETOOL_HOOK"}}
+   [t4d-pre-deny] event=PreToolUse mode=denyif=DENYME:DENIED_BY_PRETOOL_HOOK exit=0 cwd=<tmp>\e2e\work\U1
+      stdin keys: session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_use_id   stdin_ended=True
+      env CODEX_/PLUGIN_/CLAUDE_ names: CODEX_HOME,CODEX_MANAGED_BY_NPM,CODEX_MANAGED_PACKAGE_ROOT
+   [t4c-post-block] event=PostToolUse mode=blockif=BLOCKME:BLOCKED_BY_POSTTOOL_HOOK exit=0 cwd=<tmp>\e2e\work\U1
+      stdin keys: session_id,turn_id,transcript_path,cwd,hook_event_name,model,permission_mode,tool_name,tool_input,tool_response,tool_use_id   stdin_ended=True
+      env CODEX_/PLUGIN_/CLAUDE_ names: CODEX_HOME,CODEX_MANAGED_BY_NPM,CODEX_MANAGED_PACKAGE_ROOT
+      printed stdout: {"decision":"block","reason":"BLOCKED_BY_POSTTOOL_HOOK"}
+-- mock requests (model-visible input items after the first developer/system blob):
+   req-001.json POST /v1/responses: 3 input items, tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,
+      #1 type=message role=developer: <skills_instructions> ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and a short path that can be expanded into an absolute ...
+      #2 type=message role=user: <environment_context> <cwd><tmp>\e2e\work\U1</cwd> <shell>powershell</shell> <current_date>2026-09-29</current_date> <timezone><timezone></timezone> <filesystem><workspace_roots><root><home>\AppData\Local\...
+      #3 type=message role=user: hello
+   req-002.json POST /v1/responses: 5 input items, tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,
+      #1 type=message role=developer: <skills_instructions> ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and a short path that can be expanded into an absolute ...
+      #2 type=message role=user: <environment_context> <cwd><tmp>\e2e\work\U1</cwd> <shell>powershell</shell> <current_date>2026-09-29</current_date> <timezone><timezone></timezone> <filesystem><workspace_roots><root><home>\AppData\Local\...
+      #3 type=message role=user: hello
+      #4 type=function_call role=: exec_command {"cmd":"node -e \"require('fs').writeFileSync(process.env.E2E_OUT+'/ran-DENYME.txt','x')\" DENYME","login":false,"yield_time_ms":5000}
+      #5 type=function_call_output role=: Command blocked by PreToolUse hook: DENIED_BY_PRETOOL_HOOK. Command: node -e "require('fs').writeFileSync(process.env.E2E_OUT+'/ran-DENYME.txt','x')" DENYME
+   req-003.json POST /v1/responses: 7 input items, tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,
+      #1 type=message role=developer: <skills_instructions> ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and a short path that can be expanded into an absolute ...
+      #2 type=message role=user: <environment_context> <cwd><tmp>\e2e\work\U1</cwd> <shell>powershell</shell> <current_date>2026-09-29</current_date> <timezone><timezone></timezone> <filesystem><workspace_roots><root><home>\AppData\Local\...
+      #3 type=message role=user: hello
+      #4 type=function_call role=: exec_command {"cmd":"node -e \"require('fs').writeFileSync(process.env.E2E_OUT+'/ran-DENYME.txt','x')\" DENYME","login":false,"yield_time_ms":5000}
+      #5 type=function_call_output role=: Command blocked by PreToolUse hook: DENIED_BY_PRETOOL_HOOK. Command: node -e "require('fs').writeFileSync(process.env.E2E_OUT+'/ran-DENYME.txt','x')" DENYME
+      #6 type=function_call role=: exec_command {"cmd":"node -e \"require('fs').writeFileSync(process.env.E2E_OUT+'/ran-BLOCKME.txt','x')\" BLOCKME","login":false,"yield_time_ms":5000}
+      #7 type=function_call_output role=: BLOCKED_BY_POSTTOOL_HOOK
+==============================================================================
+
+==============================================================================
+E2E run P3   codex exit=0 timedOut=False seconds=6.4
+codex home folder (a throwaway folder whose name contains a space): <tmp>\e2e\homes\home with space P3
+workdir=<tmp>\e2e\work\P3  mock=127.0.0.1:59388  plugin=probe-plugin  bypassTrust=False
+install: marketplace add exit=0, plugin add exit=0 (details: <tmp>\e2e\out\P3\plugin-install.txt)
+artifacts: <tmp>\e2e\out\P3
+==============================================================================
+-- codex --json event types:
+   item.completed/agent_message x1
+   item.completed/error x4
+   thread.started x1
+   turn.completed x1
+   turn.started x1
+-- codex stderr (first 12 lines):
+   WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir "<tmp>\" (codex_home: AbsolutePathBuf("<tmp>\e2e\homes\home with space P3"))
+   Reading additional input from stdin...
+   
+-- user-level spy hooks (stdin/cwd/env as seen by a hook process) (0 hook process(es)):
+-- plugin probe hooks writing to $E2E_OUT (0 hook process(es)):
+-- mock requests (model-visible input items after the first developer/system blob):
+   req-001.json POST /v1/responses: 3 input items, tools=exec_command,write_stdin,request_user_input,view_image,multi_agent_v1,get_goal,create_goal,update_goal,
+      #1 type=message role=developer: <skills_instructions> ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and a short path that can be expanded into an absolute ...
+      #2 type=message role=user: <environment_context> <cwd><tmp>\e2e\work\P3</cwd> <shell>powershell</shell> <current_date>2026-09-29</current_date> <timezone><timezone></timezone> <filesystem><workspace_roots><root><home>\AppData\Local\...
+      #3 type=message role=user: hello
+==============================================================================

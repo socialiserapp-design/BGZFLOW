@@ -1,0 +1,99 @@
+{
+  "schema": 2,
+  "scope": "Public provenance for BG Efficiency. Methods are adapted in original wording; no third-party skill body, script or index is bundled. Check each licence again before redistributing anything taken from a source.",
+  "local_pins": "Not stored here. When you install a source, record its exact version, path and SHA-256 in your own project records.",
+  "sources": [
+    {
+      "name": "caveman",
+      "kind": "skill",
+      "used_for": "Concise, complete communication",
+      "provenance": "github.com/JuliusBrussee/caveman",
+      "licence": "MIT (skill); engine BSL-1.1, not used",
+      "bundled": false
+    },
+    {
+      "name": "ponytail",
+      "kind": "skill",
+      "used_for": "Smallest complete root-cause change",
+      "provenance": "github.com/DietrichGebert/ponytail",
+      "licence": "MIT",
+      "bundled": false
+    },
+    {
+      "name": "RTK",
+      "kind": "cli",
+      "used_for": "Command-output filtering with original-output recovery",
+      "provenance": "github.com/rtk-ai/rtk",
+      "licence": "Apache-2.0",
+      "bundled": false
+    },
+    {
+      "name": "headroom",
+      "kind": "tool",
+      "used_for": "Targeted reads and selective compression",
+      "provenance": "github.com/headroomlabs-ai/headroom",
+      "licence": "Apache-2.0",
+      "bundled": false
+    },
+    {
+      "name": "compaction-hook",
+      "kind": "hook",
+      "used_for": "Compaction ideas; the host's native compaction stays the fallback",
+      "provenance": "Public repository by tamaratran",
+      "licence": "MIT",
+      "bundled": false
+    },
+    {
+      "name": "context-engineering",
+      "kind": "skill",
+      "used_for": "Source hierarchy, project maps, restartable checkpoints",
+      "provenance": "Third-party skill",
+      "licence": "Not established",
+      "bundled": false
+    },
+    {
+      "name": "writing-for-agents",
+      "kind": "skill",
+      "used_for": "Branch-specific references, co-located conditions, checkable outcomes",
+      "provenance": "Third-party skill",
+      "licence": "Not established",
+      "bundled": false
+    },
+    {
+      "name": "codegraph",
+      "kind": "cli",
+      "version": "1.6.0",
+      "used_for": "Default code map",
+      "provenance": "github.com/colbymchenry/codegraph",
+      "licence": "MIT",
+      "bundled": false
+    },
+    {
+      "name": "graft",
+      "kind": "cli",
+      "version": "0.18.0",
+      "used_for": "Alternative code map; search-first and read-cost ideas",
+      "provenance": "npm package @nanonets/graft",
+      "licence": "MIT",
+      "bundled": false
+    },
+    {
+      "name": "code-review-graph",
+      "kind": "cli",
+      "version": "2.3.9",
+      "used_for": "Risk-ranked change brief idea; trialled, not installed",
+      "provenance": "Public repository by tirth8205",
+      "licence": "MIT",
+      "bundled": false
+    },
+    {
+      "name": "graphify",
+      "kind": "cli",
+      "version": "0.9.71",
+      "used_for": "One-page map idea; trialled, not installed by default",
+      "provenance": "Public repository by safishamsi",
+      "licence": "Apache-2.0",
+      "bundled": false
+    }
+  ]
+}

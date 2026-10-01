@@ -1,0 +1,13 @@
+node_modules/
+.notes-map/
+.codegraph/
+.bgzflow/
+overlay/
+*.log
+.env
+.env.*
+__pycache__/
+.DS_Store
+Thumbs.db
+.grok-job/
+.tmp/

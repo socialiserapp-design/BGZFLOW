@@ -1,0 +1,84 @@
+{
+  "description": "BGZFLOW hooks: bounded context and snapshots, plus an active-swarm dispatch/check/release gate. Gate errors warn and fail open except unready releases, which fail closed. Ordinary chats receive no swarm gate context.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h4-clock.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h4-clock.mjs\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h3-chat-size.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h2-big-read-guard.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h1-checkpoint-cap.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{"type":"command","command":"node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook","timeout":7}]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h5-state-snapshot.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

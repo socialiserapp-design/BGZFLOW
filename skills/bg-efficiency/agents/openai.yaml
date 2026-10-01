@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Efficiency"
+  short_description: "Keep usage low and outcomes complete"
+  default_prompt: "Apply $bg-efficiency throughout the task: maps before reads, short briefs and results, heavy work on workers, verified skill reads, reused evidence and a one-page checkpoint."
+policy:
+  allow_implicit_invocation: true
