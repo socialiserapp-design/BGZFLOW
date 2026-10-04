@@ -7,7 +7,7 @@ Use the existing [glossary](../../bg-build-with-me/references/glossary.md), requ
 
 ## Who checks, and when
 
-Freeze and run the full suite once, rehearse real-platform golden journeys and one rollback, then dispatch one fresh read-only independent review per release ID. Only reproduced wrong money, data loss, security/privacy or missing rollback blocks. Other findings, including reviewer design findings, go after-launch. Repairs are proved by a new exact-SHA rehearsal; never re-review or review a repair. For UI changes the founder final phone/capable-device design check precedes the small launch; only their mismatch blocks on design. Watch live errors for the first hour, then widen when healthy. Historical verdict fields below preserve evidence lineage; they never replace rehearsal or require a ready verdict for release.
+Freeze and run the full suite once, rehearse real-platform golden journeys and one rollback, then dispatch one fresh read-only independent review per release ID. Only reproduced wrong money, data loss, security/privacy or missing rollback blocks. Other findings, including reviewer design findings, go after-launch. Repairs are proved by a new exact-SHA rehearsal; never re-review or review a repair. For UI changes the founder final phone/capable-device design check precedes switching on; only their mismatch blocks on design. Switch on for all intended customers and watch live errors for the first hour. Historical verdict fields below preserve evidence lineage; they never replace rehearsal or require a ready verdict for release.
 
 ## Contract and trust boundary
 

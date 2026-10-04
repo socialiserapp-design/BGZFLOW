@@ -1,6 +1,22 @@
 # Changelog
 
-The 0.2.0 candidate adds deterministic swarm CLI/hook enforcement: one private ledger, configurable model policy, account-bound observations, job/hour limits and reserve, diagnosis after two counted failures, ownership checks, ordered exact-SHA whole checks, two-wave enforcement and production release readiness. Wave-2 ports strengthen logical identity, result references, repair-base advancement and release preparation ordering. See [verification evidence](docs/proof.md). Publication remains separately authorised.
+All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
+
+## 0.3.1 (2026-10-04)
+
+**Finished means switched on.** In real projects, finished and tested features were being parked behind switches that nobody turned on. Low-traffic products can never fill a percentage-rollout sample, so "hold on insufficient data" became permanent.
+
+- Accepted work is now switched on for all intended customers after the real-platform rehearsal and the one review, followed by a one-hour live error watch. Healthy work stays on; failures are switched off and fixed forward.
+- Work is switched on the moment its rehearsal passes, never on a later date. Finished work still off after 24 hours surfaces in project status as overdue, with one recommendation.
+- Only a recorded founder decision keeps finished work off. Leads cannot invent holds.
+- Percentage ladders (1/5/25/50/100) apply only above about 1,000 daily active users per platform; below that, release to everyone and watch for an hour. Missing data never means holding indefinitely.
+- Kill switches remain mandatory for money, data and security paths, and switches are removed after 7 healthy days.
+- Updated the release rules in `AGENTS.md`, `/swarm-ship`, Check It Before Release, Finish the Whole Job, Ship and Recover, and the app store and over-the-air guides.
+- Rewrote the README.
+
+## 0.3.0 (2026-10-01)
+
+First public release. See [RELEASE-NOTES-v0.3.md](RELEASE-NOTES-v0.3.md).
 
 ## 0.2.0 (candidate-2, 2026-09-30)
 
