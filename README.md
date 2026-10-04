@@ -1,14 +1,46 @@
 # BGZFLOW
 
-BGZFLOW is a free plugin that lets one founder run AI worker swarms from idea to launch.
-It plans the work, builds the pieces together, then tests and checks the whole result.
-It works with your existing agents and subscriptions; their normal usage costs still apply.
+**Run a team of AI coding agents like a real product team, from a plain-English idea to a working launch.**
 
-[Public repository](https://github.com/socialiserapp-design/BGZFLOW) · [Verification evidence](docs/proof.md) · [MIT licence](LICENSE)
+BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead agent plans the work, a swarm of workers builds every piece in parallel, and the whole product is then tested once on the real platform before it goes live. It runs on the agents and subscriptions you already have.
 
-## Install in 5 minutes
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.3.1-informational.svg)](CHANGELOG.md)
+![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
-You need your host CLI and Node.js 18 or newer. Python 3.10 or newer is needed only for the notes map. No npm packages are installed. Local-source validation and remote installation are separate evidence; this candidate makes no remote-install claim. Details: [install guide](docs/install.md), [verification evidence](docs/proof.md).
+---
+
+## Why BGZFLOW
+
+AI agents are fast at writing code and bad at finishing products. Left alone they review each other in circles, test pieces that never get assembled, lose track after a restart, and quietly leave finished work switched off. BGZFLOW is a small set of working rules, skills and local guard tools that fix those failure modes:
+
+- **Build the whole thing, then test the whole thing.** Workers build every piece in parallel with fast checks only. Nothing is reviewed or released piece by piece.
+- **Prove it on the real platform.** The finished candidate runs its key customer journeys and one rollback on a real preview, staging slot, TestFlight or internal track, with real accounts and money in test mode.
+- **One review, four reasons to stop.** A single independent read-only review per release can block only on wrong money, data loss, security or privacy, or a missing rollback, each with a reproduction. Everything else goes on the after-launch list. Repairs are proven by re-running the rehearsal, never by another review.
+- **Finished means switched on.** Accepted work goes live for its customers the moment it passes, with an hour of live error-watching. Finished work left off is flagged within a day.
+- **You decide once.** You approve the resources and usage limit for a swarm up front. After that the lead runs the work and asks only about genuine product, money or release decisions.
+- **Pick up where you left off.** One-page checkpoints and a recovery skill let any agent, on any host, continue a project after a crash, a restart or an account switch.
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Goal in plain English] --> B[Plan + prototype]
+    B --> C[Workers build every piece in parallel]
+    C --> D[Combine into one candidate]
+    D --> E[Full test suite once]
+    E --> F[Rehearse on the real platform]
+    F --> G{One independent review}
+    G -- blocker --> H[Fix and re-rehearse]
+    H --> F
+    G -- clear --> I[Switch on and watch for one hour]
+```
+
+The lead agent recovers the project's current state, proposes a short plan and asks once which workers and usage it may spend. From there it carries the approved work through building, integration, whole testing, the release and recovery. Publishing, store submission and payments still need your explicit authority.
+
+## Install
+
+Requirements: your agent's CLI and Node.js 18 or newer. Python 3.10 or newer is needed only for the optional notes map. BGZFLOW installs no npm packages.
 
 **Claude Code**
 
@@ -24,59 +56,72 @@ codex plugin marketplace add socialiserapp-design/BGZFLOW
 codex plugin add bgzflow@bgzflow
 ```
 
-## A 60-second first run
+**Grok**
 
-Open any existing repository in your agent. Start with `/swarm <goal>`: describe the result you want in plain words.
-
-Claude Code uses the plugin prefix:
-
-```text
-/bgzflow:swarm <your goal>
+```shell
+grok plugin marketplace add socialiserapp-design/BGZFLOW
+grok plugin install socialiserapp-design/BGZFLOW
 ```
 
-Codex does not load plugin slash commands. Tell it: `Read the installed BGZFLOW commands/swarm.md and run that workflow for this goal: <your goal>`.
+The [install guide](docs/install.md) covers updating, uninstalling and the optional private settings folder.
 
-The lead recovers the project, shows a short plan, asks once which worker resources it may use, and carries the approved work through building, integration and whole testing. Give any product constraints with your goal. Publishing requires separate explicit authority.
+## Quick start
+
+Open an existing repository in your agent and describe the result you want:
+
+```text
+/bgzflow:swarm Add Apple and Google sign-in, and make sure existing email users keep their accounts
+```
+
+Claude Code and Grok load the commands directly. Codex does not load plugin slash commands yet, so ask it:
+
+```text
+Read the installed BGZFLOW commands/swarm.md and run that workflow for this goal: <your goal>
+```
 
 ## Commands
 
-The names below are workflow shorthand. Claude Code and Grok use `/bgzflow:<name>`; on Codex ask the agent to follow the matching installed `commands/<name>.md`.
-
-| Swarm command | What it does |
+| Command | What it does |
 |---|---|
-| `/swarm <goal>` | Plan, build all pieces, combine, test whole and independently check |
-| `/swarm-fix <findings>` | Repair a batch, re-integrate at a new SHA and retest; two waves maximum |
-| `/swarm-research <question>` | Investigate in parallel and return one sourced answer |
-| `/swarm-design <target>` | Explore at least eight new looks, then prototype your choice |
-| `/swarm-check [candidate]` | Test and independently check the complete pinned candidate |
-| `/swarm-ship <version> [submit]` | Prepare one release; publish only with named authority |
-| `/swarm-status` | Show activity, stale/unknown jobs, coverage and recent results |
-| `/swarm-resources` | Inspect resources and save explicit approval or route proof |
+| `/swarm <goal>` | Plan, build every piece in parallel, combine, test the whole and check it independently |
+| `/swarm-fix <findings>` | Fix a batch in parallel, re-combine and retest the whole journey (two rounds at most) |
+| `/swarm-research <question>` | Investigate several angles in parallel and return one sourced answer |
+| `/swarm-design <target>` | Explore at least eight genuinely different designs, then prototype your choice |
+| `/swarm-check [candidate]` | Rehearse the complete candidate on the real platform, then run the one review |
+| `/swarm-ship <version>` | Prepare a release, switch it on within your authority and watch it live |
+| `/swarm-status` | Show running, stale and finished jobs, with duplicates and mismatches flagged |
+| `/swarm-resources` | See which agents and accounts are available, and approve what a swarm may use |
 
-| Other command | What it does |
+Supporting tools: `/bg-heavy` queues heavy local builds one at a time, `/bg-swarm` launches and stops local workers, `/bg-rounds` keeps the repair-round ledger, `/swarm-gate` enforces the swarm's limits and release order, `/doctor` checks for leaked secrets and context costs, `/notes-map` finds the right lines in long project notes, and `/startup-check` keeps start-up reading short.
+
+## What's inside
+
+**Eight skills**, each loaded only when its stage applies:
+
+| Skill | Use it for |
 |---|---|
-| `/bg-heavy` | Queue heavy local tests/builds, one at a time |
-| `/bg-swarm` | Launch, list, stop and reap local workers |
-| `/bg-rounds` | Keep the repair-wave ledger |
-| `/swarm-gate` | Enforce resources, usage, retries, ownership, ordered checks and release readiness |
-| `/doctor` | Check for secrets in URLs and plugin context costs |
-| `/notes-map` | Find the relevant lines in project notes |
-| `/startup-check` | Check startup reading, pointers and owners |
+| Plain English Builder | Turning an everyday idea into research, a clickable prototype and a buildable plan |
+| Build With Me | Managing a substantial goal end to end, choosing the right stages and workers |
+| Personal Product Design | New looks, screens and flows, with eight or more directions and device checks |
+| Finish the Whole Job | Turning an agreed plan into one integrated, working product |
+| Check It Before Release | Real-platform rehearsal and the single release review |
+| Ship and Recover | Switching accepted work on, the first live hour, rollback and incidents |
+| Continue My Project | Resuming after a crash, a break or a host or account change without losing work |
+| Efficiency | Saving tokens and usage without cutting scope or quality |
 
-## Resources and approval
+**Local guard tools and hooks**: the swarm gate (resources, usage limits, ownership, retry and release order), resource and status views, a heavy-job queue, a resource governor that protects disk and build slots, a worker mailbox, account-route receipts and a real-clock hook. See [swarm gate](docs/swarm-gate.md), [testing ladder](docs/testing-ladder.md), [mailbox](docs/mailbox.md), [resource governor](docs/resource-governor.md) and [account routing](docs/account-routing.md).
 
-You choose resources and a usage limit together once per swarm: Small (8 jobs/4 worker-hours), Medium (20/12), Large (48/32), or custom. Each includes a check/fix reserve; both choices become next time's suggested defaults. The local [swarm gate](docs/swarm-gate.md) saves one private ledger, checks worker briefs and reservations, breaks failure loops, prevents concurrent ownership, orders whole checks and blocks an unready production release. A block gives the lead one next step. Ordinary chats receive no swarm gate context.
+## Safety and privacy
 
-Installed tools and logins need a small qualifying job and a proof matching the current observed account/environment. Provider allowance percentages are enforced only when actually readable; otherwise they are labelled unavailable. The plugin never buys capacity or silently switches accounts. Non-Claude leads use the same required gate CLI. Hooks cannot prove that workers really read skills or tested honestly: their proof handback and the whole test supply that evidence.
+- Hooks are small Node.js programs that run on your machine, with no dependencies. Read [SECURITY.md](SECURITY.md) and review `hooks/hooks.json` before you install or update.
+- Your own notes, routes and project list live in a private folder outside this repository (`~/.bgzflow/overlay/` by default) and are never published.
+- BGZFLOW never buys capacity, never switches accounts silently and never publishes, submits to a store or moves money without your recorded authority.
+- Continuous integration runs the test suite, a manifest drift check, a leak check over files, history and identities, and gitleaks.
 
-The gate uses provider-neutral tiers and a discovered, dated model map. Each tier needs an exact-flags qualification; a changed model affects new jobs while running jobs keep their settings. Optional [Jev judgment and jev-codes](docs/swarm-gate.md#optional-jev) help detect semantic rule breaches and test-evidence gaps. They are off by default, use sanitized evidence and reported usage, and cannot approve a candidate or authorize release.
+## Project status
 
-Your provider settings, routes and project notes stay in the private overlay, outside this repository. See [resource setup](tools/swarm-resources/README.md) and [job status](tools/swarm-status/README.md). Resource approval grants no spending or publishing authority. Failed checks or a blocking finding prevent customer release.
+BGZFLOW is used every day to run several real products built by a one-person studio, across Claude Code and Codex. It is young and moving quickly; see the [changelog](CHANGELOG.md) and [verification evidence](docs/proof.md). Issues and pull requests are welcome. Please report security problems through a private security advisory.
 
-Eight skills and small local hooks support the workflow. Read [SECURITY.md](SECURITY.md) before relying on hooks, which run on your machine. BGZFLOW is MIT: Copyright (c) 2026 BGZFLOW contributors. [Attribution](ATTRIBUTION.md).
+## Licence
 
-The finish line is real-platform rehearsal: freeze and run the combined suite once, execute golden journeys and one rollback on the exact target build, then one read-only review per release ID. Only reproduced wrong money, data loss, security/privacy or missing rollback blocks; other findings go after-launch. Repair by rerunning rehearsal, never another review. For customer-visible changes the founder checks the verified build on a phone or capable device as the final step; only their approved-design mismatch blocks on design. Launch small within authority, watch live errors for one hour, fix forward or roll back, then widen. Automatic model updating is off by default while remaining fallback edge cases wait until after launch.
-
-## v0.3 automation
-
-The [testing ladder](docs/testing-ladder.md) makes runners do the tapping: Playwright for web, Maestro on EAS for every mobile candidate, occasional BrowserStack device sampling, and the founder's phone only for the approved-design check. Leads and workers use the [two-way mailbox](docs/mailbox.md) instead of ending a job to ask. The [resource governor](docs/resource-governor.md) protects disk, machine/build slots and thread archives, while [account receipts](docs/account-routing.md) prove which configured route actually ran a job.
+MIT. Copyright (c) 2026 BGZFLOW contributors. Third-party ideas and sources are credited in [ATTRIBUTION.md](ATTRIBUTION.md).
