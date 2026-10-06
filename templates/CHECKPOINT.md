@@ -7,7 +7,7 @@
 Updated: <system-clock timestamp, UTC> by <role + job ID>
 
 ## Outcome
-<!-- The founder's intended result in one or two sentences, and how acceptance is observed. -->
+<!-- Intended result in two sentences, and how acceptance is observed. -->
 
 ## CURRENT RULES
 <!-- The single block of rules in force now. Cite DECISIONS.md IDs instead of copying them.

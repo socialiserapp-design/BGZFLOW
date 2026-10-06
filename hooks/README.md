@@ -1,11 +1,12 @@
 # BGZFLOW hooks
 
-Five small Node scripts that enforce rules nothing else enforced: one-page checkpoints, no whole-file reads of
-big notes, small chats, a real clock, and a second copy of project state. No dependencies beyond Node 18 or newer.
+Six small Node scripts cover one-page checkpoints, no whole-file reads of big notes, small chats, a real clock,
+a second copy of project state, and lessons due for review. No dependencies beyond Node 18 or newer.
 
 | Id | Script | Event (matcher) | What it does |
 |----|--------|-----------------|--------------|
 | H4 | `h4-clock.mjs` | SessionStart, UserPromptSubmit | Adds one line with the real local date, time and timezone. |
+| H6 | `h6-lessons-due.mjs` | SessionStart | Reads only the resolved project's lessons and adds `Lessons due for review: N (bgz lessons due)` when N > 0. No writes or network. |
 | H3 | `h3-chat-size.mjs` | UserPromptSubmit | If the transcript is over `BGZFLOW_CHAT_MB`, adds one line: write a handoff and continue in a fresh chat. |
 | H2 | `h2-big-read-guard.mjs` | PreToolUse (`Read`) | Denies a whole-file read of a notes file (.md .txt .log .json .jsonl .csv) over `BGZFLOW_BIG_READ_KB`, and points to `notes-map ask` or a line range. Code files pass. |
 | H1 | `h1-checkpoint-cap.mjs` | PostToolUse (`Write\|Edit\|MultiEdit`) | If `*CHECKPOINT*.md` is over `BGZFLOW_CHECKPOINT_KB`, or `HANDOFF*.md` over `BGZFLOW_HANDOFF_KB`, blocks with: keep one page, move history to ARCHIVE.md. |
@@ -15,7 +16,7 @@ big notes, small chats, a real clock, and a second copy of project state. No dep
 
 ## Rules every hook follows
 
-- **Fails open.** Any error is caught, one line is appended to `<project>/.bgzflow/hooks.log`, and the hook exits 0. A broken or empty stdin body is treated as `{}`. A host that never closes stdin does not hang a hook.
+- **Fails open.** Any error is caught and the hook exits 0. H1–H5 append one line to `<project>/.bgzflow/hooks.log`; H6 stays silent and never writes. A broken or empty stdin body is treated as `{}`. A host that never closes stdin does not hang a hook.
 - **Small.** Typically well under 200 ms beyond Node's own start-up. At most 60 words of context per turn in total (the clock line plus, rarely, the chat-size line).
 - **Log hygiene.** The log holds a UTC timestamp, the hook id and a short message. Credentials in URLs are redacted. Environment variable values are never written anywhere, only names, and a name that could hold a secret (containing TOKEN, SECRET, KEY, PASSWORD, AUTH, COOKIE, SESSION or CREDENTIAL) is not even named. The same rule holds for the tools and the test helpers, and a test checks the sources.
 - **Limits** (environment variable, then `<project>/.bgzflow/config.json`, then default). Zero, negative or non-numeric values are ignored with a log line. Optional: `BGZFLOW_STATE_DIRS` (extra state folders for H5) and `BGZFLOW_PROJECT` (project folder override).
@@ -43,6 +44,8 @@ Checked against the official Claude Code hooks reference on 2026-09-29: <https:/
 
 A hook prints at most one JSON object. Exit code is always 0. The additionalContext text is far below the 10,000-character cap.
 
+H6 uses the same project override and host/cwd resolution as the other hooks; it never searches other projects for lessons. It reuses the lessons CLI's exact-key due logic. Missing, malformed, unreadable or larger-than-1-MB logs produce no context; use `bgz lessons due` for explicit diagnosis or larger histories. It runs only at SessionStart, not on every prompt.
+
 ## Which host runs which hook
 
 "Yes" means the host documents the event, matcher and output the hook uses. "Tested" means a test feeds that host's stdin shape.
@@ -51,6 +54,7 @@ No hook has been run inside Claude Code or Grok itself; only Codex was run end t
 | Hook | Claude Code | Codex | Grok |
 |------|-------------|-------|------|
 | H4 clock | Yes | Yes (UserPromptSubmit context observed reaching the model) | **Gap.** SessionStart output is ignored and the context of an allowing UserPromptSubmit hook is discarded. |
+| H6 lessons | Same SessionStart format as H4; fixture tested | Same SessionStart format as H4; fixture tested, not live-installed | **Gap.** SessionStart context is ignored; use `bgz lessons due`. |
 | H3 chat size | Yes | Yes when the host sends `transcript_path` (it does) | **Gap.** Same reason as H4. |
 | H2 big-read guard | Yes | **Gap.** Codex has no `Read` tool. Reads are shell commands (matched as `Bash`) or an MCP tool with its own name. | Yes. `Read` maps to Grok's `read_file`; both deny spellings are accepted. Tested with a Grok-shaped payload. |
 | H1 checkpoint cap | Yes | Yes. `apply_patch` matches `Edit` and `Write`; H1 reads the touched files from the patch text. The same block shape reached the model in the recorded run. | Yes. A `block` reason is delivered next to the tool result; it cannot undo the write. Tested with a Grok-shaped payload. |

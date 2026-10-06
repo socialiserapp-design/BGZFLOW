@@ -7,6 +7,7 @@
 // Exit 0: all checks pass.  Exit 1: at least one check failed.  Exit 2: bad usage or an unexpected error.
 import path from 'node:path';
 import { avSafeFailures, checkStartup } from './lib.mjs';
+import { due } from '../lessons/lib.mjs';
 
 function usage() {
   return [
@@ -48,6 +49,8 @@ function render(result) {
   for (const c of result.checkpoints) lines.push(`  checkpoint: ${c.path} ${(c.bytes / 1024).toFixed(1)} KB, ${c.words} words`);
   for (const w of result.warnings) lines.push(`  warn: ${w.message}`);
   for (const f of result.failures) lines.push(`  FAIL [${f.code}] ${f.message}`);
+  if (result.lessonsDue > 0) lines.push(`Lessons due for review: ${result.lessonsDue} (bgz lessons due)`);
+  if (result.lessonsWarning) lines.push(result.lessonsWarning);
   lines.push(result.ok ? 'PASS' : `FAIL (${result.failures.length} problem${result.failures.length === 1 ? '' : 's'})`);
   return lines.join('\n');
 }
@@ -65,6 +68,13 @@ try {
     process.exitCode = failures.length ? 1 : 0;
   } else {
     const result = checkStartup(opts.dir || process.cwd(), { budgetOverride: opts.budget });
+    try {
+      result.lessonsDue = due([result.projectDir]).groups.length;
+    } catch (error) {
+      // Optional lessons advice must not change the startup verdict or expose log contents.
+      const line = Number.isInteger(error.lineNumber) && error.lineNumber > 0 ? ` line ${error.lineNumber}` : '';
+      result.lessonsWarning = `Lessons log unreadable: .bgzflow/lessons.jsonl${line}`;
+    }
     process.stdout.write((opts.json ? JSON.stringify(result, null, 2) : render(result)) + '\n');
     process.exitCode = result.ok ? 0 : 1;
   }

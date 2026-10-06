@@ -4,7 +4,7 @@
 //   node scripts/test-all.mjs --list       print the suites it would run, and run nothing
 //   node scripts/test-all.mjs --only doctor   run only the suites whose path contains the text
 //
-// Suites are found on disk, so a new one is included without editing this file:
+// Suites (including tools/lessons/test) are found on disk automatically:
 // - Node: every folder holding *.test.mjs files, run with node:test. A folder whose package.json names a
 //   "main" is run through that entry (its index imports the suite), because Node 24 loads a folder as one module.
 // - Python: every test_*.py file, run with unittest under Python 3.10 or newer (python3, python or py -3).

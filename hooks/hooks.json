@@ -8,6 +8,11 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h4-clock.mjs\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h6-lessons-due.mjs\"",
+            "timeout": 10
           }
         ]
       }

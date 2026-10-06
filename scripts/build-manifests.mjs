@@ -22,6 +22,11 @@ const keywords = ["agents", "skills"];
 // Claude-format commands; the skills name the same `node .../tools/<name>/<name>.mjs` command for every host.
 const tools = [
   {
+    name: "lessons",
+    hint: "<add|due|review|status> [roots...] [options]",
+    about: "Record lessons and review repeated patterns through the normal change path",
+  },
+  {
     name: "bg-mail",
     hint: "<post|reply|wait|list> --project ID ...",
     about: "Exchange durable questions and replies between leads and workers without ending a job",

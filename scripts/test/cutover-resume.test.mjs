@@ -42,7 +42,9 @@ async function fixture(t) {
   fs.writeFileSync(preload, `import cp from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';const original=cp.spawnSync;cp.spawnSync=(exe,args,options)=>original(process.execPath,[${JSON.stringify(fake)},...args],options);syncBuiltinESMExports();`);
   const set = (fail, kind = 'timeout') => fs.writeFileSync(control, JSON.stringify({ fail, kind })); set(null);
   const run = (script, args, folder = kit) => spawnSync(process.execPath, ['--import', pathToFileURL(preload).href, path.join(folder, script), ...args],
-    { encoding: 'utf8', timeout: 30000, env: { ...process.env, BGZFLOW_NATIVE_TIMEOUT_MS: '1500' } });
+    // Allow loaded desktops to start healthy Node children; the intentional six-second
+    // stall above still exceeds this deadline and must produce a real ETIMEDOUT.
+    { encoding: 'utf8', timeout: 30000, env: { ...process.env, BGZFLOW_NATIVE_TIMEOUT_MS: '5000' } });
   const calls = () => fs.existsSync(log) ? fs.readFileSync(log, 'utf8').trim().split('\n').map(JSON.parse) : [];
   async function codex() {
     assert.equal(run('apply.mjs', ['--apply']).status, 0);

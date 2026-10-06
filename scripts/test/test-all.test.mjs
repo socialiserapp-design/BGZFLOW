@@ -21,6 +21,7 @@ test("--list finds every suite without running any", () => {
     "node tools/bg-swarm/test",
     "node tools/doctor/test",
     "node tools/notes-map/test",
+    "node tools/lessons/test",
     "node tools/startup-check/test",
     "node tools/test",
     "python tools/notes-map/test_notes_map.py",

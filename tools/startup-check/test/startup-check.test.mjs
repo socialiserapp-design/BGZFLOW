@@ -25,6 +25,38 @@ const codes = (result) => result.failures.map((f) => f.code);
 const cli = (args, env = {}) => spawnSync(process.execPath, [CLI, ...args], { encoding: 'utf8', env: cleanEnv(env), timeout: TEST_TIMEOUT_MS });
 const words = (n) => Array.from({ length: n }, (_, i) => `w${i}`).join(' ');
 
+test('malformed lessons preserve the normal startup result and report only the failing line', () => {
+  const dir = project();
+  write(dir, 'AGENTS.md', '# Small project\n');
+  write(dir, '.bgzflow/lessons.jsonl', '\n{broken\n');
+  for (const failed of [false, true]) {
+    if (failed) write(dir, 'AGENTS.md', 'Required reading: [Missing](missing.md)\n');
+    const result = cli([dir]);
+    assert.equal(result.status, failed ? 1 : 0, result.stderr);
+    assert.deepEqual(result.stdout.split('\n').filter(line => line.startsWith('Lessons')), [
+      'Lessons log unreadable: .bgzflow/lessons.jsonl line 2',
+    ]);
+    assert.doesNotMatch(result.stdout + result.stderr, /\{broken/);
+    const structured = cli([dir, '--json']);
+    assert.equal(structured.status, failed ? 1 : 0);
+    const report = JSON.parse(structured.stdout);
+    assert.equal(report.ok, !failed);
+    assert.match(report.lessonsWarning, /line 2$/);
+  }
+});
+
+test('unreadable lessons storage leaves a passing startup intact', () => {
+  const dir = project();
+  write(dir, 'AGENTS.md', '# Small project\n');
+  fs.mkdirSync(path.join(dir, '.bgzflow/lessons.jsonl'), { recursive: true });
+  const result = cli([dir]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(result.stdout.split('\n').filter(line => line.startsWith('Lessons')), [
+    'Lessons log unreadable: .bgzflow/lessons.jsonl',
+  ]);
+  assert.match(result.stdout, /PASS/);
+});
+
 describe('word count and pointers', () => {
   test('a word is any run of non-blank characters', () => {
     assert.equal(wordCount('a-b c\nd\te'), 4);

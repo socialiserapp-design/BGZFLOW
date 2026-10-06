@@ -23,7 +23,8 @@ export function makeHome(prefix = 'swarm-') {
     heavy,
     env,
     cleanup() {
-      fs.rmSync(dir, { recursive: true, force: true });
+      // Stopped Windows children can release their cwd handles just after exit.
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     },
   };
 }
