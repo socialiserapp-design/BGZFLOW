@@ -1,6 +1,7 @@
 {
   "name": "bgzflow",
   "private": true,
+  "bin": { "bgz": "tools/bgz.mjs" },
   "scripts": {
     "test": "node scripts/test-all.mjs"
   }

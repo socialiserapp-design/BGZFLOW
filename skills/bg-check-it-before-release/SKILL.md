@@ -26,3 +26,7 @@ Repair: same owner | stable finding ID | repaired SHA | rerun rehearsal; no new 
 UI only: founder chat reference | phone/capable device | exact SHA | matched/mismatch
 Handback: evidence/limits | next owner/action | small launch and hour watching
 ```
+
+Finish reports keep three verification levels separate: **BUILT** (compiles/tests pass), **REACHED** (deployed/staged and responds), **USED** (exercised on the real platform with current data through the real journey, observed by eye or a check inspecting the real result). Only USED may be called "working". Record evidence or gaps for each, including the data copy and its date; demo screenshots and stale copies cannot establish USED.
+
+Required report fields: numbered next steps, each with **Confirm by:** a command, check or observation; if none, **All objectives complete.** End with **What went wrong:** 1–2 lines or "nothing", appended using `bgz lessons add` ([CLI](../../tools/lessons/README.md)). Apply the [lessons review procedure](../bg-finish-the-whole-job/SKILL.md#lessons-to-rules); never ask the founder to grade or accept work.

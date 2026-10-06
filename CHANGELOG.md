@@ -2,6 +2,13 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.3.2 (2026-10-06)
+
+- Added a local, append-only lessons log with add, due, review and status commands. Two open lessons with the same key, or one high-severity lesson, trigger review across explicitly selected projects.
+- Reviews close the recorded occurrences without erasing history. New problems remain eligible. Promotions prefer a hard check and follow the normal tested, independently checked release path; live rules are never edited directly.
+- Finish reports now separate BUILT, REACHED and USED, identify the data copy and date, give confirmation steps, and record what went wrong. Only USED supports a claim that something is working.
+- SessionStart and the existing startup check show a single reminder when lessons are due. The read-only hook runs once per session, stays silent on errors, and adds no dependency. Added regression fixtures and tests for reporting, storage, validation and review closure.
+
 ## 0.3.1 (2026-10-04)
 
 **Finished means switched on.** In real projects, finished and tested features were being parked behind switches that nobody turned on. Low-traffic products can never fill a percentage-rollout sample, so "hold on insufficient data" became permanent.

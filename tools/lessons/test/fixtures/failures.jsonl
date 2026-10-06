@@ -1,0 +1,6 @@
+{"id":"lesson-1","date":"2026-10-05T09:00:00.000Z","project":"example","stage":"rehearsal","what":"A switch rehearsal used a day-old data copy and did not prove current data compatibility.","key":"stale-rehearsal-data","evidence":"proof/switch.txt"}
+{"id":"lesson-2","date":"2026-10-05T10:00:00.000Z","project":"example","stage":"check","what":"Demo screenshots with fake data were accepted as UI proof; a person later found a transparent dropdown.","key":"demo-ui-proof","severity":"high"}
+{"id":"lesson-3","date":"2026-10-05T11:00:00.000Z","project":"example","stage":"build","what":"A silence watchdog killed a long suite; status stayed active and the report blamed an unrelated earlier error.","key":"watchdog-stale-status"}
+{"id":"lesson-4","date":"2026-10-05T12:00:00.000Z","project":"example","stage":"build","what":"A watcher tracked the launcher instead of the real worker and announced a false finish.","key":"launcher-false-finish"}
+{"id":"lesson-5","date":"2026-10-05T13:00:00.000Z","project":"example","stage":"rehearsal","what":"The app only quit through its tray menu, leaving an automated switch dependent on a human click.","key":"tray-only-quit"}
+{"id":"lesson-6","date":"2026-10-05T14:00:00.000Z","project":"example","stage":"rehearsal","what":"Synthetic recurrence: the next switch rehearsal again used an old copy.","key":"stale-rehearsal-data"}

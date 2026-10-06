@@ -8,6 +8,18 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 
+test('host manifests preserve default hook discovery including the lessons SessionStart hook', () => {
+  for (const file of ['plugin.json', '.claude-plugin/plugin.json']) {
+    const manifest = JSON.parse(readFileSync(join(root, file), 'utf8'));
+    assert.equal(manifest.hooks, undefined, 'use the default hooks/hooks.json discovery');
+    assert.equal(manifest.extensions?.['com.openai']?.hooks, undefined);
+  }
+  const hooks = JSON.parse(readFileSync(join(root, 'hooks/hooks.json'), 'utf8')).hooks;
+  const commands = hooks.SessionStart.flatMap(group => group.hooks.map(hook => hook.command));
+  assert.ok(commands.includes('node "${CLAUDE_PLUGIN_ROOT}/hooks/h6-lessons-due.mjs"'));
+  assert.ok(commands.includes('node "${CLAUDE_PLUGIN_ROOT}/hooks/h4-clock.mjs"'));
+});
+
 test("build-manifests --check finds no drift in the committed files", () => {
   const r = spawnSync(process.execPath, ["scripts/build-manifests.mjs", "--check"], { cwd: root, encoding: "utf8" });
   assert.equal(r.status, 0, r.stderr);

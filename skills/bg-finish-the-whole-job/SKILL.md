@@ -25,6 +25,14 @@ Use one supported background wait, then exact result pickup, for finished, faile
 
 ## Copyable templates
 
+Finish reports keep three verification levels separate: **BUILT** (compiles/tests pass), **REACHED** (deployed/staged and responds), **USED** (exercised on the real platform with current data through the real journey, observed by eye or a check inspecting the real result). Only USED may be called "working". Record evidence or gaps for each, including the data copy and its date; demo screenshots and stale copies cannot establish USED. Never ask the founder to grade or accept work.
+
+Required report fields: numbered next steps, each with **Confirm by:** a command, check or observation; if none, **All objectives complete.** End with **What went wrong:** 1–2 lines or "nothing", appended using `bgz lessons add` ([CLI](../../tools/lessons/README.md)).
+
+### Lessons to rules
+
+When `bgz lessons due` reports groups, or weekly, use a cheap model to triage them. The tool groups by exact key only; the lead reconciles near-duplicate keys, preserving original records and linking any dismissed duplicate to the retained group. Each due group gets one outcome: prefer a hard check (hook, test or required report field); edit a skill for know-how; otherwise dismiss with a reason. Every promotion follows BGZFLOW's normal change path: builder edits and tests, one independent check, authorised release. Never edit live rules directly. After release, record `review --key K --outcome promoted --to PATH`; for dismissal use `--outcome dismissed --reason TEXT`. Until then keep it open. Closure names existing lesson IDs; new recurrences remain eligible.
+
 Use the [task row, worker prompt, handback and consolidated repair templates](references/worker-packet.md) and the [brief](../../templates/BRIEF.md). For material unresolved product choices use the [question round](../bg-plain-english-builder/references/question-round.md#copyable-question-round); reuse settled decisions from `DECISIONS.md`.
 
 ```text

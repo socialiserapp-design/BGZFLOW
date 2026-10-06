@@ -309,7 +309,7 @@ describe('H1 checkpoint cap (PostToolUse, Write|Edit|MultiEdit)', () => {
 });
 
 describe('every hook fails open', () => {
-  const scripts = ['h1-checkpoint-cap.mjs', 'h2-big-read-guard.mjs', 'h3-chat-size.mjs', 'h4-clock.mjs', 'h5-state-snapshot.mjs'];
+  const scripts = ['h1-checkpoint-cap.mjs', 'h2-big-read-guard.mjs', 'h3-chat-size.mjs', 'h4-clock.mjs', 'h5-state-snapshot.mjs', 'h6-lessons-due.mjs'];
   const inputs = ['', '   ', 'not json at all', '[1,2,3]', 'null', '{"tool_input": "a string", "cwd": 5}', '{"cwd": "Z:/does/not/exist", "transcript_path": 42}', '{'.repeat(2000)];
   for (const script of scripts) {
     test(`${script}: broken input exits 0 with empty or valid JSON output`, () => {
@@ -457,6 +457,7 @@ describe('speed: a hook adds little to bare Node start-up', () => {
     const base = time(bare);
     const cases = {
       'h4-clock.mjs': { hook_event_name: 'UserPromptSubmit', cwd: dir },
+      'h6-lessons-due.mjs': { hook_event_name: 'SessionStart', cwd: dir },
       'h3-chat-size.mjs': { hook_event_name: 'UserPromptSubmit', cwd: dir, transcript_path: path.join(dir, 'CHECKPOINT.md') },
       'h2-big-read-guard.mjs': { hook_event_name: 'PreToolUse', tool_name: 'Read', cwd: dir, tool_input: { file_path: path.join(dir, 'CHECKPOINT.md') } },
       'h1-checkpoint-cap.mjs': { hook_event_name: 'PostToolUse', tool_name: 'Write', cwd: dir, tool_input: { file_path: path.join(dir, 'CHECKPOINT.md') } },
@@ -490,12 +491,13 @@ describe('hooks.json', () => {
   test('registers each hook on the documented event with the documented matcher', () => {
     const find = (script) => commands.filter((c) => c.command.includes(script));
     assert.deepEqual(find('h4-clock.mjs').map((c) => c.event).sort(), ['SessionStart', 'UserPromptSubmit']);
+    assert.deepEqual(find('h6-lessons-due.mjs').map((c) => c.event), ['SessionStart']);
     assert.deepEqual(find('h3-chat-size.mjs').map((c) => c.event), ['UserPromptSubmit']);
     assert.deepEqual(find('h2-big-read-guard.mjs').map((c) => [c.event, c.matcher]), [['PreToolUse', 'Read']]);
     assert.deepEqual(find('h1-checkpoint-cap.mjs').map((c) => [c.event, c.matcher]), [['PostToolUse', 'Write|Edit|MultiEdit']]);
     assert.deepEqual(find('h5-state-snapshot.mjs').map((c) => c.event), ['Stop']);
     assert.deepEqual(find('swarm-gate.mjs').map(c => c.event).sort(), ['PostToolUse', 'PostToolUseFailure', 'PreToolUse','Stop']);
-    assert.equal(commands.length, 10);
+    assert.equal(commands.length, 11);
   });
 
   test('every command uses the plugin-root placeholder, a real script and a short timeout', () => {

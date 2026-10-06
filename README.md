@@ -5,7 +5,7 @@
 BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead agent plans the work, a swarm of workers builds every piece in parallel, and the whole product is then tested once on the real platform before it goes live. It runs on the agents and subscriptions you already have.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.1-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.2-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
@@ -93,6 +93,12 @@ Read the installed BGZFLOW commands/swarm.md and run that workflow for this goal
 | `/swarm-resources` | See which agents and accounts are available, and approve what a swarm may use |
 
 Supporting tools: `/bg-heavy` queues heavy local builds one at a time, `/bg-swarm` launches and stops local workers, `/bg-rounds` keeps the repair-round ledger, `/swarm-gate` enforces the swarm's limits and release order, `/doctor` checks for leaked secrets and context costs, `/notes-map` finds the right lines in long project notes, and `/startup-check` keeps start-up reading short.
+
+## Lessons to rules
+
+Each finish report records what went wrong in the project's private, append-only lessons log. Repeated patterns, or one high-severity lesson, become due for review. The lead prefers a test, hook or required report field; know-how becomes a skill edit. Promotions follow the normal build, test, independent check and release path. SessionStart and the startup check show one line only when reviews are due.
+
+Reports distinguish **BUILT**, **REACHED** and **USED**; only a real journey with current data can be called working. Each next step says how to confirm it. Run `node <plugin>/tools/bgz.mjs lessons --help` for the local CLI and see the [lessons guide](tools/lessons/README.md).
 
 ## What's inside
 
