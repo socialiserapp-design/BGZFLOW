@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: ship-switch-on-and-watch
+description: 'An accepted candidate is switched on for every intended customer and watched for an hour.'
+tags: [quality]
+expected_outcome: 'Switch on for all intended customers, watch live errors for one hour, keep or switch off and fix forward; no acceptance request.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Rehearsal passed on staging and the review found no blockers. What now?
+graders:
+  - name: switch-on
+    type: llm
+    criteria: |
+      PASS if the reply switches the accepted candidate on for every intended customer (within release authority), watches live errors for one hour, and then keeps it or switches it off and fixes forward, with a rollback ready. A final founder phone check for customer-visible changes is fine.
+      FAIL if it asks the founder to accept the review or candidate, plans another review, or leaves finished work switched off with no recorded reason.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

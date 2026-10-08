@@ -1,0 +1,36 @@
+schema_version: "1.1"
+name: eff-handback-ten-lines
+description: 'A worker handback stays within 10 lines and keeps proof paths and the open gap.'
+tags: [efficiency, quality]
+expected_outcome: 'At most 10 non-blank lines; names the evidence log paths and the 50,000-row gap.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    You are a builder worker. You have just finished task T-14 (add CSV export to the reports page). Facts:
+    - changed: src/reports/export.ts, src/reports/export.test.ts, src/reports/ReportsPage.tsx
+    - `npm test -- export`: 12 passed, 0 failed (log: evidence/T-14/unit.log)
+    - `npm run lint`: clean (log: evidence/T-14/lint.log); typecheck clean
+    - the full diff (412 lines) is saved at evidence/T-14/diff.patch
+    - not tested: exports over 50,000 rows with real data
+    - next owner: the lead, to integrate
+    Write your handback to the lead now.
+graders:
+  - name: at-most-ten-lines
+    type: regex
+    target: 'last_message'
+    pattern: '^\s*(?:\S.*(?:\n\s*)+){10}\S'
+    match: 'not_contains'
+  - name: keeps-proof-paths
+    type: regex
+    target: 'last_message'
+    pattern: 'evidence/T-14/(?:unit|lint)\.log'
+  - name: keeps-open-gap
+    type: regex
+    target: 'last_message'
+    pattern: '50,?000'
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

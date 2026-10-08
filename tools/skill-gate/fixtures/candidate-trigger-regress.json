@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.284",
+  "partial": false,
+  "suite": {
+    "ablation": "with-without",
+    "threshold": 1
+  },
+  "cases": [
+    {
+      "name": "eff-a",
+      "aggregates": {
+        "score": 1,
+        "delta": 0.33
+      },
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 900
+            }
+          },
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 900
+            }
+          }
+        ],
+        "without": [
+          {
+            "score": 0.67,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          },
+          {
+            "score": 0.67,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "eff-b",
+      "aggregates": {
+        "score": 1,
+        "delta": 0.67
+      },
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 1000
+            }
+          },
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 1000
+            }
+          }
+        ],
+        "without": [
+          {
+            "score": 0.33,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          },
+          {
+            "score": 0.33,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "eff-c",
+      "aggregates": {
+        "score": 1,
+        "delta": 0.33
+      },
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 1100
+            }
+          },
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 1100
+            }
+          }
+        ],
+        "without": [
+          {
+            "score": 0.67,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          },
+          {
+            "score": 0.67,
+            "error": null,
+            "usage": {
+              "output_tokens": 1200
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "trigger-eff-fires",
+      "aggregates": {
+        "score": 1,
+        "delta": 1
+      },
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 300
+            }
+          },
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 300
+            }
+          }
+        ],
+        "without": [
+          {
+            "score": 0,
+            "error": null,
+            "usage": {
+              "output_tokens": 300
+            }
+          },
+          {
+            "score": 0,
+            "error": null,
+            "usage": {
+              "output_tokens": 300
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "trigger-eff-quiet",
+      "aggregates": {
+        "score": 0.33,
+        "delta": -0.67
+      },
+      "arms": {
+        "with": [
+          {
+            "score": 0.33,
+            "error": null,
+            "usage": {
+              "output_tokens": 200
+            }
+          },
+          {
+            "score": 0.33,
+            "error": null,
+            "usage": {
+              "output_tokens": 200
+            }
+          }
+        ],
+        "without": [
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 200
+            }
+          },
+          {
+            "score": 1,
+            "error": null,
+            "usage": {
+              "output_tokens": 200
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 5
+  }
+}

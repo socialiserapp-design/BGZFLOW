@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: des-mobile-settings-screen
+description: 'A mobile settings screen gets native craft (platform patterns, states, haptics, accessibility) in a look chosen for that product.'
+tags: [quality, craft]
+expected_outcome: 'Platform-correct settings (grouped rows, native switches, safe areas, scalable text, 44pt/48dp targets), every toggle state covered (saving, failed, unknown), haptics only after a confirmed change, dark mode and reduced motion, in a look picked from distinct options rather than a house style.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Design the settings screen for our iPhone and Android habit-tracker app: notifications, reminder time, theme, account and delete account. It should feel really polished.
+graders:
+  - name: native-craft
+    type: llm
+    criteria: |
+      PASS if it uses platform-correct patterns on both platforms (grouped list rows, native switches and pickers, safe areas, large-title or top app bar conventions), scalable text, touch targets of at least 44pt on iOS and 48dp on Android, saving/failed/unknown states for toggles, haptics only after a confirmed change, dark mode, reduced motion and screen-reader labels, and a clear destructive-action treatment for delete account.
+      FAIL if it is a generic web-style form, ignores states or platform differences, or fires success feedback before the change is confirmed.
+  - name: look-is-chosen
+    type: llm
+    criteria: |
+      PASS if the visual look comes from the product's approved look or, when none exists, from several distinct options (for example native-pure, soft tactile, editorial calm, playful) for the founder to choose, with no single house style imposed.
+      FAIL if it applies one fixed look (for example dark glass) as the default without offering options.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

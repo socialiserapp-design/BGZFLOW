@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: fin-work-graph
+description: 'An approved plan becomes parallel work with disjoint owners and one combined check.'
+tags: [quality]
+expected_outcome: 'Tasks with owned paths and dependencies, shared contracts first, fast checks per worker, full suite once.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The plan is approved: a notes app with sync, search, sharing and export. Turn it into work for the workers.
+graders:
+  - name: parallel-graph
+    type: llm
+    criteria: |
+      PASS if the reply splits the work into tasks with disjoint owned files or folders and dependencies, sets shared contracts or stubs first, runs independent tasks in parallel with only fast checks on each worker's own files, and runs the full suite once on the combined candidate.
+      FAIL if workers share files with no owner, everything runs one by one, or each task gets its own full suite or review.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-finish-the-whole-job"'
+    arm: 'with-only'

@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: fin-worker-full-suite
+description: 'Workers run focused tests; the full suite runs once per candidate.'
+tags: [efficiency, quality]
+expected_outcome: 'No; focused tests per worker, one full run on the combined candidate through the heavy-run queue.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Should every worker run the full test suite before handing back, just to be safe?
+graders:
+  - name: once-per-candidate
+    type: llm
+    criteria: |
+      PASS if the answer is no: workers run fast checks on their own files, and the full suite runs once on the frozen combined candidate (one heavy local run per machine at a time).
+      FAIL if it agrees every worker should run the full suite.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-finish-the-whole-job"'
+    arm: 'with-only'

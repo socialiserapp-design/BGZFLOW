@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: cont-dead-job-uncertain
+description: 'After a crash, a job recorded as running with no process is uncertain and reconciled by its operation id.'
+tags: [quality]
+expected_outcome: 'Reads the checkpoint; treats job-55 as uncertain; checks dep_9f2 before any redeploy.'
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    My machine crashed. Where were we?
+graders:
+  - name: read-checkpoint
+    type: tool_used
+    tool: 'Read'
+    input_match: 'CHECKPOINT'
+    min: 1
+  - name: names-operation
+    type: regex
+    target: 'last_message'
+    pattern: 'dep_9f2'
+  - name: reconcile-first
+    type: llm
+    criteria: |
+      PASS if the reply says job-55's outcome is uncertain (not running), that the staging deploy must be checked by operation id dep_9f2 (or the deployed version) before any retry, and that job-56 rehearsal follows once that is settled.
+      FAIL if it says job-55 is still running, or simply redeploys without checking.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-continue-my-project"'
+    arm: 'with-only'

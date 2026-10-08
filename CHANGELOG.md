@@ -2,6 +2,46 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.5.0 (2026-10-08)
+
+**The design skill can do far more, and every product still keeps its own look.**
+
+- New looks library: 57 distinct looks in six families (quiet and editorial, technical and dense, soft and tactile, bold and expressive, glass, light and depth, platform-native), each with a full recipe (type, colour, space and shape, material, motion, signature details) and a "suits / avoid" line. No look is a default; a direction round draws from several families, flags common AI defaults and adapts each look to the product.
+- New craft toolbox: typography and variable fonts with free font sources, colour and palette rotation, dark mode, responsive and adaptive layout, surfaces, micro-interactions, sound and haptics, icons and illustration, asset generation with provenance, data visuals, empty and loading states, onboarding, delightful details, interface words, screenshot QA and reference gathering. Where source skills disagreed, both options are kept with when-to-use guidance.
+- New cinematic motion and 3D reference: decide the fit first, one motion grammar, recipes for 3D heroes, scroll stories, text reveals, transitions, shaders, particles, product turntables, cursor effects, data worlds and illustrated delight, library choices, a 3D asset pipeline and hard guardrails (performance, reduced motion, fallbacks).
+- New motion by platform reference: the same effects on React Native and Expo, SwiftUI, Android Compose, Flutter and desktop, with an equivalence table.
+- The skill has a new step that picks candidate looks and effect levels before exploring, and keeps heavy effects off frequent task paths. A sources page records where each part came from and what was dropped.
+- New eval cases: a web landing section, a mobile settings screen, a redesign of a plain screen, two products that must look clearly different, three cinematic cases (fit check, marketing hero and scroll story, native app motion), and the locked-look case now also resists an end-of-pass "house style" push.
+
+## 0.4.2 (2026-10-07)
+
+**Design work starts from the product's page and ends on a real phone.**
+
+- BG Personal Product Design now reads the product's design page (`products/<product>.md` in the company design folder) first, when it exists, before any other design file.
+- New looks are explored in Claude Design (or the project's design canvas) and the founder picks one there before any code; the picked target is then handed to the builder. Its sync step never runs automatically.
+- A short real-phone check after any screen change: under the one-driver hold, on a test build or the production app on a company test account (never an emulator, never the founder's own apps), screenshot each changed screen and put it next to the approved picture. Clipped text, a wrong font or colour drift fails; fix and capture again.
+
+## 0.4.1 (2026-10-06)
+
+**Nothing the founder didn't ask for may stop a customer.** A release shipped a gate nobody approved, and customers' posts silently stalled; the review only looked at money, data, security and rollback.
+
+- The one release review has a fifth reason to block: an unapproved stop path. That is any new or changed customer-facing wait, refusal, hold, gate, cap, block or expiry without the founder's written approval. The review lists every stop path it finds, approved or not, quotes the approval and where it is recorded, and blocks on any without one. The reproduction is the customer journey that now stops. A refusal that stops a money error the customer didn't choose is still allowed; the founder is told once afterwards.
+- Builders build only what was asked. Adding an unrequested stop path is a defect, and every worker handback lists the stop paths it added (or none).
+- `swarm-gate` accepts the new finding category `unapproved-stop-path`; existing finding records and categories work unchanged.
+- New skill test cases: an unrequested gate must block; an approved one is listed and passes.
+
+## 0.4.0 (2026-10-06)
+
+**Skill tests first, then a cheaper way of working.** A changed skill must now prove it does at least as well as the version it replaces before it goes live.
+
+- Every skill carries its own eval cases: behaviour cases plus one case where it should fire and one where it should not. BG Efficiency has nine behaviour cases, including the safety ones (a destructive action is still confirmed; failing tests are still reported in full).
+- New skill gate (`bgz skill-gate`). It compares a skill's pass rate with the previous release and with no plugin at all. A skill passes only if it scores at least as well as before and no trigger case does worse than no plugin. A partial run or a usage-limit hit counts as a fail and is rerun, never read as a result. See `docs/SKILL-TESTS.md`.
+- BG Efficiency 2.0, in four parts, most expensive first. Effort by role: readers and mechanical work low, leads medium, high only when a brief names it, and one level higher after a failure instead of retrying. Less typing into tools: scripts and SQL are saved to a file once and run by path, files are edited rather than rewritten, and logs, diffs and code are never pasted into chat. Less re-reading: a fresh chat per stage from a short handoff, and fewer wake-ups because finished work is handled in one go and idle leads hold inbound messages. Shorter replies: concise style everywhere and worker handbacks of at most 10 lines, with the detail in a named file.
+- Every safety, quality, evidence and recovery rule from 0.3.2 is kept. Saving effort never cuts scope, tests or holds.
+- New `bgz receipt` prints paths, sizes, line counts and SHA-256 hashes for a handback, so the model writes one pointer line instead of typing them. New `bgz usage` reads local transcripts and shows where tokens went: thinking, tool input and replies, cache share, and what woke each turn.
+- Host settings (effort, output style, inbound hold) are given only as examples per host. Keys that could not be confirmed in official docs are marked unverified.
+- The worker packet, swarm rules and checkpoint template now match: 10-line returns with a receipt line, role, model and effort per job, and a handoff at each stage end.
+
 ## 0.3.2 (2026-10-06)
 
 - Added a local, append-only lessons log with add, due, review and status commands. Two open lessons with the same key, or one high-severity lesson, trigger review across explicitly selected projects.

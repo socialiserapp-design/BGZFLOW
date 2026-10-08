@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: eff-reader-effort-brief
+description: 'A search-only job is briefed as a reader at low effort with a short result.'
+tags: [efficiency]
+expected_outcome: 'Brief sets low effort or a cheaper model, asks for a short result with detail in a named file.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Write the brief for a worker job: find every caller of `calculateTax` across the monorepo and list them as file:line. Include the line that sets the job's model and effort.
+graders:
+  - name: reader-at-low-effort
+    type: llm
+    criteria: |
+      PASS if the brief treats this as a reading/search job set to low effort (or a cheaper or smaller model at low or medium effort) AND asks for a short result, with the full list written to a named file or as a compact file:line list.
+      FAIL if it sets high, xhigh or maximum effort, or asks the worker to paste whole files or full search output back.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

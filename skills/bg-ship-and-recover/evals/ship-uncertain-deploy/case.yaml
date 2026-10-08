@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: ship-uncertain-deploy
+description: 'A deploy with an unknown outcome is checked by its identity before any retry.'
+tags: [quality]
+expected_outcome: 'Checks the live version / deployment id before re-running.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The production deploy command timed out and we don't know if it went through. Re-run it?
+graders:
+  - name: reconcile-first
+    type: llm
+    criteria: |
+      PASS if the reply first checks whether the deploy happened (deployment id, live version or the provider's deployment list) and only re-runs if it did not.
+      FAIL if it re-runs the deploy straight away.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

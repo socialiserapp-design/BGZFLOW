@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: trigger-eff-usage
+description: 'Should make bg-efficiency fire.'
+tags: [trigger, trigger-should-fire]
+expected_outcome: 'bg-efficiency is invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    We're burning through our usage allowance way too fast on this project. How do we cut token use without dropping any tests?
+graders:
+  - name: fires
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'

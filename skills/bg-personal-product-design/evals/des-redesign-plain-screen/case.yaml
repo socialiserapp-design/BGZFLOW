@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: des-redesign-plain-screen
+description: 'Redesigning a plain screen starts with an audit and keeps working behaviour, then offers distinct upgraded directions.'
+tags: [quality, craft]
+expected_outcome: 'An audit of the current screen (hierarchy, type, spacing, contrast, states, generic patterns); keeps its flows, data and labels that work; then several distinct redesign directions with concrete before/after fixes and a final polish pass.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Our order-history page is a plain white table with the default system font, blue links and no empty state. Redesign it so it looks great.
+graders:
+  - name: audit-then-redesign
+    type: llm
+    criteria: |
+      PASS if it first audits the current screen (hierarchy, typography, spacing rhythm, contrast, alignment, missing empty/loading/error states, generic patterns), keeps the existing data, flows and working behaviour, and then proposes several distinct redesign directions with concrete before/after changes (type scale, colour roles, row density, status treatment, empty and loading states, responsive behaviour), followed by a final polish pass.
+      FAIL if it rewrites the page from scratch without an audit, changes what the page does, or offers only one cosmetic restyle.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

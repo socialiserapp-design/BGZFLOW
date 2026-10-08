@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: eff-status-short
+description: 'A routine status question gets a short answer that still flags the stuck job.'
+tags: [efficiency, quality]
+expected_outcome: 'At most 5 non-blank lines; export job running; map-callers queued since 13:10 flagged as stuck.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    quick check, is the export worker still running? job list:
+
+    job-7f3a  builder  export-csv   running  started 14:02  last output 14:31
+    job-81bc  checker  auth-review  done     exit 0
+    job-90de  reader   map-callers  queued   queued 13:10
+
+    It's 14:33 now.
+graders:
+  - name: at-most-five-lines
+    type: regex
+    target: 'last_message'
+    pattern: '^\s*(?:\S.*(?:\n\s*)+){5}\S'
+    match: 'not_contains'
+  - name: answers-and-flags-stuck
+    type: llm
+    criteria: |
+      PASS if the reply says the export-csv job (job-7f3a) is still running AND flags the map-callers job (job-90de), queued since 13:10, as stuck or needing to be checked, reconciled or restarted.
+      FAIL if it says every job is fine, ignores job-90de, or gives a long walkthrough of all three jobs.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

@@ -1,7 +1,10 @@
 <!-- One page of CURRENT state: about 1,500 words, within BGZFLOW_CHECKPOINT_KB (8 KB).
      Move anything no longer current to ARCHIVE.md; never delete history.
      Update at every state change. Take timestamps from the system clock (e.g. `date -u +%FT%TZ`).
-     Keep <project>/.bgzflow/ versioned or snapshotted. -->
+     Keep <project>/.bgzflow/ versioned or snapshotted.
+     At each stage end: update this page, write the 2 KB handoff (templates/HANDOFF.md) and start a
+     fresh chat from it; prefer that to compacting one long chat again and again. An idle lead holds
+     inbound messages and handles finished jobs, notices and mail together in one wake-up. -->
 # Checkpoint: <project>
 
 Updated: <system-clock timestamp, UTC> by <role + job ID>
@@ -34,8 +37,8 @@ Updated: <system-clock timestamp, UTC> by <role + job ID>
 ## Jobs
 <!-- A job recorded running or queued whose process is dead is `uncertain`, never active.
      A job queued more than 5 minutes is stuck: reconcile, cancel, redispatch. -->
-| Job ID | Executor | Recorded status | Process alive? | Exit | Result path |
-|---|---|---|---|---|---|
+| Job ID | Executor (role, model, effort) | Recorded status | Process alive? | Exit | Live log | Result path |
+|---|---|---|---|---|---|---|
 
 ## Open findings
 <!-- Stable IDs across rounds; the `bg-rounds` ledger counts rounds. Round 3 needs the founder's explicit approval. -->
