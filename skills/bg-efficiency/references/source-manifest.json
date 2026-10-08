@@ -94,6 +94,93 @@
       "provenance": "Public repository by safishamsi",
       "licence": "Apache-2.0",
       "bundled": false
+    },
+    {
+      "name": "claude-code-docs",
+      "kind": "documentation",
+      "used_for": "Effort per role, Concise output style, cost and cache behaviour, idle inbound hold (2.0)",
+      "provenance": "code.claude.com/docs/en/model-config, /output-styles, /costs, /prompt-caching (accessed 2026-10-06); Vendor documentation",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "anthropic-effort",
+      "kind": "documentation",
+      "used_for": "Effort lowers thinking, text and tool calls (2.0)",
+      "provenance": "platform.claude.com/docs/en/build-with-claude/effort; anthropic.com/news/claude-opus-4-5; Vendor documentation",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "codex-config-reference",
+      "kind": "documentation",
+      "used_for": "Codex effort, subagent model and effort, verbosity and tool-output keys (2.0); named profiles unverified",
+      "provenance": "learn.chatgpt.com/docs/config-file/config-reference (accessed 2026-10-06); Vendor documentation",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "openai-gpt5-params",
+      "kind": "documentation",
+      "used_for": "Low verbosity measured at 39% fewer output tokens in one example (2.0)",
+      "provenance": "developers.openai.com/cookbook/examples/gpt-5/gpt-5_new_params_and_tools; Vendor documentation",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "factory-compression-study",
+      "kind": "study",
+      "used_for": "Structured handoff summaries keep the most detail (2.0)",
+      "provenance": "factory.ai/news/evaluating-compression; Vendor study; seen as a snippet",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "amp-handoff",
+      "kind": "article",
+      "used_for": "Hand off and start fresh instead of repeated compaction (2.0)",
+      "provenance": "ampcode.com/news/handoff; Vendor article; seen as a snippet",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "skillsbench",
+      "kind": "study",
+      "used_for": "Changed skills must pass the skill gate before release (2.0)",
+      "provenance": "arxiv.org/abs/2602.12670; Academic paper",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "agent-spend-study",
+      "kind": "study",
+      "used_for": "Measure per accepted outcome; raise effort after a failure (2.0)",
+      "provenance": "arxiv.org/abs/2604.22750; Academic paper",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "agents-md-study",
+      "kind": "study",
+      "used_for": "Keep instruction files short and human-written (2.0)",
+      "provenance": "arxiv.org/abs/2602.11988; Academic paper; seen through a secondary report",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
+    },
+    {
+      "name": "brevity-hallucination",
+      "kind": "study",
+      "used_for": "Brevity never drops safety detail; no fragment styles or hard caps (2.0)",
+      "provenance": "giskard.ai Phare analysis, 2025; implicator.ai terse-mode summary (secondary); Public analyses",
+      "licence": "Not applicable: cited, nothing copied",
+      "bundled": false
     }
+  ],
+  "excluded_2_0": [
+    "Agent teams (about 7x tokens in plan mode)",
+    "Advisor mode as a default (experimental; trial only)",
+    "Extra compressors stacked on RTK or Headroom",
+    "Hard output caps and fragment writing styles",
+    "Setting keys not found in official docs (see tool-harmony.md Host settings)"
   ]
 }

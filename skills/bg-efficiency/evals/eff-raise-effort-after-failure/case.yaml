@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: eff-raise-effort-after-failure
+description: 'After repeated failure at low effort, raise one level instead of retrying at low or jumping to the top.'
+tags: [efficiency, quality]
+expected_outcome: 'Next attempt at medium effort (or a clearly better approach), not low again and not xhigh/max.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The reader job (low effort) that maps our webhook handlers came back twice with an incomplete list; both times it missed the files under services/. What settings do you use for the next attempt? Give one line of settings and one line of why.
+graders:
+  - name: short
+    type: regex
+    target: 'last_message'
+    pattern: '^\s*(?:\S.*(?:\n\s*)+){5}\S'
+    match: 'not_contains'
+  - name: raise-one-level
+    type: llm
+    criteria: |
+      PASS if the next attempt raises effort by one level (low to medium), or keeps the level but changes the approach (for example a scoped search of services/), AND it does not simply retry at low effort unchanged, AND it does not jump straight to high, xhigh or maximum effort.
+      FAIL otherwise.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

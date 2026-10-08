@@ -1,0 +1,2 @@
+{"type":"user","uuid":"s1","parentUuid":null,"isSidechain":true,"timestamp":"2026-10-05T10:03:00.000Z","message":{"role":"user","content":"Do the task"}}
+{"type":"assistant","uuid":"s2","isSidechain":true,"requestId":"req_5","timestamp":"2026-10-05T10:03:01.000Z","message":{"id":"msg_5","model":"m-b","role":"assistant","content":[{"type":"thinking","thinking":"tttttttttttttttttttttttttttttt"},{"type":"text","text":"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"}],"usage":{"input_tokens":1,"cache_creation_input_tokens":100,"cache_read_input_tokens":0,"output_tokens":60}}}

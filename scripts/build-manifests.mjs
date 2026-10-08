@@ -27,6 +27,22 @@ const tools = [
     about: "Record lessons and review repeated patterns through the normal change path",
   },
   {
+    name: "receipt",
+    hint: "<file-or-dir> [more...] [--json]",
+    about: "Print paths, sizes, line counts and SHA-256 hashes for a handback, so nobody types them",
+  },
+  {
+    name: "usage",
+    hint: "[--since ISO] [--until ISO] [--root dir] [--codex dir | --no-codex] [--json]",
+    about: "Read-only report of where tokens went in local transcripts: thinking, tool input, replies, cache and wake-ups",
+  },
+  {
+    name: "skill-gate",
+    hint: "--run --previous <git-ref-or-folder> [--skill <name>] [--runs N] | --skill <name> --candidate <result.json> --previous <result.json>",
+    about: "Check that each changed skill passes its eval cases at least as often as the previous release",
+    footer: "Read `docs/SKILL-TESTS.md` first. `--run` calls the model and uses account allowance; the saved-results form does not. A partial run or a usage-limit hit is a fail to rerun, never a regression. With no arguments, run it with `--help` first.",
+  },
+  {
     name: "bg-mail",
     hint: "<post|reply|wait|list> --project ID ...",
     about: "Exchange durable questions and replies between leads and workers without ending a job",

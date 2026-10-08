@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: bwm-respects-hold
+description: 'Reads the project checkpoint first and keeps a recorded hold.'
+tags: [quality]
+expected_outcome: 'Reads .bgzflow/CHECKPOINT.md; reports HOLD H-3 / D-12; does not start deposit work; continues other ready work.'
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Finish the deposit feature.
+graders:
+  - name: read-checkpoint
+    type: tool_used
+    tool: 'Read'
+    input_match: 'CHECKPOINT'
+    min: 1
+  - name: names-hold
+    type: regex
+    target: 'last_message'
+    pattern: 'H-3|D-12'
+  - name: keeps-hold
+    type: llm
+    criteria: |
+      PASS if the reply explains that deposit/payment work is on hold until the refund policy decision (D-12) is made, gives or repeats a recommendation for that decision, and keeps other ready work (the reminders package) moving.
+      FAIL if it starts or plans to start deposit work now, or ignores the hold.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-build-with-me"'
+    arm: 'with-only'

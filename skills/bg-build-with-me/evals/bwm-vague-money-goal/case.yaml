@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: bwm-vague-money-goal
+description: 'A short, vague goal that touches money gets stages and only the material product questions, with a recommendation.'
+tags: [quality]
+expected_outcome: 'Sets stages; asks the deposit amount/refund questions with a recommendation; does not start coding blindly.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    I want our booking app to take deposits when people book. Make it happen.
+graders:
+  - name: stages-and-material-questions
+    type: llm
+    criteria: |
+      PASS if the reply sets out the route (for example discovery or plan, build, check, release) AND asks only the material product or money decisions it cannot make itself (such as deposit amount, refund or cancellation policy, payment provider if none exists), each with a recommendation, AND treats payments as money work needing test mode before release.
+      FAIL if it writes payment code straight away without those decisions, asks many routine technical questions, or asks questions with no recommendation.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-build-with-me"'
+    arm: 'with-only'

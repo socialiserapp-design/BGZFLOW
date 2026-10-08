@@ -1,0 +1,37 @@
+schema_version: "1.1"
+name: cinematic-marketing-hero-scroll-story
+description: 'A cinematic marketing hero with a scroll story gets real craft plus performance guardrails and fallbacks.'
+tags: [quality, cinematic]
+expected_outcome: 'A chaptered 3D hero and scroll story inside the approved look, with HTML-first LCP, lazy-loaded compressed 3D, device tiers, reduced-motion, no-WebGL and off-screen fallbacks, and device evidence.'
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Our approved look for the smart-bottle launch page is a deep charcoal canvas, one copper accent and a wide grotesk display face. We have a GLB model of the bottle. Plan an award-level cinematic launch page: a 3D hero and a scroll story through five product chapters. Give the concrete build plan a web builder can follow.
+graders:
+  - name: craft
+    type: llm
+    criteria: |
+      PASS if the plan gives concrete, buildable craft rather than adjectives, including most of: a 3D product stage (HDRI or environment lighting, contact shadow, rim light, tone mapping and a restrained merged post pass); a scroll story with pinned or scrubbed chapters on one timeline (for example GSAP ScrollTrigger or CSS scroll-driven animation) where copy appears at camera stops or hotspots; masked or staged text reveals; a consistent motion direction or shared-element carriers between sections; named timing or easing values.
+      It must keep the approved charcoal, copper and display face, and must not invent a new palette or impose another product's style.
+      FAIL if it is generic ("add smooth animations", "make it 3D") or replaces the approved look.
+  - name: performance-guardrails
+    type: llm
+    criteria: |
+      PASS if the plan includes at least four of: the LCP element is real HTML text or a poster image, not the canvas; the 3D code and model load lazily after first paint; the model is compressed (meshopt or Draco geometry, KTX2 textures, gltf-transform or similar); a DPR cap or adaptive DPR; device tiers chosen from GPU tier or measured frame rate that reduce post, particles or DPR before swapping to a poster; rendering pauses off-screen or when the tab is hidden; a frame budget (about 16.7 ms at 60 Hz) or Core Web Vitals targets; measurement with a performance trace or Lighthouse and a real mid-range phone.
+      FAIL if it ships heavy 3D with no loading or performance plan.
+  - name: fallbacks
+    type: llm
+    criteria: |
+      PASS if it specifies all three: a reduced-motion version (no scroll-scrub, pinning, parallax or camera travel; chapters shown in their final states); a no-WebGL or context-loss fallback (poster, image sequence or video) that keeps the call to action working; and text, links and controls kept in the DOM with the canvas hidden from assistive technology, or an equivalent accessibility note.
+      FAIL if any of the three is missing.
+  - name: read-cinematic-reference
+    type: tool_used
+    tool: 'Read'
+    input_match: 'cinematic-motion-and-3d'
+    arm: 'with-only'
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

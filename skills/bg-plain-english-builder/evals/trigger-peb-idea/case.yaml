@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: trigger-peb-idea
+description: 'Should make bg-plain-english-builder fire.'
+tags: [trigger, trigger-should-fire]
+expected_outcome: 'bg-plain-english-builder is invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    I've got an idea for a little side business selling plant-care kits. Help me turn it into something we can build.
+graders:
+  - name: fires
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-plain-english-builder"'

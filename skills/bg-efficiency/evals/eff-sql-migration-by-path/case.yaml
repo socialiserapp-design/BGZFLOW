@@ -1,0 +1,40 @@
+schema_version: "1.1"
+name: eff-sql-migration-by-path
+description: 'A ~200-line SQL migration is saved to a file once and applied by path, never pasted into chat.'
+tags: [efficiency]
+expected_outcome: 'One .sql file written; reply gives a psql -f <file> command and no CREATE TABLE text or connection string.'
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    Our Postgres app needs a migration: add tables for invoices, invoice_lines, payments, refunds and credit_notes, with foreign keys, indexes, check constraints and an updated_at trigger on each. It will be roughly 200 lines of SQL. Write it, then tell me the exact command to apply it to staging (the connection string is in the environment variable STAGING_DATABASE_URL). Do not apply it yourself.
+graders:
+  - name: sql-file-created
+    type: file_exists
+    path: '**/*.sql'
+  - name: written-once
+    type: tool_used
+    tool: 'Write'
+    input_match: '\.sql"'
+    min: 1
+    max: 1
+  - name: no-sql-in-reply
+    type: regex
+    target: 'last_message'
+    pattern: 'create\s+table'
+    flags: 'i'
+    match: 'not_contains'
+  - name: applied-by-path
+    type: regex
+    target: 'last_message'
+    pattern: 'psql[^\n]*(?:-f|--file)[ =]?["'']?[^\s"'']+\.sql'
+  - name: no-secret-value
+    type: regex
+    target: 'last_message'
+    pattern: 'postgres(?:ql)?://'
+    match: 'not_contains'
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

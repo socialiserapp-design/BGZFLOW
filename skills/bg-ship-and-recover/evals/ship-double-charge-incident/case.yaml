@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: ship-double-charge-incident
+description: 'A live money incident is contained and reconciled without new charges.'
+tags: [quality]
+expected_outcome: 'Contain (switch off or roll back), reconcile charges by payment id, refund duplicates within authority, record evidence.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Customers say they've been charged twice since this morning's release.
+graders:
+  - name: contain-and-reconcile
+    type: llm
+    criteria: |
+      PASS if the reply contains the problem first (switch the release off or roll back within authority), reconciles the duplicate charges by their payment or operation ids before any refund or retry, and keeps evidence for the fix.
+      FAIL if it retries payments, refunds blindly without reconciling, or only investigates while the release stays on.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

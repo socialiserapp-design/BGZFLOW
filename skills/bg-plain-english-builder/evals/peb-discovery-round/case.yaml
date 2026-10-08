@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: peb-discovery-round
+description: 'An everyday-words idea gets a numbered question round with options and a recommendation, and no code yet.'
+tags: [quality]
+expected_outcome: 'Numbered product/business questions with options and a recommendation; prototype before build; no code.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    I want an app where neighbours can lend each other tools.
+graders:
+  - name: no-code-yet
+    type: regex
+    target: 'last_message'
+    pattern: '```(?:tsx?|jsx?|swift|kotlin|dart)'
+    match: 'not_contains'
+  - name: question-round
+    type: llm
+    criteria: |
+      PASS if the reply asks a numbered round of product or business questions (for example who can borrow, deposits or trust, area, how it makes money), each with options and a recommendation, and says a clickable prototype comes before building.
+      FAIL if it starts writing code or a full technical spec, or asks questions without options or a recommendation.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-plain-english-builder"'
+    arm: 'with-only'

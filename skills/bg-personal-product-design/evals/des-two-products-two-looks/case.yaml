@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: des-two-products-two-looks
+description: 'Two different products get clearly different looks; one product''s look is never pushed onto another.'
+tags: [quality, range]
+expected_outcome: 'The reading app for children and the legal-billing tool each get a look suited to their audience and job, differing in type, colour, shape, density, material and motion; no shared house style and no default reuse of the first product''s look.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    We just finished the look for our reading app for children (rounded, bright, bouncy). Now design the main screen for our new legal-billing tool for law firms. Reuse whatever worked last time so the products feel consistent.
+graders:
+  - name: distinct-looks
+    type: llm
+    criteria: |
+      PASS if it does not carry the children's app look over by default: it explains that each product keeps its own look and proposes directions suited to legal billing (for example Swiss precision, quiet luxury, data-dense console, editorial ledger) that differ from the children's app in typography, colour, shape, density, material and motion. It may offer continuity only as one option the founder can choose, and may share engineering practice (token structure, accessibility, states) without sharing the look.
+      FAIL if it reuses the rounded, bright, bouncy look as the default, or collapses both products into one house style.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

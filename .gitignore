@@ -11,3 +11,4 @@ __pycache__/
 Thumbs.db
 .grok-job/
 .tmp/
+skills/*/evals/results/

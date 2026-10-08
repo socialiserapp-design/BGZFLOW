@@ -5,7 +5,7 @@
 BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead agent plans the work, a swarm of workers builds every piece in parallel, and the whole product is then tested once on the real platform before it goes live. It runs on the agents and subscriptions you already have.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.2-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
@@ -14,9 +14,9 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 
 AI agents are fast at writing code and bad at finishing products. Left alone they review each other in circles, test pieces that never get assembled, lose track after a restart, and quietly leave finished work switched off. BGZFLOW is a small set of working rules, skills and local guard tools that fix those failure modes:
 
-- **Build the whole thing, then test the whole thing.** Workers build every piece in parallel with fast checks only. Nothing is reviewed or released piece by piece.
+- **Build the whole thing, then test the whole thing.** Workers build every piece in parallel with fast checks only, and build only what was asked. Nothing is reviewed or released piece by piece.
 - **Prove it on the real platform.** The finished candidate runs its key customer journeys and one rollback on a real preview, staging slot, TestFlight or internal track, with real accounts and money in test mode.
-- **One review, four reasons to stop.** A single independent read-only review per release can block only on wrong money, data loss, security or privacy, or a missing rollback, each with a reproduction. Everything else goes on the after-launch list. Repairs are proven by re-running the rehearsal, never by another review.
+- **One review, five reasons to stop.** A single independent read-only review per release can block only on wrong money, data loss, security or privacy, a missing rollback, or a customer-facing stop path (a wait, refusal, hold, gate, cap, block or expiry) the founder never approved in writing, each with a reproduction. The review lists every new stop path with the founder's quoted approval. Everything else goes on the after-launch list. Repairs are proven by re-running the rehearsal, never by another review.
 - **Finished means switched on.** Accepted work goes live for its customers the moment it passes, with an hour of live error-watching. Finished work left off is flagged within a day.
 - **You decide once.** You approve the resources and usage limit for a swarm up front. After that the lead runs the work and asks only about genuine product, money or release decisions.
 - **Pick up where you left off.** One-page checkpoints and a recovery skill let any agent, on any host, continue a project after a crash, a restart or an account switch.
@@ -108,7 +108,7 @@ Reports distinguish **BUILT**, **REACHED** and **USED**; only a real journey wit
 |---|---|
 | Plain English Builder | Turning an everyday idea into research, a clickable prototype and a buildable plan |
 | Build With Me | Managing a substantial goal end to end, choosing the right stages and workers |
-| Personal Product Design | New looks, screens and flows, with eight or more directions and device checks |
+| Personal Product Design | New looks, screens and flows: eight or more directions from a library of distinct looks, cinematic motion and 3D where it fits, and device checks |
 | Finish the Whole Job | Turning an agreed plan into one integrated, working product |
 | Check It Before Release | Real-platform rehearsal and the single release review |
 | Ship and Recover | Switching accepted work on, the first live hour, rollback and incidents |

@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: trigger-peb-not-units
+description: 'Must not make bg-plain-english-builder fire.'
+tags: [trigger, trigger-should-not-fire]
+expected_outcome: 'bg-plain-english-builder is not invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Convert 5 miles to kilometres.
+graders:
+  - name: stays-quiet
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-plain-english-builder"'
+    min: 0
+    max: 0
+    arm: 'both'

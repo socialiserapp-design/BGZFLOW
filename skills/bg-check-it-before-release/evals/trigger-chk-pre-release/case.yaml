@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: trigger-chk-pre-release
+description: 'Should make bg-check-it-before-release fire.'
+tags: [trigger, trigger-should-fire]
+expected_outcome: 'bg-check-it-before-release is invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Everything for v2.3 is merged. Run the pre-release check on the candidate.
+graders:
+  - name: fires
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-check-it-before-release"'

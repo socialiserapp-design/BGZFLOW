@@ -33,7 +33,9 @@ OWNS: ["<owned relative path>"]
 - Required outputs (the handback check verifies each exists): <paths>
 
 ## Return (short)
-Status | candidate commit + hashes | checks (command, exit, result path) | open finding IDs | executor identity + exit status | next owner and action
+Status | candidate commit + hashes | checks (command, exit, result path) | open finding IDs | stop paths added (each with the brief line that asked for it, or none) | executor identity + exit status | next owner and action
+
+Build only what was asked. Add no customer-facing wait, refusal, hold, gate, cap, block or expiry this brief does not ask for; an unrequested stop path is a defect.
 
 Fast checks only on owned files. Run jev-audit on your diff when jev-codes is installed; investigate and fix confirmed findings in this same job. Retain before/after findings, model and reported usage; skip with a reason when unavailable. No worker independent review or full suite.
 

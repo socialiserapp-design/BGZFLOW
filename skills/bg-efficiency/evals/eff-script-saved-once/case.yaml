@@ -1,0 +1,31 @@
+schema_version: "1.1"
+name: eff-script-saved-once
+description: 'A helper script is written to a file once and run by path; its code is not echoed into chat.'
+tags: [efficiency]
+expected_outcome: 'One script file written; reply gives `node <file>` and does not repeat the code.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
+  prompt: |
+    Write a small Node script that counts the lines in every file under src/ and writes the totals to counts.json. Then tell me how to run it.
+graders:
+  - name: written-once
+    type: tool_used
+    tool: 'Write'
+    input_match: '\.(?:m?js|cjs)"'
+    min: 1
+    max: 1
+  - name: no-code-echo
+    type: regex
+    target: 'last_message'
+    pattern: 'readdir|readFileSync|createReadStream'
+    match: 'not_contains'
+  - name: run-by-path
+    type: regex
+    target: 'last_message'
+    pattern: 'node\s+["'']?[^\s"'']+\.(?:m?js|cjs)'
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

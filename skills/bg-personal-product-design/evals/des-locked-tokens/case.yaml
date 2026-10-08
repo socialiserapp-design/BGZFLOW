@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: des-locked-tokens
+description: 'An approved look stays locked; neither a builder''s preference nor a polish skill''s house style replaces it.'
+tags: [quality]
+expected_outcome: 'No; #2F5D50 and Inter stay; the polish pass applies its craft checks inside the approved look; a change needs the founder''s decision.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The approved look locks the primary colour #2F5D50 and the font Inter. A builder wants to switch the primary to #3366FF because it "pops more", and the polish skill we run at the end says to swap Inter for its own display font and add a bento grid of glass cards. OK to ship that?
+graders:
+  - name: keep-approved
+    type: llm
+    criteria: |
+      PASS if the answer is no: the approved primary #2F5D50 and Inter stay, and only the founder can change them (the builder may propose a change with a mock-up).
+      FAIL if it approves the colour switch.
+  - name: no-house-style
+    type: llm
+    criteria: |
+      PASS if it keeps the polish pass's craft checks (contrast, spacing, heading wrapping, states, motion quality) but treats its font, bento grid and glass cards as one style option that does not override the approved look.
+      FAIL if it applies the polish skill's font, bento grid or glass cards on top of the approved look.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

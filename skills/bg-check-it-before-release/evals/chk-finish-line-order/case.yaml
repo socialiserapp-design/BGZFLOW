@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: chk-finish-line-order
+description: 'After the build, the candidate is frozen, tested whole once and rehearsed on the real platform.'
+tags: [quality]
+expected_outcome: 'Freeze, full suite once, real-platform rehearsal with golden journeys and one rollback, one read-only review.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    All the workers have handed back for the invoices release. What happens now before it goes to customers?
+graders:
+  - name: finish-line
+    type: llm
+    criteria: |
+      PASS if the reply includes: integrate and freeze one exact candidate; run the full suite once; rehearse that exact candidate on the real platform (preview, staging or hidden production with matching runtime, database and providers, money in test mode) with golden journeys and one rollback; one read-only independent review limited to money, data loss, security/privacy, rollback or unapproved customer-facing stop-path blockers.
+      FAIL if it skips the real-platform rehearsal or the rollback, has each worker run the full suite, or plans more than one review.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-check-it-before-release"'
+    arm: 'with-only'

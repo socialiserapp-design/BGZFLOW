@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: chk-no-second-review
+description: 'A repair is proven by rerunning rehearsal, never by a second review.'
+tags: [quality, efficiency]
+expected_outcome: 'No new review; rerun the rehearsal (and the affected tests) on the repaired candidate.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The fix for finding F2 (double refund) just landed. Should we run another independent review on the repaired candidate before launch?
+graders:
+  - name: rehearsal-not-review
+    type: llm
+    criteria: |
+      PASS if the answer is no second review, and the repair is proven by rerunning the real-platform rehearsal (and the relevant tests or reproduction) on the new exact candidate.
+      FAIL if it recommends another independent review or a review of the repair.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-check-it-before-release"'
+    arm: 'with-only'

@@ -528,7 +528,7 @@ export function releaseCheck(state, sha) {
   if (overridden) return allow();
   if (!SHA.test(sha || '') || sha !== state.candidateSha || !integration(state, sha).allowed ||
       state.results.rehearsal?.sha!==sha||state.results.rehearsal?.status!=='passed'||state.results.rehearsal?.rollbackProven!==true||
-      Object.values(state.findings).some(f => f.blocking && f.status === 'open')) return block('release', 'The exact candidate lacks passing real-platform golden journeys and rollback, or has an open reproduced blocker-class finding.', 'Rehearse this exact SHA, prove rollback and close wrong-money, data-loss, security/privacy or missing-rollback findings.');
+      Object.values(state.findings).some(f => f.blocking && f.status === 'open')) return block('release', 'The exact candidate lacks passing real-platform golden journeys and rollback, or has an open reproduced blocker-class finding.', 'Rehearse this exact SHA, prove rollback and close wrong-money, data-loss, security/privacy, missing-rollback or unapproved-stop-path findings.');
   if(state.uiChanging){const d=state.designCheck;if(d?.sha!==sha||!human(d)||d.authorisedBy!==state.designOwner)return block('design-check','This UI-changing release needs the founder final design check on a phone or capable device.','Send the verified TestFlight, internal-track or preview build to the founder and record their design-match result.');if(d.status!=='matched')return block('design-match','The founder reported that this build does not match the approved design.','Repair the mismatch, rerun the rehearsal and obtain the founder design check on that exact build.');}
   return allow();
 }
@@ -635,9 +635,9 @@ export function recordState(project, type, value, swarm,options={}) {
       if (!validId(value.id) || !['open','closed'].includes(value.status)) throw new Error('finding needs stable ID and disposition');
       if (value.status === 'closed' && (!str(value.evidence) || value.sha !== s.candidateSha)) throw new Error('close a finding with exact-candidate repair evidence');
       const prior=s.findings[value.id],waves=[...new Set([...(prior?.waves||[]),...(value.status==='open'&&s.fixWaves?[s.fixWaves]:[])])],piece=value.piece||prior?.piece;
-      const category=value.category||prior?.category||'unknown',reproduction=safe(value.reproduction||prior?.reproduction),blocking=['wrong-money','data-loss','security','privacy','security/privacy','missing-rollback'].includes(category)&&!!reproduction.trim();
+      const category=value.category||prior?.category||'unknown',reproduction=safe(value.reproduction||prior?.reproduction),blocking=['wrong-money','data-loss','security','privacy','security/privacy','missing-rollback','unapproved-stop-path'].includes(category)&&!!reproduction.trim();
       s.findings[value.id] = { id: value.id, status: value.status, category,reproduction,blocking,disposition:blocking?'blocker':'after-launch', detail: safe(value.detail || prior?.detail), evidence: safe(value.evidence), sha: value.sha || null,piece:piece||null,waves };
-      if(value.status==='open'&&!blocking&&['wrong-money','data-loss','security','privacy','missing-rollback'].includes(category)){s.warnings||=[];s.warnings.push({at:clock(),message:'Finding '+value.id+' needs reproduction; lead must investigate the claim.'});}
+      if(value.status==='open'&&!blocking&&['wrong-money','data-loss','security','privacy','missing-rollback','unapproved-stop-path'].includes(category)){s.warnings||=[];s.warnings.push({at:clock(),message:'Finding '+value.id+' needs reproduction; lead must investigate the claim.'});}
       if(piece&&s.pieces[piece]&&s.findings[value.id].blocking&&value.status==='open'&&waves.length>=2){const f=s.failures[piece+':fix']||={count:0,rootCause:null};f.count=Math.max(f.count,2);f.cause=failureCause(s.findings[value.id].detail);f.error=s.findings[value.id].detail;f.finding=value.id;}
     } else if (type === 'fix-wave') {
       if (s.fixWaves >= 2 && !human(value)) {

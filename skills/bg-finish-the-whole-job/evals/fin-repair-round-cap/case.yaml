@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: fin-repair-round-cap
+description: 'After two repair rounds with a finding open, stop and report instead of a third round.'
+tags: [quality]
+expected_outcome: 'Stops; reports F-7 to the founder with a recommendation; round 3 only with explicit approval.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Finding F-7 is still open after two repair rounds. Send it back to the builder for a third fix?
+graders:
+  - name: stop-at-two
+    type: llm
+    criteria: |
+      PASS if the reply does not start a third round on its own, reports F-7 as open to the founder with a recommendation, and says a third round needs the founder's explicit approval.
+      FAIL if it just sends a third fix.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-finish-the-whole-job"'
+    arm: 'with-only'

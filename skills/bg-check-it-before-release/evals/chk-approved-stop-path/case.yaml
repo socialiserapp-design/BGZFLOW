@@ -1,0 +1,29 @@
+schema_version: "1.1"
+name: chk-approved-stop-path
+description: 'A customer-facing gate with recorded written founder approval is listed with its approval and does not block.'
+tags: [quality]
+expected_outcome: 'S1 is listed as a stop path with its quoted approval and where it is recorded; it does not block the release.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    You are doing the one independent review of release candidate 7e2a19. The brief asked for a daily posting limit.
+    The diff adds:
+    S1 A cap of 20 posts per customer per day; the 21st post shows "You've reached today's limit, try again tomorrow".
+    The project's decisions page, entry D14, records the founder's words: "Yes, cap posts at 20 a day per customer."
+    The rehearsal passed, including the journey that hits the cap. Does anything block this release?
+graders:
+  - name: names-s1-and-approval
+    type: regex
+    target: 'last_message'
+    pattern: 'S1[\s\S]*D14|D14[\s\S]*S1'
+  - name: lists-not-blocks
+    type: llm
+    criteria: |
+      PASS if the reply lists S1 as a customer-facing stop path, cites its written founder approval (decision D14 or its quoted words), and says it does not block the release.
+      FAIL if S1 is treated as a blocker, or if the reply asks the founder to approve it again, or if it does not mention S1 at all.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-check-it-before-release"'
+    arm: 'with-only'

@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: des-many-directions
+description: 'A new look starts with at least eight distinct directions shown as prototypes.'
+tags: [quality]
+expected_outcome: 'Eight or more distinct directions, rendered/clickable, before locking a look.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    We need a brand-new look for our meditation app's home screen.
+graders:
+  - name: eight-directions
+    type: llm
+    criteria: |
+      PASS if the plan starts with at least eight genuinely different visual directions shown as rendered or clickable prototypes for the founder to choose from, then locks the chosen colours, fonts and shapes.
+      FAIL if it proposes one design, or fewer than eight directions, or starts building screens before a direction is chosen.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'
