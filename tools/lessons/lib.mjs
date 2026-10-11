@@ -124,8 +124,17 @@ export function add(root, input) {
     const existing = [...state.lessons, ...state.reviews].find(l => l.id === row.id);
     if (existing) throw new Error('id already exists; inspect status before retrying');
     appendOwned(file, (state.separator || '') + JSON.stringify(row) + '\n');
+    queueRegression(resolved, row);
     return row;
   });
+}
+// A recorded failure queues a regression check (drafted later by `bgz jev regress`). Best-effort; never breaks `add`.
+function queueRegression(root, row) {
+  if (row.key === 'no-incident') return;
+  try {
+    const q = path.join(root, '.bgzflow', 'regression-queue.jsonl');
+    appendOwned(q, JSON.stringify({ t: row.date, source: 'lessons', id: row.id.slice(0, 10), key: row.key, what: row.what, ...(row.evidence ? { evidence: row.evidence } : {}) }) + '\n');
+  } catch { /* the queue is optional */ }
 }
 export function review(roots, input) {
   const draft = reviewRecord({ ...input, id: randomUUID(), date: new Date().toISOString(), lessons: ['pending'] });

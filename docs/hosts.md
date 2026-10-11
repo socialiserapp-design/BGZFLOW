@@ -8,7 +8,7 @@ Versions that day:
 - Codex CLI 0.159.0
 - Grok 1.0.44 (`5b807183dd79`)
 
-`VERSION` is the only version source. `node scripts/build-manifests.mjs` writes the manifests below; `--check` exits 1 on drift. The current candidate is `bgzflow` version `0.2.0`, MIT. Its public author is `BGZFLOW contributors`, marketplace owner is `socialiserapp-design`, and homepage, repository and every marketplace source point to [socialiserapp-design/BGZFLOW](https://github.com/socialiserapp-design/BGZFLOW). The earlier installation observations below belong to `0.1.0`; the [0.2.0 receipt](evidence/candidate-2-hosts.json) separately records the local-source gate installation. Remote-source installation is untested. No author email is written in the manifests.
+`VERSION` is the only version source. `node scripts/build-manifests.mjs` writes the manifests below; `--check` exits 1 on drift. The current candidate is `bgzflow` version `0.2.0`, MIT. Its public author is `Simeon Kontogeorges`, marketplace owner is `socialiserapp-design`, and homepage, repository and every marketplace source point to [socialiserapp-design/BGZFLOW](https://github.com/socialiserapp-design/BGZFLOW). The earlier installation observations below belong to `0.1.0`; the [0.2.0 receipt](evidence/candidate-2-hosts.json) separately records the local-source gate installation. Remote-source installation is untested. No author email is written in the manifests.
 
 ## Claude Code
 

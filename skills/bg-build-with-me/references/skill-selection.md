@@ -81,3 +81,7 @@ Illustrative request (not a live run):
 ### One-pass fallback
 
 On missing permission, a missing route or credential, an invalid response, an error status (for example 401, 422, 429 or 529) or a timeout: record the actual gap, then select once with the same rubric using the capable current executor or reviewer. Keep capability coverage, retrieve the smallest missing fact and continue independent ready work. There is no paid retry loop, per-message selection, new helper or daemon, fabricated response or global stall. A matching retained result may be reused without asking the service again; refresh it only when material evidence changes. Token counts do not establish cash cost, savings or correctness.
+
+## Jev picks the job's skills
+
+`bgz jev skills --brief brief.md --write` lists every installed skill (plugin, `~/.claude/skills`, `~/.codex/skills`, `~/.agents/skills`, plugin skills), scores each one against the job by name and description, and writes a "Skills to load" list with scores into the brief. It is liberal: anything that could plausibly help (score 0.35 or more) stays, the BG skills the stage needs are always included and a skill the brief names is never dropped. The lead adds the list to every dispatch. See [bg-jev](../../bg-jev/SKILL.md).

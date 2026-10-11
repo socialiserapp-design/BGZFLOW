@@ -15,3 +15,11 @@ Each kit has a durable phase and operation identity. An interrupted operation mu
 Native commands default to 600 seconds. Set `BGZFLOW_NATIVE_TIMEOUT_MS` to a positive integer in milliseconds to override it; an explicit helper timeout takes precedence. Each attempt keeps its own receipt, including timeout and failure details.
 
 `APPLY.ps1 -Resume` (`apply.mjs --resume`) and `CODEX-REFRESH.ps1 -Resume -CodexAppClosed` continue a failed isolated native operation using the same staged home, skipping completed operations. Resume verifies the recorded stage identity, original backups, source payload and all live targets against the ownership journal and failure snapshot. Volatile host entries remain excluded. Live drift, unexpected changes, an in-flight operation or a failure during live commit refuses resume and directs the owner to UNDO. Resume never rebuilds a mutated staged home or retries the live commit partially.
+
+## bg-jev skill links
+
+The cutover kit installs the plugin; it does not make per-skill links. `bg-jev` is new in 0.6.0, so it gets its links from `scripts/jev-links.mjs`, run once after APPLY:
+
+- `node scripts/jev-links.mjs link` makes `~/.codex/BGZFLOW/bg-jev` (pointing at the installed plugin's `skills/bg-jev`), then `~/.codex/skills/bg-jev` and `~/.claude/skills/bg-jev` (both pointing at the first). Junctions on Windows. A path that already holds anything else is kept and reported, never replaced.
+- Rollback: `node scripts/jev-links.mjs unlink`, before UNDO. It removes only links that point where `link` points them; the skill folder itself and any real folder are left alone.
+- `status` shows each link; `--dry` shows what would happen; `--home` and `--plugin` aim it at another home or plugin folder (rehearse with a throwaway home first).

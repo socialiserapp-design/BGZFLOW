@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: jev-big-file-ask-first
+description: 'A question about a very large file is put to Jev instead of opening the file whole.'
+tags: [efficiency]
+expected_outcome: 'Uses bgz jev file (or files) with a question; does not read the whole 400 KB file.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Bash, Skill]
+  prompt: |
+    logs/server.log is about 400 KB. Does it show any payment retries? Check it for me.
+graders:
+  - name: asks-jev-or-searches
+    type: llm
+    criteria: |
+      PASS if the reply (or its plan) answers by running `bgz jev file logs/server.log --q "..."` or by searching the log for the retry lines, and does not read the whole file into the chat.
+      FAIL if it reads the entire file.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-jev"'
+    arm: 'with-only'

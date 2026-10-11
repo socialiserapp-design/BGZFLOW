@@ -13,6 +13,7 @@ Where a later change copies upstream text, keep that project's licence and any n
 | CodeGraph | https://github.com/colbymchenry/codegraph | MIT. Copyright (c) 2026 Colby Mchenry | Code-map ideas and rules. |
 | Ponytail | https://github.com/DietrichGebert/ponytail | MIT. Copyright (c) 2026 DietrichGebert | The laziness ladder: do the smallest thing that works. |
 | Fast compaction hook by tamaratran | https://github.com/tamaratran | MIT, from its licence file and package.json (version 0.2.0). Copyright (c) 2025 | Compaction ideas. The short licence header names no person. |
+| Ten Levels of Jev (IndyDevDan) | https://github.com/disler/ten-levels-of-jev | MIT. Copyright (c) IndyDevDan | The ten levels and ten rules, and the pattern of question types, confidence bands and fail-open guards behind `bgz jev`. Our client, gates and tools are written in our own code. |
 | code-review-graph | https://github.com/tirth8205/code-review-graph | MIT on the staging branch. Copyright (c) 2026 Tirth Kanani | Written review-graph rules. The installer is not included. |
 | graft | https://github.com/NanoNets/context-graph-engine | MIT. Copyright (c) 2026 Context Graph Engine contributors | Context-graph rules. The npm package name is `@nanonets/graft`. |
 | RTK | https://github.com/rtk-ai/rtk | Apache-2.0 on the develop branch. Copyright 2024 rtk-ai and rtk-ai Labs | Token-reduction ideas. |

@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: trigger-jev-score-risk
+description: 'Should make bg-jev fire.'
+tags: [trigger, trigger-should-fire]
+expected_outcome: 'bg-jev is invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Use Jev to score how risky my diff against main is before we pay for the review.
+graders:
+  - name: fires
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-jev"'

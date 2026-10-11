@@ -90,9 +90,9 @@ function optional(file) { try { return json(file); } catch (e) { if (e.code === 
 function folder(project) { return path.join(project, '.bgzflow', 'swarms'); }
 export function resolveSwarmProject(input = {}, env = process.env) {
   const lead = findProjectDir(input, env), worker = walkUp(input.workerCwd || input.tool_input?.workdir || input.tool_input?.cwd);
-  const common = root => {
-    if (!root) return null;
-    const marker = path.join(walkUp(root), '.git');
+  const commonAt = top => {
+    if (!top) return null;
+    const marker = path.join(top, '.git');
     try {
       if (!fs.statSync(marker).isFile()) return null;
       const gitdir = /^gitdir:\s*(.+)/m.exec(read(marker, 4096))?.[1];
@@ -102,7 +102,22 @@ export function resolveSwarmProject(input = {}, env = process.env) {
       return path.basename(shared) === '.git' ? path.dirname(shared) : null;
     } catch { return null; }
   };
-  return [lead, common(lead), worker, common(worker)].find(p => p && fs.existsSync(folder(p))) || lead;
+  const common = root => (root ? commonAt(walkUp(root)) : null);
+  // A linked worktree that sits below some other folder holding .bgzflow/ (found first by the walk up) still
+  // reaches its own main worktree's swarm ledger: the nearest Git top below the walked-up project is tried first.
+  const gitTop = start => {
+    let dir = path.resolve(start);
+    for (let i = 0; i < 40; i++) {
+      if (fs.existsSync(path.join(dir, '.git'))) return dir;
+      const parent = path.dirname(dir); if (parent === dir) break; dir = parent;
+    }
+    return null;
+  };
+  const here = input.cwd || process.cwd(), walked = walkUp(here);
+  const top = lead && lead === walked ? gitTop(here) : null;
+  const rel = top ? path.relative(lead, top) : '';
+  const nested = rel && !rel.startsWith('..') && !path.isAbsolute(rel) ? [commonAt(top)] : [];
+  return [...nested, lead, common(lead), worker, common(worker)].find(p => p && fs.existsSync(folder(p))) || lead;
 }
 function ledgerFile(project, swarm) { if (!validId(swarm)) throw new Error('invalid swarm ID'); return path.join(folder(project), swarm+'.json'); }
 function ledgers(project) {

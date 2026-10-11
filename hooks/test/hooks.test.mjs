@@ -497,7 +497,9 @@ describe('hooks.json', () => {
     assert.deepEqual(find('h1-checkpoint-cap.mjs').map((c) => [c.event, c.matcher]), [['PostToolUse', 'Write|Edit|MultiEdit']]);
     assert.deepEqual(find('h5-state-snapshot.mjs').map((c) => c.event), ['Stop']);
     assert.deepEqual(find('swarm-gate.mjs').map(c => c.event).sort(), ['PostToolUse', 'PostToolUseFailure', 'PreToolUse','Stop']);
-    assert.equal(commands.length, 11);
+    assert.deepEqual(find('h7-jev-gates.mjs').map((c) => c.event).sort(), ['PostToolUse', 'PreToolUse']);
+    assert.deepEqual(find('h8-outcomes.mjs').map((c) => c.event), ['SessionStart']);
+    assert.equal(commands.length, 14);
   });
 
   test('every command uses the plugin-root placeholder, a real script and a short timeout', () => {

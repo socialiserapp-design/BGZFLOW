@@ -94,3 +94,7 @@ Requested flags do not prove what a child actually received. For a real job, rec
 ## Questions without restarts
 
 A worker never ends a job just to ask. It posts uncertainty through `bg-mail` with its recommended safe default and timeout, keeps working where safe, and waits in the same job only when the answer is required. The lead replies through the same mailbox. On timeout the worker uses the recorded default; secrets never enter messages.
+
+## Jev routing and grading
+
+Before dispatch ask Jev once: `bgz jev route --job @brief.md` picks a role from STATUS section 1, then a model tier and effort score. Code still applies the allowance and job limits from STATUS; a Jev error means use the role's first STATUS option. After each job run `bgz jev grade` on its output and read `bgz jev league` before reordering fallbacks. See [bg-jev](../../bg-jev/SKILL.md).

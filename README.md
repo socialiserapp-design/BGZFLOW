@@ -4,11 +4,24 @@
 
 BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead agent plans the work, a swarm of workers builds every piece in parallel, and the whole product is then tested once on the real platform before it goes live. It runs on the agents and subscriptions you already have.
 
+**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
+
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.5.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.0-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.6.0: Jev, a fast and cheap judge for every agent
+
+Big models are slow and expensive for small calls like "is this command risky?", "which worker should take this job?" or "did that test fail for real?". BGZFLOW 0.6.0 adds **Jev**: a judgement layer that answers many small questions about the real situation in about a second, for a fraction of a cent, with a confidence score. Weights and thresholds stay in code, and any Jev error fails open, so it never blocks work.
+
+- **Guards**: risky shell commands, credential leaks in edits and injected instructions in tool output are caught before they do harm.
+- **Routing and grading**: Jev picks the right worker and skills for each job, grades every finished job on a rubric and keeps a league table, so the best workers and workflows rise.
+- **Self-improving**: a workflow that consistently beats the average becomes a skill, with a backup, a watch period and automatic restore.
+- **Smarter chats**: it decides when a long chat should hand off, and answers questions about files without opening them.
+
+See the [changelog](CHANGELOG.md) for the full list.
 
 ## Why BGZFLOW
 
@@ -120,14 +133,23 @@ Reports distinguish **BUILT**, **REACHED** and **USED**; only a real journey wit
 ## Safety and privacy
 
 - Hooks are small Node.js programs that run on your machine, with no dependencies. Read [SECURITY.md](SECURITY.md) and review `hooks/hooks.json` before you install or update.
+- Jev guardrail switches: `BGZFLOW_JEV_GATES=off` turns all Jev gates off; `BGZFLOW_JEV_SCREEN=off`, `BGZFLOW_JEV_BASH=off` and `BGZFLOW_JEV_WRITE=off` turn off one each; `BGZFLOW_JEV_BREAKER=off` ignores the 5-minute outage pause. `BGZFLOW_OVERRIDE="<approved step>"` lets one approved step through once and logs it to `<BGZFLOW_HOME>/overrides.jsonl`. `writeAllow` in the overlay config (or `BGZFLOW_WRITE_ALLOW`) adds folders the write gate accepts. `BGZFLOW_DECISIONS_FILE` names the owner's decisions file (default `DECISIONS.md`).
 - Your own notes, routes and project list live in a private folder outside this repository (`~/.bgzflow/overlay/` by default) and are never published.
 - BGZFLOW never buys capacity, never switches accounts silently and never publishes, submits to a store or moves money without your recorded authority.
 - Continuous integration runs the test suite, a manifest drift check, a leak check over files, history and identities, and gitleaks.
 
 ## Project status
 
-BGZFLOW is used every day to run several real products built by a one-person studio, across Claude Code and Codex. It is young and moving quickly; see the [changelog](CHANGELOG.md) and [verification evidence](docs/proof.md). Issues and pull requests are welcome. Please report security problems through a private security advisory.
+BGZFLOW is used every day to build and run several real products across Claude Code and Codex. It is young and moving quickly; see the [changelog](CHANGELOG.md) and [verification evidence](docs/proof.md). Issues and pull requests are welcome. Please report security problems through a private security advisory.
+
+## About the author
+
+BGZFLOW is designed and built by **Simeon Kontogeorges**. It grew out of running a whole product company with AI agents: every rule in it comes from a real failure in a real product, turned into a test, a hook or a skill so it never happens twice.
+
+- GitHub: [socialiserapp-design](https://github.com/socialiserapp-design)
+
+If BGZFLOW helps you ship, a star on this repository is the best thanks.
 
 ## Licence
 
-MIT. Copyright (c) 2026 BGZFLOW contributors. Third-party ideas and sources are credited in [ATTRIBUTION.md](ATTRIBUTION.md).
+MIT. Copyright (c) 2026 Simeon Kontogeorges. Third-party ideas and sources are credited in [ATTRIBUTION.md](ATTRIBUTION.md).

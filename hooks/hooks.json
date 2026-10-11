@@ -13,6 +13,11 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h6-lessons-due.mjs\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h8-outcomes.mjs\"",
+            "timeout": 5
           }
         ]
       }
@@ -47,6 +52,10 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash|Shell|exec_command|Write|Edit|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"", "timeout": 5 }]
       }
     ],
     "PostToolUse": [
@@ -63,6 +72,10 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash|Shell|exec_command|WebFetch|Read|mcp__.*(?:browser|fetch|search|scrap|crawl|brave|chrome|playwright|puppeteer|navigate|page|web).*|Write|Edit|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"", "timeout": 5 }]
       }
     ],
     "PostToolUseFailure": [

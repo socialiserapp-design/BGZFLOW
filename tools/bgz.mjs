@@ -10,6 +10,8 @@ const SCRIPTS = {
   receipt: 'receipt/receipt.mjs',
   usage: 'usage/usage.mjs',
   'skill-gate': 'skill-gate/skill-gate.mjs',
+  jev: 'jev/cli.mjs',
+  preflight: 'jev/preflight.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -17,6 +19,8 @@ const USAGE = [
   '  receipt <file-or-dir>... [--json] hashes, sizes and counts for a handback',
   '  usage [--since ISO] [--json]      where the tokens went, from local transcripts',
   '  skill-gate --run --previous <ref>  check each skill\'s evals match or beat the previous version',
+  '  jev <ask|file|files|score|route|skills|arch|unasked|grade|league|outcomes|improve|bench|regress>  cheap Jev judgements (bgz jev --help)',
+  '  preflight                         read-only worker-start check: stray skills, long plugin overviews, ANTHROPIC_API_KEY',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);

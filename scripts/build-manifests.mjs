@@ -12,7 +12,7 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
 
 const description =
   "A free plugin that lets one founder run AI worker swarms from idea to launch.";
-const author = { name: "BGZFLOW contributors" };
+const author = { name: "Simeon Kontogeorges", url: "https://github.com/socialiserapp-design" };
 const repository = "https://github.com/socialiserapp-design/BGZFLOW";
 const owner = { name: "socialiserapp-design" };
 const source = { source: "url", url: repository };
@@ -89,6 +89,12 @@ const tools = [
     name: "bg-rounds",
     hint: "<open|close|next|status> <package> [finding-id...]",
     about: "Keep the repair-round ledger; a third round needs recorded approval",
+  },
+  {
+    name: "jev",
+    hint: "<ask|file|files|score|route|skills|arch|unasked|grade|league|outcomes|improve|bench|regress> [options]",
+    about: "Ask Jev, the fast cheap judge: file questions, routing, skill picks, guardrail scores and worker grades",
+    footer: "Same as `bgz jev`. A failed or missing Jev prints {\"ok\":false,...} and exits 1; fall back to the main model once. The key is read from TYPESAFE_API_KEY or ~/.typesafe_key and is never printed. With no arguments, run it with `--help` first.",
   },
   {
     name: "doctor",

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { toolFilePath } from './io.mjs';
+import { jevUsable } from '../../tools/jev/jev.mjs';
 
 export const NOTES_EXTENSIONS = new Set(['.md', '.txt', '.log', '.json', '.jsonl', '.csv']);
 // A read with an explicit line limit above this is treated as a whole-file read.
@@ -57,7 +58,7 @@ export function hasNotesMap(startDir) {
 }
 
 // Returns { reason, file, bytes } to deny, or undefined to allow.
-export function bigReadViolation({ toolName, toolInput, cwd }, cfg) {
+export function bigReadViolation({ toolName, toolInput, cwd }, cfg, env = process.env) {
   if (!isReadTool(toolName)) return undefined;
   const filePath = toolFilePath(toolInput || {});
   if (!filePath) return undefined;
@@ -85,6 +86,9 @@ export function bigReadViolation({ toolName, toolInput, cwd }, cfg) {
   } else {
     advice = `No notes map yet: run notes-map build "<project folder>" once, then notes-map ask "<question>" ${runner}.`;
   }
-  const reason = `${path.basename(abs)} is ${kb} KB, over the ${cfg.bigReadKb} KB whole-file read cap. ${advice} Or read a line range with offset and limit.`;
+  // The Jev hint only when Jev can answer (a key is present and the gates are on); otherwise the 0.5.0 text.
+  const reason = jevUsable(env)
+    ? `${path.basename(abs)} is ${kb} KB, over the ${cfg.bigReadKb} KB whole-file read cap. First choice: bgz jev file <this file> --q "<question>". Otherwise: ${advice} Or read a line range with offset and limit.`
+    : `${path.basename(abs)} is ${kb} KB, over the ${cfg.bigReadKb} KB whole-file read cap. ${advice} Or read a line range with offset and limit.`;
   return { reason, file: abs, bytes };
 }

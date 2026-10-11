@@ -32,6 +32,14 @@ OWNS: ["<owned relative path>"]
 - Acceptance: <exact commands or flows and expected results>
 - Required outputs (the handback check verifies each exists): <paths>
 
+## Skills to load
+- <written by `bgz jev skills --brief <this file> --write`: each skill with its score; the lead adds this list to the dispatch>
+
+## Checks (written before the build by a model other than the builder; they decide done)
+- 1. <exact command or observation and expected result>
+- 2. <optional>
+- 3. <optional>
+
 ## Return (short)
 Status | candidate commit + hashes | checks (command, exit, result path) | open finding IDs | stop paths added (each with the brief line that asked for it, or none) | executor identity + exit status | next owner and action
 

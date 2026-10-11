@@ -2,6 +2,35 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.6.0 (2026-10-09)
+
+**Jev, the fast cheap judge, is used at all ten levels, and it grades the workers.**
+
+- New `bgz jev` client (Node 20, no new dependencies): noul, choice and score questions in one request, a 3 s default timeout, fail-open on any error or missing key, and a ledger at `~/.bgzflow/jev-ledger.jsonl` that never holds state text or secrets. Subcommands: `ask`, `file`, `files`, `score`, `route`, `skills`, `arch`, `unasked`, `grade`, `league`, `outcomes`, `improve`, `bench`, `regress`.
+- Levels 1-5: new `bg-jev` skill (ten rules, question types, confidence bands, weighted scores kept in code, one-choice routing before dispatch), linked from BG Efficiency, BG Build With Me, the worker route and skill selection.
+- Level 6: three guardrail hooks sharing one script. A Bash gate (protected targets in code, then Jev on intent; blocks only irreversible at 0.9 or more or a protected target, warns between 0.5 and 0.9), a Write/Edit gate (paths outside the project, credentials in content) and a result screen for injected instructions (banner only, never a block). `BGZFLOW_JEV_GATES=off` or no key gives 0.5.0 behaviour exactly.
+- Level 7: the chat-size hook asks Jev four questions on each prompt (task switch, boundary, history needed, mid-edit) to choose silent, notice, recommend or request. Size thresholds stay in code.
+- Levels 8-9: `bgz jev file` and `bgz jev files` answer questions about files without opening them; the big-read guard now names `bgz jev file` first.
+- Level 10: `bgz jev ask --cmd` runs one command through the level 6 gate and asks about the result; recipes for test-failure type, diff risk and fix confirmation.
+- Performance: `grade` scores a finished job on a rubric, `league` shows the average by role and worker, `outcomes` adjusts grades by real outcomes (git reverts, review flags, lessons) in code with no model calls, run once a day by a SessionStart hook.
+- Better workflows become skills: `improve` promotes a workflow that beats the role average by 0.1 over 3 or more jobs, with a drafter that is not the worker, the unasked check, a backup and a 5-job watch with automatic restore. `bench` keeps a fixed set of job cards that runs only before a promotion or a model swap. `regress` drafts a regression check for every recorded failure.
+- Also: `skills` picks each job's skills liberally into the brief; `arch` and `unasked` give architecture and not-asked-for leads (warnings only); `bgz preflight` flags stray skills, long plugin overviews and `ANTHROPIC_API_KEY`; the one release review runs as three parallel specialist passes merged into one report; a brief template with skills and checks.
+
+### Fixes after independent check
+
+- One masker for everything that leaves the machine: `sanitize` (PEM blocks, tokens, URL and command-line passwords, secret assignments, emails, phone numbers) runs on every Jev question and state, every ledger line and every rewritten performance line. The result screen sends only sanitized web text, the Bash gate only sanitized command text, and the chat-size judge only user and assistant text.
+- Secret files (`.env*`, `Secrets/`, `*key*`, `*.pem`, `*credentials*`, `id_*`) are skipped by every `bgz jev` file reader and refused when named on purpose.
+- `bgz jev ask --cmd` children run without `TYPESAFE_API_KEY` or `FAST_JEV_KEY_FILE`, and a protected command (force push or delete on main/master) is refused in code first, even with no key or Jev down.
+- Outage breaker: a Jev timeout or network error makes later calls fail open at once for 5 minutes, so an outage costs at most about 1.5 s per tool call. `BGZFLOW_JEV_BREAKER=off` turns it off.
+- Hook switches: `BGZFLOW_JEV_SCREEN=off`, `BGZFLOW_JEV_BASH=off` and `BGZFLOW_JEV_WRITE=off` turn off one gate each. `BGZFLOW_OVERRIDE="<approved step>"` lets one approved step through once and is logged to `<BGZFLOW_HOME>/overrides.jsonl`. `writeAllow` in the overlay config, or `BGZFLOW_WRITE_ALLOW`, lists extra folders the write gate accepts.
+- Neutral owner wording everywhere. The decisions file is `BGZFLOW_DECISIONS_FILE`, else the overlay config's `"decisionsFile"`, else `DECISIONS.md` (in the project or its `.bgzflow/` folder). Installs that keep their decisions in another file set one of the first two.
+- STATUS defaults to `$BGZFLOW_OVERLAY/STATUS.md`, else `~/.bgzflow/overlay/STATUS.md`.
+- The daily outcomes job runs detached with a time budget and a job cap (`--background=1`, `--max-jobs`, `--budget-ms`); it writes the day stamp only after it finishes and leaves a one-line notice the next session start shows once.
+- `improve`: one promotion per skill per pass, never writes inside the installed plugin (source repo, `BGZFLOW_SKILLS_DIR` or `~/.bgzflow/skills-overlay`), a drafter from another vendor than the worker, safer rollback, and `--dry` skips the bench. `regress --dry` writes nothing, drafts go to `.bgzflow/regression-drafts/`, and rerunning the brief update leaves the file unchanged. `grade` logs the brief path so `bench seed` can open it.
+- `bgz preflight` warns (never blocks) when the same skill name is in two folders.
+- New `scripts/jev-links.mjs` links `bg-jev` into the Codex and Claude skill folders: run it after APPLY, and unlink before UNDO. It never replaces or removes a real folder.
+- Tests: the six known-bug tests (X1-X6) are now real, passing tests; test fixtures build secret-looking values from pieces and use noreply identities, so the leak check is clean.
+
 ## 0.5.0 (2026-10-08)
 
 **The design skill can do far more, and every product still keeps its own look.**

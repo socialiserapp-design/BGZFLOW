@@ -18,6 +18,6 @@ The repaired integrated candidate ran 17 suites once at the final gate: **728 te
 
 The final staged tree passed a disposable Claude/Codex-home archive install and byte-for-byte UNDO rehearsal. The public archive excluded `context/`, `CLOUD-BRIEF.md`, `.bgzflow/` and both private/local overlay trees. Host marketplace CLIs were not used, so this proves the archive layout, installed startup tool and exact restoration of the disposable homes rather than a live marketplace/account installation.
 
-## Decisions for the founder
+## Decisions for the owner
 
-None for this release candidate. Recommendation: keep the one-slot build schedule until launch demand makes the measured queue delay worth an upgrade; any upgrade remains the founder's spending decision.
+None for this release candidate. Recommendation: keep the one-slot build schedule until launch demand makes the measured queue delay worth an upgrade; any upgrade remains the owner's spending decision.

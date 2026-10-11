@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: jev-low-confidence-goes-up
+description: 'A Jev answer below 0.5 confidence goes to the lead, not into action.'
+tags: [quality]
+expected_outcome: 'Treats 0.42 confidence as a send-up case and does not act on it.'
+execution:
+  max_turns: 6
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    bgz jev said the command "rm -rf build/cache" is destructive with confidence 0.42, and 0.7 for another one. What do I do with the two answers?
+graders:
+  - name: bands-applied
+    type: llm
+    criteria: |
+      PASS if the reply sends the 0.42 answer to the lead or a person (below 0.5), and confirms the 0.7 one with one cheap check, acting only at 0.9 or above.
+      FAIL if it acts on the 0.42 answer, or treats 0.7 as safe to act on.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-jev"'
+    arm: 'with-only'

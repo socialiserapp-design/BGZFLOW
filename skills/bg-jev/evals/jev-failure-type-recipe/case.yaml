@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: jev-failure-type-recipe
+description: 'A failing test run is classified with the level 10 recipe, not rerun blindly.'
+tags: [quality]
+expected_outcome: 'Classifies flaky, real or environment with Jev and acts on the class.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Bash, Skill]
+  prompt: |
+    npm test failed on one test in CI and I can't tell why. Work out what kind of failure it is before we do anything about it.
+graders:
+  - name: classifies-first
+    type: llm
+    criteria: |
+      PASS if the reply classifies the failure as flaky, real or environment first (for example `bgz jev ask --cmd "npm test" --type choice --options flaky,real,environment`) and then picks the action for that class.
+      FAIL if it just reruns the suite repeatedly or starts editing code without classifying.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-jev"'
+    arm: 'with-only'
