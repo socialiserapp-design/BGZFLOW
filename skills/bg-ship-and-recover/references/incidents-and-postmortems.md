@@ -46,6 +46,14 @@ For a SEV1 or SEV2, data, security or money harm and significant near misses, as
 
 On-call handover includes active incidents, current severity, deployed and rolled-back IDs, pending operations, holds, actions already attempted, dashboards, upcoming changes, the next customer update and the escalation contact. The incoming owner acknowledges receipt, verifies access and alert delivery through authorised checks and states the next action. Until acknowledged, ownership stays explicit with the outgoing owner or the agreed escalation recipient; a sent note alone is not a transfer.
 
+## Record every incident and count rework
+
+Each incident record names four things: the **system** that failed, its **owner**, the **cause** (a short kebab-case name such as `sandbox-write`, reused exactly when it is the same cause) and the **release** it came in (a version or short commit). Record them with `bgz lessons add --system <name> --cause <name> --release <version>` ([CLI](../../../tools/lessons/README.md)); `bgz lessons list` shows the records and `bgz lessons rework` counts them.
+
+**Rework** is a repeat fix of the same cause: the same system failing for the same reason again after a fix was shipped. One cause fixed once is not rework; the same cause fixed a second time is. A cause that recurs is a sign the fix treated the symptom, so run the [architecture scorecard](../../bg-continue-my-project/references/architecture-scorecard.md) on that system when it recurs; it never delays containment or restoring service.
+
+Report **deploy frequency**, **change failure rate** (the share of releases that needed a fix, rollback or incident) and **time to restore** (from detection to recovery) only from complete records: every release counted, every incident with its release and UTC start and end. If the records are incomplete, say what is missing and report no figure. Never estimate, back-fill or invent these numbers; an honest "not enough records yet" is the right answer.
+
 Optional incident and alert tools, where available, use existing accounts and approved integrations. Public skills exist for runbook templates, post-mortem writing and on-call handoffs (e.g. `incident-runbook-templates`, `postmortem-writing`, `on-call-handoff-patterns`); do not assume they are installed or install them implicitly. Project recovery runbooks remain authoritative.
 
 Basis: the public [incident-response skills in the wshobson/agents repository](https://github.com/wshobson/agents/tree/156b7a5e7a8b93642628a339ee4039c925b34c7f/plugins/incident-response/skills), MIT, read at that pinned commit. This is an independently worded, provider-neutral adaptation; it contains no infrastructure commands or copied templates.

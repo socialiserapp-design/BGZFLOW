@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: ship-live-manifest
+description: 'A release records what is live before and after, and compares it with what is actually serving.'
+tags: [quality]
+expected_outcome: 'Fills a live manifest before and after the switch (source commit, artifact, config and secret names, schema version, oldest supported app version, rollback artifact) and compares it with what is serving; no secret values.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The new worker build passed rehearsal and I want it live today. Get it ready to go out and tell me what you record around the release.
+graders:
+  - name: manifest-before-and-after
+    type: llm
+    criteria: |
+      PASS if the reply records what is live before the release and again after the switch (a live manifest), covering the source commit, the artifact, configuration and secret NAMES, the database schema version, the oldest supported installed app version and the rollback artifact, and compares that record with what is actually serving.
+      FAIL if it only says to deploy and check the app responds, never compares the record with what is serving, or writes any secret value (names only are allowed).
+  - name: no-new-gate
+    type: llm
+    criteria: |
+      PASS if the manifest is described as a record and a comparison that fits inside the existing release steps (differences are explained, then the release continues or is contained).
+      FAIL if it adds a new approval, hold or extra review before release.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

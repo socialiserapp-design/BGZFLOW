@@ -2,6 +2,22 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.7.0 (2026-10-14)
+
+**Professional build methods from an architecture audit, built into the skills by default.**
+
+- Know what is live: new `templates/LIVE-MANIFEST.md` (source, artifact, config and secret names, schema version, oldest supported app, rollback artifact); ship step 1 fills BEFORE, step 7 fills AFTER and compares it with what is serving.
+- Decision records: new `templates/ADR.md` (Proposed, Accepted, Superseded); `templates/DECISIONS.md` is now the index; records live in the code repo's `docs/adr/` and are superseded, never deleted.
+- Lanes follow the systems: BG Build With Me lists the bounded systems before splitting work; one owning lane per system, lanes meet only at a written, versioned contract, and one customer outcome is never split by platform, model or layer.
+- Testing ladder: contracts first with consumer-driven contract tests and the oldest installed app checked before deploy; tests assert customer outcomes through real adapters in provider test mode with recorded fixtures; prequalify the test environment, so a failure there is a tool failure, not a product bug.
+- Watch customer outcomes, not machinery: new `outcome-watch.md` reference (due work on time, newest customer output, money balance, a company canary); `templates/PROJECT-AGENTS.md` gains an outcome-checks section.
+- New references: `durable-work.md` (one operation identity, outbox, idempotent consumers, check an unknown outcome by its original ID, one adapter per provider, rebuild beside the old) and `architecture-scorecard.md` (12 practices scored 0-4, keep / simplify / rebuild).
+- Incidents record system, owner, cause and release; rework is a repeat fix of the same cause. Deploy frequency, change failure rate and time to restore are reported only from complete records.
+- `bgz lessons list` (`--open`, `--key`, `--json`); `bgz lessons rework` (`--since`, `--json`) groups incidents by system and cause, shows the repeat share and says what it cannot compute; `add` takes `--system`, `--cause` and `--release`.
+- `status`, `due`, `list` and `rework` read without any write or owned-path check, and errors name the failed check without paths. `add` and `review` screen a root path segment by segment, so an ordinary long forward-slash root is no longer refused.
+- `bg-mail post` from a sandboxed worker spools to `.bgzflow/mail-spool/` when the inbox is not writable; `bg-mail collect --from DIR` imports by message id, is safe to repeat and copies by default (`--remove` deletes only what it imported).
+- Five new eval cases (live manifest, outcome watch, unqualified environment, lanes by system, repeat cause scorecard).
+
 ## 0.6.0 (2026-10-09)
 
 **Jev, the fast cheap judge, is used at all ten levels, and it grades the workers.**

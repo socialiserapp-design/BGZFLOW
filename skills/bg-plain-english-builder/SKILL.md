@@ -36,7 +36,7 @@ Use these canonical templates inside the existing plan and checkpoint:
 | Bounded worker assignment | [Brief](../../templates/BRIEF.md) and [worker prompt rules](../bg-finish-the-whole-job/references/worker-packet.md#worker-prompt) |
 | Exact-candidate return | [Worker handback](../bg-finish-the-whole-job/references/worker-packet.md#worker-handback) |
 | Questions, answers and dependent branches | [Question round](references/question-round.md#copyable-question-round) |
-| Accepted decisions | [DECISIONS.md](../../templates/DECISIONS.md) |
+| Accepted decisions | [DECISIONS.md](../../templates/DECISIONS.md) (the index; engineering decisions are numbered [ADRs](../../templates/ADR.md) in the code repo's `docs/adr/`) |
 
 Use this short cover note with the full plan and linked packets:
 

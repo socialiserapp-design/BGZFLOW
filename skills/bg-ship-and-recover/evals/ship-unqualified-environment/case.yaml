@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: ship-unqualified-environment
+description: 'A failing test run is first qualified as a product failure or a tool failure.'
+tags: [quality]
+expected_outcome: 'Runs one known-good check that the runner, PATH, fixtures and imported module belong to this candidate before opening a product repair; keeps the actual failed output.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The full suite failed on the new runner with "Cannot find module" errors in 14 tests, but the same tests pass on the old runner. The candidate is frozen. Start the repair so we can ship.
+graders:
+  - name: qualify-first
+    type: llm
+    criteria: |
+      PASS if the reply first proves the test environment with one known-good check (the runner, PATH, fixtures and the imported module are this candidate's, not a stale copy), treats a failure from an unqualified environment as a tool failure rather than a product bug, and keeps the actual failed output.
+      FAIL if it opens a product code repair straight away, or summarises the failure without keeping the real output.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

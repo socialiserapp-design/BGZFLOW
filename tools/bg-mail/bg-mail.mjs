@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { writablePath, writeOwnedFile, withOwnedLock } from '../../hooks/lib/owned-path.mjs';
+import { isLinked, writablePath, writeOwnedFile, withOwnedLock } from '../../hooks/lib/owned-path.mjs';
 
 const root = process.env.BG_MAIL_DIR || path.join(
   process.env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state'),
@@ -53,6 +53,143 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+const PERMISSION = new Set(['EACCES', 'EPERM', 'EROFS', 'ERR_ACCESS_DENIED']);
+const NAME = /^[A-Za-z0-9._-]+$/;
+
+// Why a folder cannot take a message. 'link': a link in its path, a refusal that is never worked around.
+// 'permission': read-only or outside the sandbox, the case the spool is for. null: writable, or not a permission problem.
+function whyNotWritable(directory) {
+  const absolute = path.resolve(directory);
+  const drive = path.parse(absolute).root;
+  let current = drive;
+  let nearest = drive;
+  for (const part of path.relative(drive, absolute).split(path.sep).filter(Boolean)) {
+    current = path.join(current, part);
+    let stat;
+    try {
+      stat = fs.lstatSync(current);
+    } catch (error) {
+      if (error.code === 'ENOENT') break;
+      return PERMISSION.has(error.code) ? 'permission' : null;
+    }
+    if (isLinked(stat)) return 'link';
+    if (!stat.isDirectory()) return null;
+    nearest = current;
+  }
+  // Try to create and remove a probe in the nearest folder that exists.
+  const probe = path.join(nearest, `.bg-mail-probe-${process.pid}-${crypto.randomUUID()}`);
+  try {
+    fs.writeFileSync(probe, '', { flag: 'wx', mode: 0o600 });
+  } catch (error) {
+    return PERMISSION.has(error.code) ? 'permission' : null;
+  }
+  try { fs.unlinkSync(probe); } catch { /* the probe is empty and ignored by every command */ }
+  return null;
+}
+
+// A worker that cannot write the shared inbox leaves its message here for the lead to collect.
+const spoolDirectory = () => path.join(process.cwd(), '.bgzflow', 'mail-spool');
+
+function spool(message) {
+  try {
+    atomic(path.join(spoolDirectory(), `${message.id}.json`), message);
+  } catch {
+    throw new Error('the inbox is not writable and the spool folder could not be written either; run from a folder you can write to');
+  }
+  console.log(JSON.stringify(message));
+  console.error(`bg-mail: inbox not writable; message spooled to .bgzflow/mail-spool/${message.id}.json (lead: bg-mail collect --from <that folder>)`);
+}
+
+// A message as `post` writes it. Spooled files come from another process, so check them before trusting them.
+function validMessage(message, file) {
+  const named = (value) => typeof value === 'string' && NAME.test(value) && value !== '.' && value !== '..';
+  const good = message && typeof message === 'object' && !Array.isArray(message)
+    && message.schema === 1 && named(message.id) && file === `${message.id}.json`
+    && named(message.project) && named(message.from) && named(message.to)
+    && message.kind === 'question' && typeof message.body === 'string' && message.body !== ''
+    && (message.default === null || typeof message.default === 'string')
+    && Number.isFinite(message.waitMinutes) && message.waitMinutes >= 0
+    && typeof message.createdAt === 'string' && Number.isFinite(Date.parse(message.createdAt))
+    && message.state === 'open' && message.reply === undefined;
+  return good ? message : null;
+}
+
+function spooled(id) {
+  if (!NAME.test(id || '')) return undefined;
+  try {
+    return validMessage(JSON.parse(fs.readFileSync(path.join(spoolDirectory(), `${id}.json`), 'utf8')), `${id}.json`) || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// The inbox copy wins. The spooled copy answers only when the inbox cannot be read or does not hold the message.
+function lookup(project, id) {
+  let failure;
+  try {
+    const found = rows(project).find((row) => row.id === id);
+    if (found) return found;
+  } catch (error) {
+    failure = error;
+  }
+  const local = spooled(id);
+  if (local) return local;
+  if (failure) throw failure;
+  return undefined;
+}
+
+// Copy spooled messages into the inbox. A message already in the inbox is never rewritten, so replies survive repeat runs.
+function collect(from, remove) {
+  let names;
+  try {
+    if (!fs.statSync(from).isDirectory()) throw new Error('collect --from must be a folder');
+    names = fs.readdirSync(from).filter((name) => name.endsWith('.json')).sort();
+  } catch (error) {
+    throw new Error(error.code ? 'collect --from folder does not exist or cannot be read' : error.message);
+  }
+  const result = { imported: [], skipped: [], removed: [], invalid: [], failed: [] };
+  for (const name of names) {
+    const source = path.join(from, name);
+    let message = null;
+    try {
+      if (fs.lstatSync(source).isFile()) message = validMessage(JSON.parse(fs.readFileSync(source, 'utf8')), name);
+    } catch { /* reported below as invalid */ }
+    if (!message) {
+      result.invalid.push(name);
+      continue;
+    }
+    const target = path.join(box(message.project), `${message.id}.json`);
+    try {
+      let wrote = false;
+      withOwnedLock(target, () => {
+        let present = true;
+        try { fs.lstatSync(target); } catch (error) { if (error.code === 'ENOENT') present = false; else throw error; }
+        if (present) return;
+        atomic(target, message);
+        wrote = true;
+      });
+      if (!wrote) {
+        result.skipped.push(message.id);
+        continue;
+      }
+      result.imported.push(message.id);
+    } catch {
+      result.failed.push(message.id);
+      continue;
+    }
+    // Remove only a file this run imported, and only after the inbox copy reads back with the same id.
+    if (remove) {
+      try {
+        if (JSON.parse(fs.readFileSync(writablePath(target), 'utf8')).id === message.id) {
+          fs.unlinkSync(source);
+          result.removed.push(message.id);
+        }
+      } catch { /* the spooled file stays where it is */ }
+    }
+  }
+  return result;
+}
+
 function answer(message, now = Date.now()) {
   if (message.reply) {
     return { state: 'answered', answer: message.reply.body, message };
@@ -90,7 +227,15 @@ async function main() {
       createdAt: new Date().toISOString(),
       state: 'open',
     };
-    atomic(path.join(box(project), `${id}.json`), message);
+    const file = path.join(box(project), `${id}.json`);
+    try {
+      atomic(file, message);
+    } catch (error) {
+      // Only a folder the worker may not write to is worked around; a link or any other refusal still fails.
+      if (whyNotWritable(path.dirname(file)) !== 'permission') throw error;
+      spool(message);
+      return;
+    }
     console.log(JSON.stringify(message));
     return;
   }
@@ -119,7 +264,7 @@ async function main() {
     const project = flag('project');
     const id = flag('id');
     while (true) {
-      const message = rows(project).find((row) => row.id === id);
+      const message = lookup(project, id);
       if (!message) throw new Error('message not found');
       const result = answer(message);
       if (result) {
@@ -152,10 +297,28 @@ async function main() {
     return;
   }
 
-  throw new Error('usage: bg-mail post|reply|wait|watch|list ...');
+  if (command === 'collect') {
+    const from = flag('from');
+    if (!from) throw new Error('collect needs --from DIR [--remove]');
+    const result = collect(from, args.includes('--remove'));
+    console.log(JSON.stringify(result));
+    if (result.failed.length) process.exitCode = 2;
+    return;
+  }
+
+  throw new Error('usage: bg-mail post|reply|wait|watch|list|collect ...');
+}
+
+// Name the failing check without printing the inbox, working-folder or home paths.
+function scrub(message) {
+  let clean = String(message);
+  for (const [secret, label] of [[root, '<inbox>'], [process.cwd(), '<cwd>'], [os.homedir(), '<home>']]) {
+    if (secret.length > 3) clean = clean.split(secret).join(label);
+  }
+  return clean;
 }
 
 main().catch((error) => {
-  console.error(`bg-mail: ${error.message}`);
+  console.error(`bg-mail: ${scrub(error.message)}`);
   process.exitCode = 2;
 });

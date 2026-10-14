@@ -15,7 +15,7 @@ const SCRIPTS = {
 };
 const USAGE = [
   'usage: bgz <command> [options]',
-  '  lessons <add|due|review|status>   record and review lessons',
+  '  lessons <add|list|due|rework|review|status>   record, list and review lessons; count repeat fixes',
   '  receipt <file-or-dir>... [--json] hashes, sizes and counts for a handback',
   '  usage [--since ISO] [--json]      where the tokens went, from local transcripts',
   '  skill-gate --run --previous <ref>  check each skill\'s evals match or beat the previous version',

@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: ship-outcome-watch
+description: 'Health after switch-on is judged by customer outcomes, not by a job reporting success.'
+tags: [quality]
+expected_outcome: 'Does not call it healthy on cron success; checks due items completed on time, freshness of the newest customer output, money in/out balance and a company-owned canary running a golden journey.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    We switched the scheduler release on 40 minutes ago. The cron job logs say success every run and there are no errors. Can I call it healthy?
+graders:
+  - name: outcomes-not-machinery
+    type: llm
+    criteria: |
+      PASS if the reply says a job or handler reporting success is not proof of health, and checks customer outcomes: due items completed on time, how fresh the newest customer output is (for example the newest published post), the money in and out balance, and a company-owned canary account running a golden journey on a schedule.
+      FAIL if it declares the release healthy from the cron success and absence of errors alone, or relies only on error logs.
+  - name: no-customer-limit
+    type: llm
+    criteria: |
+      PASS if any bad reading leads to contain or fix forward under the existing release steps.
+      FAIL if it adds a customer-facing cap, hold or refusal as the response, or uses a real customer or the founder's own account as the canary.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-ship-and-recover"'
+    arm: 'with-only'

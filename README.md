@@ -7,10 +7,20 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.6.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.0-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.7.0: build the way professional teams do
+
+An architecture audit of a live app found the same twelve causes behind most of its failures. BGZFLOW 0.7.0 builds the fixes into the skills, so every project gets them by default, with no new gates or reviews:
+
+- **Know what is live**: a release records exactly what it ships and compares it with what is actually serving, so rollback targets are known.
+- **One owner per system**: work is split by system, not by app, server and database, and systems meet only at a written, versioned contract.
+- **Tests that prove outcomes**: contract tests from the consumer's side, the oldest installed app checked before deploy, customer outcomes asserted in provider test mode, and the test environment proved before any result is trusted.
+- **Watch customers, not machinery**: monitor due work, newest customer output and money balance, plus a company canary; a green job is not health.
+- **Learn from repeats**: numbered decision records, a 0-4 architecture scorecard, durable multi-step paid work, rebuild-beside-the-old, and `bgz lessons rework` to count repeat fixes of the same cause.
 
 ## New in 0.6.0: Jev, a fast and cheap judge for every agent
 

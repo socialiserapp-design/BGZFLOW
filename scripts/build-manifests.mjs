@@ -44,7 +44,7 @@ const tools = [
   },
   {
     name: "bg-mail",
-    hint: "<post|reply|wait|list> --project ID ...",
+    hint: "<post|reply|wait|list|watch|collect> --project ID ...",
     about: "Exchange durable questions and replies between leads and workers without ending a job",
   },
   {

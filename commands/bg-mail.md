@@ -1,6 +1,6 @@
 ---
 description: "Exchange durable questions and replies between leads and workers without ending a job"
-argument-hint: "<post|reply|wait|list> --project ID ..."
+argument-hint: "<post|reply|wait|list|watch|collect> --project ID ..."
 disable-model-invocation: true
 ---
 

@@ -29,6 +29,16 @@ Start or resume: read <map> and `.bgzflow/CHECKPOINT.md` for the owners, exact c
 - Release and recovery: <runbook, authority and rollback>; a passing record is not release authority.
 - Handback: <evidence path> with candidate, base, configuration, environment, outputs and hashes, findings and owners, limits, live or staged state and next action.
 
+## Customer-outcome checks
+
+A scheduled job or handler reporting "success" is not health. List what proves customers are being served, and who looks:
+
+- Due items completed on time: <what is due, where to count it, expected rate>
+- Freshness of the newest customer output: <what to read, how old is too old>
+- Money in and out balance: <charges, settlements, refunds and the gap that must stay at zero>
+- Canary: <company-owned test account, golden journey, schedule, where its result lands>
+- Live manifest and engineering decisions: <where the release manifest is kept>; <docs/adr/ in the code repo>
+
 ## Read when needed
 
 | Trigger | Read |
