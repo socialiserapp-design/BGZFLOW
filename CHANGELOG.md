@@ -2,6 +2,10 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.7.1 (2026-10-14)
+
+- BG Ship And Recover step 5: a passing rehearsal with no open reproduced blocker is the go-ahead, so the lead switches on without asking the founder to approve, confirm or authorise the release. Authority, budget, owner and holds come from the brief, the founder's decisions file or the release record; when none is recorded, the lead switches on and notes the gap in the handback. Only a recorded founder hold, new spending or an app-store submission the brief doesn't name waits for the founder. Skill gate: the switch-on case passes 1 of 3 runs (0.7.0: 0 of 3) and no reply asks the founder to approve the release; replies can still pause to ask where the release record lives.
+
 ## 0.7.0 (2026-10-14)
 
 **Professional build methods from an architecture audit, built into the skills by default.**
