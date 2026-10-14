@@ -4,11 +4,14 @@
 //   node tools/project-setup/project-setup.mjs [<project-dir>] [--json] [--dry]
 // Without a folder it uses the current project (nearest folder with .bgzflow or .git). Re-running refreshes the detected
 // commands and keeps everything under "manual"; a manual command wins when the file is read (readProjectCommands).
+// It also saves a "system" (repos, worktrees, services, declared deployments; see tools/map/discover.mjs) for `bgz map`, keeping
+// system.owner, system.integration_branch and system.manual across runs. A folder with a system but no commands is still saved.
 // Exit codes: 0 saved, dry run or nothing found; 1 the existing project.json is unreadable or cannot be written; 2 bad usage.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findProjectDir } from '../../hooks/lib/project.mjs';
+import { discover, isSystemFound } from '../map/discover.mjs';
 
 export const SCHEMA_VERSION = 1;
 const KINDS = ['build', 'test', 'lint'];
@@ -266,19 +269,27 @@ export class SetupError extends Error {}
 export function setup(dir, { dry = false, now = new Date() } = {}) {
   const file = projectFile(dir);
   const { commands, from } = detect(dir);
-  if (!KINDS.some((kind) => commands[kind])) {
+  const found = discover(dir, { now });
+  if (!KINDS.some((kind) => commands[kind]) && !isSystemFound(found)) {
     return { file, found: false, written: false, dry, commands, from, manual: {}, effective: readProjectCommands(dir) };
   }
   let manual = {};
+  let prior = {};
   const text = read(dir, REL_FILE);
   if (text === null && fs.existsSync(file)) throw new SetupError(`${REL_FILE} cannot be read; left as it is`);
   if (text !== null && text.trim() !== '') {
-    let prior = null;
-    try { prior = JSON.parse(text); } catch { /* reported below */ }
+    try { prior = JSON.parse(text); } catch { prior = null; }
     if (!prior || typeof prior !== 'object' || Array.isArray(prior)) throw new SetupError(`${REL_FILE} is not valid JSON; left as it is (fix or remove it, then run again)`);
     if (prior.manual && typeof prior.manual === 'object' && !Array.isArray(prior.manual)) manual = prior.manual;
   }
-  const record = { schema_version: SCHEMA_VERSION, detected_at: now.toISOString(), commands, from, manual };
+  // The system map keeps what a person set (owner, integration branch, confirmed deployments); only "detected" is refreshed.
+  const before = prior.system && typeof prior.system === 'object' && !Array.isArray(prior.system) ? prior.system : {};
+  const system = {};
+  if (filled(before.owner)) system.owner = before.owner;
+  if (filled(before.integration_branch)) system.integration_branch = before.integration_branch;
+  system.detected = found;
+  system.manual = before.manual && typeof before.manual === 'object' && !Array.isArray(before.manual) ? before.manual : {};
+  const record = { schema_version: SCHEMA_VERSION, detected_at: now.toISOString(), commands, from, manual, system };
   if (!dry) {
     const tmp = `${file}.${process.pid}.tmp`;
     try {
@@ -293,9 +304,19 @@ export function setup(dir, { dry = false, now = new Date() } = {}) {
   return { file, found: true, written: !dry, dry, ...record, effective: effectiveCommands(record) };
 }
 
+// "2 services, 1 deployment": what the system scan found, or '' when it found nothing.
+function systemSummary(system) {
+  const d = system?.detected;
+  if (!d) return '';
+  const count = (n, word) => (n ? `${n} ${word}${n === 1 ? '' : 's'}` : null);
+  return [count(d.repos.length, 'repo'), count(d.worktrees.length, 'worktree'), count(d.services.length, 'service'), count(d.deployments.length, 'deployment')].filter(Boolean).join(', ');
+}
+
 function formatResult(r) {
-  if (!r.found) return ['project-setup: no build, test or lint commands found; nothing written.'];
-  const lines = [r.dry ? `project-setup: dry run, nothing written (would save ${REL_FILE})` : `project-setup: saved ${REL_FILE}`];
+  if (!r.found) return ['project-setup: no build, test or lint commands or system found; nothing written.'];
+  const found = systemSummary(r.system);
+  const tail = found ? ` - system: ${found}` : '';
+  const lines = [r.dry ? `project-setup: dry run, nothing written (would save ${REL_FILE}${tail})` : `project-setup: saved ${REL_FILE}${tail}`];
   lines.push(KINDS.map((kind) => `${kind}: ${r.effective[kind] ?? 'not found'}`).join('; '));
   const kept = KINDS.filter((kind) => filled(r.manual[kind]));
   if (kept.length) lines.push(`manual entries kept: ${kept.join(', ')}`);

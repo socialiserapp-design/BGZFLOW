@@ -276,3 +276,43 @@ test('a damaged project.json is left as it is', () => {
   assert.equal(fs.readFileSync(projectFile(dir), 'utf8'), '{ "manual": { "test": "x" ');
   assert.deepEqual(fs.readdirSync(path.join(dir, '.bgzflow')), ['project.json']);
 });
+
+test('setup also saves the system, and a folder with a system but no commands is still saved', () => {
+  const dir = project({ 'api/package.json': JSON.stringify({ name: 'api' }), 'web/package.json': JSON.stringify({ name: 'web', dependencies: { api: '*' } }), 'api/wrangler.toml': 'name = "api-worker"\n' });
+  const r = run([dir]);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /saved \.bgzflow\/project\.json - system: 2 services, 1 deployment/);
+  assert.ok(r.stdout.trim().split('\n').length <= 3);
+  const doc = JSON.parse(fs.readFileSync(projectFile(dir), 'utf8'));
+  assert.deepEqual(Object.keys(doc.system), ['detected', 'manual']);
+  assert.deepEqual(doc.system.detected.services.map((s) => s.name).sort(), ['api', 'web']);
+  assert.deepEqual(doc.system.detected.services.find((s) => s.name === 'web').deps, ['api']);
+  assert.deepEqual(doc.system.detected.deployments.map((d) => d.name), ['api-worker']);
+  assert.deepEqual(doc.system.manual, {});
+  assert.deepEqual(doc.manual, {}, 'the commands manual block is separate from the system one');
+});
+
+test('a rerun refreshes system.detected and keeps system.owner, integration_branch and manual', () => {
+  const dir = project({ 'api/package.json': JSON.stringify({ name: 'api' }) });
+  assert.equal(run([dir]).status, 0);
+  const doc = JSON.parse(fs.readFileSync(projectFile(dir), 'utf8'));
+  doc.system.owner = 'ops';
+  doc.system.integration_branch = 'release';
+  doc.system.manual = { deployments: [{ name: 'api-worker', active: true, evidence: 'curl 200' }] };
+  fs.writeFileSync(projectFile(dir), JSON.stringify(doc));
+  fs.mkdirSync(path.join(dir, 'web'));
+  fs.writeFileSync(path.join(dir, 'web', 'package.json'), JSON.stringify({ name: 'web' }));
+  assert.equal(run([dir]).status, 0);
+  const again = JSON.parse(fs.readFileSync(projectFile(dir), 'utf8'));
+  assert.deepEqual([again.system.owner, again.system.integration_branch], ['ops', 'release']);
+  assert.deepEqual(again.system.manual, doc.system.manual);
+  assert.deepEqual(again.system.detected.services.map((s) => s.name).sort(), ['api', 'web']);
+});
+
+test('--dry reports the system but writes nothing', () => {
+  const dir = project({ 'api/package.json': JSON.stringify({ name: 'api' }) });
+  const r = run([dir, '--dry']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /dry run, nothing written \(would save \.bgzflow\/project\.json - system: 1 service\)/);
+  assert.equal(fs.existsSync(path.join(dir, '.bgzflow')), false);
+});

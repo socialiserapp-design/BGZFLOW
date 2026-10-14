@@ -73,6 +73,7 @@ On any host, run the same tools with `node "<plugin root>/tools/<name>/<name>.mj
 - `project.json` holds the build, test and lint commands from `bgz setup`, plus a `manual` section for commands you enter by hand (a manual command wins over the detected one). Running `bgz setup` again keeps `manual` as it is and rewrites the detected parts.
 - `facts.json` holds the short per-project facts from `bgz facts`.
 - `work-graph.json` holds the work graph the lead hands tasks out from; `bgz start-now` reads it.
+- The system map lives in `project.json` (under `system`) and in each work-graph task's `change`. `bgz map` shows it; see [the system map](system-map.md).
 - `config.json` holds project settings, such as size limits.
 - `lessons.jsonl` holds recorded lessons.
 - `rounds.json` holds repair-round history.

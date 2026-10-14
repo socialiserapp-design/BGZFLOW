@@ -9,10 +9,14 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.8.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.0-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.0: one system map, kept by one owner
+
+BGZFLOW 0.9.0 adds a system map. `bgz map` shows your repos, worktrees, services and deployments, and every change in flight with the stage it has reached: planned, committed, integrated, deployed or production-verified. Git proves committed and integrated. The owner records deployed and production-verified with evidence. Workers end each handback with a `Changed:` line per change, and the owner keeps the map and passes it on through the inbox, the checkpoint and the handoff. It is advice only: it blocks nothing and asks no one anything. See [the system map](docs/system-map.md).
 
 ## New in 0.8.0: start faster
 
@@ -122,6 +126,8 @@ Read the installed BGZFLOW commands/swarm.md and run that workflow for this goal
 | `/swarm-resources` | See which agents and accounts are available, and approve what a swarm may use |
 
 Supporting tools: `/bg-heavy` queues heavy local builds one at a time, `/bg-swarm` launches and stops local workers, `/bg-rounds` keeps the repair-round ledger, `/swarm-gate` enforces the swarm's limits and release order, `/doctor` checks for leaked secrets and context costs, `/notes-map` finds the right lines in long project notes, and `/startup-check` keeps start-up reading short.
+
+`bgz map` shows the system map: your repos, services and deployments, and how far each change has got ([details](docs/system-map.md)).
 
 ## Lessons to rules
 

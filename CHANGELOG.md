@@ -2,6 +2,16 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.0 (2026-10-14)
+
+**One system map, kept by one owner.**
+
+- System map: `bgz map` shows the project's repos, worktrees, services and declared deployments, the changes in flight grouped by stage, and which services and deployments each change reaches. Read-only. `--brief` prints a few plain lines for the checkpoint, handoff and inbox; `--json` is for scripts. `bgz setup` now also saves the detected system in `.bgzflow/project.json`; entries you add by hand win.
+- Five stages: plan, committed, integrated, deployed and production-verified. Git proves committed and integrated. The owner records deployed and production-verified with `bgz map record` and `--evidence`; without evidence they show as "claimed, no evidence" and nothing is refused. `bgz map live` confirms an active deployment.
+- One owner writes the map: the work graph's integration owner, else the project owner, else the lead. Workers end each handback with `Changed: <what> | where: <paths> | effect: <how>` lines.
+- Skills: Build With Me, Finish the Whole Job, Ship and Recover and Continue My Project each use the map inside their existing steps. The work-graph reference adds the optional task `change` object. The checkpoint template gains a System map section and the brief template asks for the `Changed:` lines.
+- New `docs/system-map.md`, linked from the getting-started guide and the README. Advice only: no new gate, review round or question.
+
 ## 0.8.0 (2026-10-14)
 
 **Start faster: a start-now list, a plan check for extras, automatic project setup, project facts and a getting-started guide.**

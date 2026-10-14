@@ -99,6 +99,34 @@ This JSON Schema validates each task row; the [task row](worker-packet.md#task-r
       }, "additionalProperties": false
     },
     "open_findings": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "change": {
+      "type": "object", "required": ["stage"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/changeStage"},
+        "commit": {"type": ["string", "null"]},
+        "items": {
+          "type": "array", "items": {
+            "type": "object", "required": ["what", "where", "effect"],
+            "properties": {
+              "what": {"type": "string", "minLength": 1},
+              "where": {"type": "array", "items": {"type": "string", "minLength": 1}},
+              "effect": {"type": "string"}
+            }, "additionalProperties": false
+          }
+        },
+        "history": {
+          "type": "array", "items": {
+            "type": "object", "required": ["stage", "at", "by"],
+            "properties": {
+              "stage": {"$ref": "#/$defs/changeStage"},
+              "at": {"type": "string", "minLength": 1},
+              "by": {"type": "string", "minLength": 1},
+              "evidence": {"type": ["string", "null"]}
+            }, "additionalProperties": false
+          }
+        }
+      }, "additionalProperties": false
+    },
     "route_receipt": {
       "type": "object",
       "required": ["launch_cwd", "lead_session", "turn_id", "executor", "exit_status", "branch", "candidate", "dirty_files", "created_resources", "live_log", "repair_round", "brief_ref", "identity_ref", "skill_evidence_ref", "command_outputs_ref", "finding_lineage_ref", "live_staged_ref", "usage_ref", "result_location", "next_action"],
@@ -128,6 +156,7 @@ This JSON Schema validates each task row; the [task row](worker-packet.md#task-r
   },
   "additionalProperties": false,
   "$defs": {
+    "changeStage": {"enum": ["plan", "committed", "integrated", "deployed", "production-verified"]},
     "ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "ref": {
       "type": "object", "required": ["id", "path", "version"],
@@ -144,6 +173,12 @@ This JSON Schema validates each task row; the [task row](worker-packet.md#task-r
 Wrap the rows in a graph envelope: `schema_version: 1`, `project_id`, `plan_ref`, `decisions_ref` (`DECISIONS.md`), `lead_id`, `integration_owner`, `integration_workspace`, `baseline`, `shared_refs`, `usage_ceiling_ref`, `holds_ref`, `ledger_ref` (the project ledger of clones, worktrees and integrated commit SHAs, under `<project>/.bgzflow/`), `route`, `status_location`, `whole_candidate_checks` and `tasks`. Every reference resolves to an exact existing record or version. Account values are nonsecret aliases. The ceiling reference records each account's approved limit, observation source and time, reset and reserve, and separates estimates from hard host quotas. `route` names the verified native controls and the visibility rule; `status_location` points to the lead's short results on the default route, or to the supported live board on another. Record full-history access in each task's `return.history_ref`; unavailable IDs stay null until a real host result sets them.
 
 `model_tier` names the needed capability, such as `economical-qualified`; `route_receipt.executor` records the model and effort that actually ran, because a tier alone proves nothing. A task's `tests` are its fast checks only: type check, lint and the unit tests it touched. The full suite and critical journeys live only in the envelope's `whole_candidate_checks`, run once by the integration job (build first, check once). `acceptance_command` is a real fast command for the finished assignment; for non-code work use the artifact or render checker, or record an observed acceptance procedure in `tests`.
+
+## Change record (optional)
+
+`change` is optional, so rows without it stay valid and a task with no `change` is at `plan`. It records one task's place on the [system map](../../../docs/system-map.md): `stage` is the furthest of `plan`, `committed`, `integrated`, `deployed` and `production-verified` that has been recorded; `commit` is the task's commit; each `items` entry is one `Changed:` line from the handback (`what`, `where` paths, `effect`); `history` logs each stage with when, by whom and the evidence given.
+
+`committed` and `integrated` are proven from git, not typed in: the commit exists, and it is on the integration branch (or the task's `integration.state` is `integrated`). `deployed` and `production-verified` carry the owner's evidence; without it the map shows "claimed, no evidence" and refuses nothing. Only the graph's `integration_owner` writes `change`, with `bgz map record`.
 
 ## Start-now list
 

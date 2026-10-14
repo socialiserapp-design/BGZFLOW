@@ -43,6 +43,7 @@ OWNS: ["<owned relative path>"]
 
 ## Return (short)
 Status | candidate commit + hashes | checks (command, exit, result path) | open finding IDs | stop paths added (each with the brief line that asked for it, or none) | executor identity + exit status | next owner and action
+Then one line per change: `Changed: <what> | where: <paths> | effect: <how>`.
 
 Build only what was asked. Add no customer-facing wait, refusal, hold, gate, cap, block or expiry this brief does not ask for; an unrequested stop path is a defect.
 

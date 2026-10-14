@@ -15,7 +15,7 @@ const bgz = (args, opts = {}) => spawnSync(process.execPath, [cli, ...args], { e
 test('help lists every subcommand and an unknown one exits 2', () => {
   const help = bgz(['--help']);
   assert.equal(help.status, 0);
-  for (const c of ['lessons', 'receipt', 'usage', 'skill-gate', 'setup', 'start-now', 'facts']) assert.match(help.stdout, new RegExp(`^  ${c} `, 'm'));
+  for (const c of ['lessons', 'receipt', 'usage', 'skill-gate', 'setup', 'start-now', 'facts', 'map']) assert.match(help.stdout, new RegExp(`^  ${c} `, 'm'));
   assert.equal(bgz(['nope']).status, 2);
 });
 

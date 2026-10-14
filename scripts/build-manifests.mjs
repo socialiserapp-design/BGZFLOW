@@ -126,6 +126,11 @@ const tools = [
     hint: "<for|add|accept|list> [options]",
     about: "Keep per-project facts and print the ones relevant to a brief's files",
   },
+  {
+    name: "map",
+    hint: "[<dir>] [--brief] [--json] | record <task-id> ... --as <role> | live <deployment> --evidence <text> --as <role>",
+    about: "Show the one system map: repos, worktrees, services, deployments and each task's change by stage; the owner records changes and confirms live deployments",
+  },
 ];
 
 function json(value) {

@@ -15,6 +15,7 @@ const SCRIPTS = {
   setup: 'project-setup/project-setup.mjs',
   'start-now': 'start-now/start-now.mjs',
   facts: 'facts/facts.mjs',
+  map: 'map/map.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -27,6 +28,7 @@ const USAGE = [
   '  setup [<project-dir>] [--dry]     detect build, test and lint commands into .bgzflow/project.json',
   '  start-now [<project-dir>] [--json] list work-graph tasks that are ready to start (dependencies done)',
   '  facts <for|add|accept|list>       per-project facts for the files a brief touches',
+  '  map [<dir>] [--brief] [--json]    one system map: repos, services, deployments, and each change by stage (map record|live ... --as <role>)',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);

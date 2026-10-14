@@ -34,6 +34,11 @@ Updated: <system-clock timestamp, UTC> by <role + job ID>
 | Clone or worktree | Owner | Branch | Last integrated commit |
 |---|---|---|---|
 
+## System map
+<!-- Owner: the integration writer, who alone writes the map. Paste the output of `bgz map --brief` below
+     after each handback is recorded. Advice only; it blocks nothing. -->
+Owner: 
+
 ## Jobs
 <!-- A job recorded running or queued whose process is dead is `uncertain`, never active.
      A job queued more than 5 minutes is stuck: reconcile, cancel, redispatch. -->
