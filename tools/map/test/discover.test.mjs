@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { after, test } from 'node:test';
-import { discover, isSystemFound, stripCredentials } from '../discover.mjs';
+import { canonical, discover, isSystemFound, skipList, stripCredentials } from '../discover.mjs';
 
 // Built at run time so the source holds no address-shaped text (leak check).
 const AT = '@';
@@ -197,4 +197,226 @@ test('nested repos are found up to depth 2 and not deeper', () => {
   const found = discover(dir);
   assert.deepEqual(found.repos.map((r) => path.basename(r.path)), ['inner']);
   assert.equal(found.repos[0].head, null, 'a repo with no commit has no head');
+});
+
+// Turns a folder that already holds files into a repo with one commit.
+function commitAll(dir, branch = 'main') {
+  git(dir, 'init', '-b', branch);
+  git(dir, 'add', '.');
+  git(dir, 'commit', '-m', 'first');
+  return dir;
+}
+
+// A temp repo with one commit holding the given files.
+const repo = (files, branch = 'main') => commitAll(tree(files), branch);
+
+// A commit made at a fixed time, so "newest" is not left to the clock.
+function commitAt(cwd, date, file) {
+  fs.writeFileSync(path.join(cwd, file), `${date}\n`);
+  const env = { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date };
+  for (const args of [['add', '.'], ['commit', '-m', `at ${date}`]]) {
+    const r = spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=noreply@example.invalid', '-c', 'commit.gpgsign=false', ...args], { cwd, encoding: 'utf8', env });
+    assert.equal(r.status, 0, `git ${args.join(' ')}: ${r.stderr}`);
+  }
+}
+
+// A project folder with three linked worktrees of one repo that lives outside it, plus two unrelated clones under oss/.
+function worktreeProject() {
+  const engine = repo({ 'package.json': pkg('engine'), 'wrangler.toml': 'name = "engine-worker"\n' });
+  const root = tree();
+  for (const n of [1, 2, 3]) git(engine, 'worktree', 'add', '-b', `b${n}`, path.join(root, `wt${n}`));
+  for (const n of ['a', 'b']) {
+    const clone = path.join(root, 'oss', n);
+    fs.mkdirSync(clone, { recursive: true });
+    fs.writeFileSync(path.join(clone, 'package.json'), pkg(`${n}-svc`));
+    fs.writeFileSync(path.join(clone, 'wrangler.toml'), `name = "${n}-worker"\n`);
+    commitAll(clone);
+  }
+  return { engine, root };
+}
+
+const pathsOf = (list) => list.map((x) => x.path);
+const enginePath = (found) => found.services.find((s) => s.name === 'engine')?.path;
+
+test('linked worktrees of one repo count once and only one checkout is read', () => {
+  const { engine, root } = worktreeProject();
+  const found = discover(root);
+
+  assert.equal(found.repos.filter((r) => r.path === canonical(engine)).length, 1, 'the repo is listed once, at its main checkout');
+  assert.equal(found.repos.length, 3, 'the repo and the two clones under oss');
+  for (const n of [1, 2, 3]) assert.ok(pathsOf(found.worktrees).includes(canonical(path.join(root, `wt${n}`))), `wt${n} still appears under worktrees`);
+  assert.equal(found.worktrees.filter((w) => w.main).length, 3);
+
+  assert.equal(found.services.filter((s) => s.name === 'engine').length, 1, 'the service is read from one checkout');
+  assert.equal(found.deployments.filter((d) => d.name === 'engine-worker').length, 1);
+  assert.deepEqual(found.services.map((s) => s.name).sort(), ['a-svc', 'b-svc', 'engine']);
+  assert.equal(found.deployments.length, 3);
+
+  const skipped = discover(root, { skip: ['oss'] });
+  assert.equal(skipped.repos.length, 1);
+  assert.equal(skipped.repos[0].path, canonical(engine));
+  assert.equal(skipped.worktrees.length, 4, 'the main checkout and its three linked worktrees');
+  assert.deepEqual(skipped.services.map((s) => s.name), ['engine']);
+  assert.deepEqual(skipped.deployments.map((d) => d.name), ['engine-worker']);
+  assert.ok(![...skipped.services, ...skipped.deployments].some((x) => (x.path ?? x.file).startsWith('oss/')), 'nothing under oss is listed');
+});
+
+test('the checkout that is read is the integration branch, then the default branch, then the newest commit', () => {
+  const { root } = worktreeProject();
+  assert.equal(enginePath(discover(root)), 'wt1', 'equal commits fall back to path order');
+  assert.equal(enginePath(discover(root, { integrationBranch: 'b3' })), 'wt3');
+  assert.equal(enginePath(discover(root, { integrationBranch: ' b2 ' })), 'wt2');
+  assert.equal(enginePath(discover(root, { integrationBranch: 'no-such-branch' })), 'wt1');
+  assert.equal(enginePath(discover(root, { skip: ['wt1', 'wt2'] })), 'wt3', 'a skipped checkout is never the one read');
+
+  commitAt(path.join(root, 'wt2'), '2031-01-01T00:00:00Z', 'newer.txt');
+  assert.equal(enginePath(discover(root)), 'wt2', 'the newest commit wins when no branch is named');
+  assert.equal(enginePath(discover(root, { integrationBranch: 'b3' })), 'wt3', 'the integration branch still wins over a newer commit');
+
+  const { engine, root: other } = worktreeProject();
+  git(engine, 'checkout', '-b', 'work');
+  git(engine, 'worktree', 'add', path.join(other, 'trunk'), 'main');
+  commitAt(path.join(other, 'wt3'), '2032-01-01T00:00:00Z', 'newer.txt');
+  assert.equal(enginePath(discover(other)), 'trunk', 'the default branch wins over a newer commit');
+  assert.equal(enginePath(discover(other, { integrationBranch: 'b3' })), 'wt3');
+});
+
+test('a repo whose main checkout is bare is recorded at the checkout that is read', () => {
+  const bare = tree();
+  git(bare, 'init', '--bare', '-b', 'main');
+  const seed = repo({ 'package.json': pkg('engine') });
+  git(seed, 'push', bare, 'main');
+  const root = tree();
+  git(bare, 'worktree', 'add', path.join(root, 'wt1'), 'main');
+  git(bare, 'worktree', 'add', '-b', 'b2', path.join(root, 'wt2'));
+
+  const found = discover(root);
+  assert.deepEqual(pathsOf(found.repos), [canonical(path.join(root, 'wt1'))]);
+  assert.equal(found.worktrees.length, 2, 'the bare folder is not a worktree');
+  assert.deepEqual(found.services.map((s) => [s.name, s.path]), [['engine', 'wt1']]);
+});
+
+test('a project that is itself a checkout keeps its own path, and a worktree nested inside it adds nothing', () => {
+  const root = repo({ 'api/package.json': pkg('api'), 'api/index.js': 'x\n' });
+  git(root, 'worktree', 'add', '-b', 'feature', path.join(root, 'nested'));
+  const found = discover(root);
+  assert.deepEqual(pathsOf(found.repos), [canonical(root)]);
+  assert.equal(found.worktrees.length, 2);
+  assert.ok(pathsOf(found.worktrees).includes(canonical(path.join(root, 'nested'))));
+  assert.deepEqual(found.services.map((s) => s.path), ['api'], 'the nested worktree is not read as code');
+  assert.deepEqual(discover(root, { integrationBranch: 'feature' }).services.map((s) => s.path), ['api'], 'the project root always wins');
+});
+
+test('a plain clone with a worktree of its own inside the project is listed once', () => {
+  const root = tree();
+  const clone = path.join(root, 'libs', 'tool');
+  fs.mkdirSync(clone, { recursive: true });
+  fs.writeFileSync(path.join(clone, 'package.json'), pkg('tool'));
+  commitAll(clone);
+  git(clone, 'worktree', 'add', '-b', 'side', path.join(root, 'side'));
+  const found = discover(root);
+  assert.deepEqual(pathsOf(found.repos), [canonical(clone)]);
+  assert.equal(found.worktrees.length, 2);
+  assert.deepEqual(found.services.map((s) => s.name), ['tool']);
+});
+
+// The services and deployments a project gives, ready to compare between two projects.
+const readOf = (found) => ({ services: found.services, deployments: found.deployments.map((d) => [d.name, d.file ?? d.path]) });
+const engineFiles = () => ({ 'package.json': pkg('engine'), 'wrangler.toml': 'name = "engine-worker"\n' });
+
+// A project holding one reachable copy of the repo at eng/, the baseline the other cases must match.
+function singleCopy() {
+  const root = tree();
+  git(repo(engineFiles()), 'worktree', 'add', '-b', 'only', path.join(root, 'eng'));
+  return readOf(discover(root));
+}
+
+test('a checkout nested inside another checkout of the same repo is never the one read', () => {
+  const root = tree();
+  const app = path.join(root, 'app');
+  fs.mkdirSync(app);
+  for (const [name, text] of Object.entries(engineFiles())) fs.writeFileSync(path.join(app, name), text);
+  commitAll(app);
+  git(app, 'worktree', 'add', '-b', 'dev', path.join(app, 'wt'));
+
+  const plain = readOf(discover(root));
+  assert.deepEqual(plain.services.map((s) => s.path), ['app']);
+  assert.deepEqual(plain.deployments.map((d) => d[0]), ['engine-worker']);
+  assert.deepEqual(readOf(discover(root, { integrationBranch: 'dev' })), plain, 'naming the nested copy changes nothing');
+  assert.equal(discover(root, { integrationBranch: 'dev' }).worktrees.length, 2, 'the nested copy is still a worktree');
+});
+
+test('a checkout the walk cannot enter (hidden folder, too deep) is never the one read', () => {
+  const baseline = singleCopy();
+  for (const hidden of [['.wt', 'x'], ['a', 'b', 'c', 'd', 'e']]) {
+    const engine = repo(engineFiles());
+    const root = tree();
+    git(engine, 'worktree', 'add', '-b', 'side', path.join(root, 'eng'));
+    git(engine, 'worktree', 'add', '-b', 'dev', path.join(root, ...hidden));
+    const label = hidden.join('/');
+    assert.deepEqual(readOf(discover(root)), baseline, `${label}: no options`);
+    assert.deepEqual(readOf(discover(root, { integrationBranch: 'dev' })), baseline, `${label}: the unreachable copy is named as the integration branch`);
+    commitAt(path.join(root, ...hidden), '2031-01-01T00:00:00Z', 'newer.txt');
+    assert.deepEqual(readOf(discover(root)), baseline, `${label}: the unreachable copy has the newest commit`);
+    assert.equal(discover(root).worktrees.length, 3, `${label}: still listed as a worktree`);
+  }
+});
+
+test('a checkout under a built-in skip name is never the one read, even when it sorts first or is newest', () => {
+  const baseline = singleCopy();
+  const engine = repo(engineFiles());
+  const root = tree();
+  for (const n of ['eng', 'build']) git(engine, 'worktree', 'add', '-b', `b-${n}`, path.join(root, n));
+  assert.deepEqual(readOf(discover(root)), baseline, 'equal commits: path order would pick build');
+  assert.deepEqual(readOf(discover(root, { integrationBranch: 'b-build' })), baseline, 'named as the integration branch');
+  commitAt(path.join(root, 'build'), '2031-01-01T00:00:00Z', 'newer.txt');
+  assert.deepEqual(readOf(discover(root)), baseline, 'newest commit');
+  assert.equal(discover(root).repos.length, 1);
+});
+
+test('skip drops every checkout of a repo when all of them are skipped', () => {
+  const { root } = worktreeProject();
+  const found = discover(root, { skip: ['wt1', 'wt2', 'wt3', 'oss'] });
+  assert.deepEqual([found.repos, found.worktrees, found.services, found.deployments], [[], [], [], []]);
+});
+
+test('skipList keeps clean relative folders and drops anything else', () => {
+  assert.deepEqual(skipList(['oss', 'a\\b', './c/', 'd//e', 'oss', ' f ']), ['oss', 'a/b', 'c', 'd/e', 'f']);
+  assert.deepEqual(skipList(['', '.', './', '/abs', 'C:/abs', 'C:\\abs', '..', '../x', 'a/../b', 'a/..', 42, null, { x: 1 }]), []);
+  assert.deepEqual(skipList('oss'), []);
+  assert.deepEqual(skipList(undefined), []);
+});
+
+test('skip matches a folder or what is under it, with either slash, and ignores unsafe entries', () => {
+  const root = tree({
+    'oss/a/package.json': pkg('a-svc'),
+    'oss/b/package.json': pkg('b-svc'),
+    'ossify/package.json': pkg('ossify'),
+    'tools/oss/package.json': pkg('deep-oss'),
+    'api/package.json': pkg('api'),
+    'supabase/functions/keep/index.ts': '',
+    'supabase/functions/drop/index.ts': '',
+  });
+  const names = (opts) => discover(root, opts).services.map((s) => s.name).sort();
+  const all = ['a-svc', 'api', 'b-svc', 'deep-oss', 'drop', 'keep', 'ossify'];
+  assert.deepEqual(names({}), all);
+  assert.deepEqual(names({ skip: ['oss'] }), ['api', 'deep-oss', 'drop', 'keep', 'ossify'], 'a name that only starts the same is not skipped');
+  assert.deepEqual(names({ skip: ['oss/a'] }), all.filter((n) => n !== 'a-svc'));
+  assert.deepEqual(names({ skip: ['oss\\a\\'] }), all.filter((n) => n !== 'a-svc'), 'back slashes and a trailing slash work');
+  assert.deepEqual(names({ skip: ['./oss/b'] }), all.filter((n) => n !== 'b-svc'));
+  assert.deepEqual(names({ skip: ['tools/oss', 'supabase/functions/drop'] }), all.filter((n) => n !== 'deep-oss' && n !== 'drop'));
+  assert.deepEqual(names({ skip: [path.join(root, 'oss'), '../oss', 'oss/../api', '', 7] }), all, 'absolute, parent and empty entries do nothing');
+  assert.deepEqual(names({ skip: 'oss' }), all, 'a skip that is not a list does nothing');
+  if (process.platform === 'win32') assert.deepEqual(names({ skip: ['OSS'] }), names({ skip: ['oss'] }), 'windows paths ignore case');
+});
+
+test('skip also keeps a folder out of the workflow lookup', () => {
+  const root = tree({
+    '.github/workflows/deploy.yml': 'name: deploy\non: push\njobs:\n  run:\n    steps:\n      - run: echo deploy\n',
+    'api/package.json': pkg('api'),
+  });
+  assert.deepEqual(discover(root).deployments.map((d) => d.name), ['gh-deploy']);
+  assert.deepEqual(discover(root, { skip: ['.github'] }).deployments, []);
+  assert.deepEqual(discover(root, { skip: ['.github/workflows'] }).deployments, []);
+  assert.deepEqual(discover(root, { skip: ['api'] }).deployments.map((d) => d.name), ['gh-deploy']);
 });

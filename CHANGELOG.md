@@ -2,6 +2,14 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.1 (2026-10-14)
+
+**The system map counts each repo once.**
+
+- A repo with many linked worktrees is one repo in `bgz map` and `bgz setup`. The scan walks one checkout of it (the project's own, else the one on the integration branch, else the default branch) and still lists the others under worktrees. Before, every worktree was walked as separate code and the service counts ballooned.
+- New optional `system.skip` in `.bgzflow/project.json`: a list of folders, relative to the project, that the scan leaves out (third-party reference clones, for example). `bgz setup` keeps it on rerun, and the full `bgz map` names the skipped folders.
+- Advice only, as before: no new command, flag or prompt.
+
 ## 0.9.0 (2026-10-14)
 
 **One system map, kept by one owner.**

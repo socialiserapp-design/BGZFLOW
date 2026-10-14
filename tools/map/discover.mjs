@@ -101,63 +101,142 @@ function entriesOf(dir) {
     return [];
   }
 }
-const isScanDir = (e) => e.isDirectory() && !e.name.startsWith('.') && !SKIP.has(e.name);
+const isScanName = (name) => !name.startsWith('.') && !SKIP.has(name);
+const isScanDir = (e) => e.isDirectory() && isScanName(e.name);
 
-function gitTop(dir) {
-  const top = runGit(dir, ['rev-parse', '--show-toplevel']);
-  return top ? canonical(top) : null;
+// The owner's skip list as clean folder paths under the project: strings only, forward slashes, no absolute or `..` entries.
+export function skipList(skip) {
+  const out = [];
+  for (const entry of Array.isArray(skip) ? skip : []) {
+    if (typeof entry !== 'string') continue;
+    const given = entry.trim().replace(/\\/g, '/');
+    if (!given || /^\/|^[A-Za-z]:/.test(given) || given.split('/').includes('..')) continue;
+    const rel = path.posix.normalize(given).replace(/\/+$/, '');
+    if (rel && rel !== '.' && !out.includes(rel)) out.push(rel);
+  }
+  return out;
 }
 
-function repoInfo(repo) {
+// True for a folder that is a skip entry or under one; windows paths ignore case (pathKey).
+function skipMatcher(root, skip) {
+  const keys = skipList(skip).map((rel) => pathKey(path.join(root, rel)));
+  if (!keys.length) return () => false;
+  return (p) => {
+    const key = pathKey(p);
+    return keys.some((k) => key === k || key.startsWith(`${k}/`));
+  };
+}
+
+// True when `p` is the folder `rootKey` names or under it.
+const isWithin = (rootKey, p) => {
+  const key = pathKey(p);
+  return key === rootKey || key.startsWith(rootKey.endsWith('/') ? rootKey : `${rootKey}/`);
+};
+
+// A folder's git facts: its work tree top, its own git dir and the git dir all checkouts of the repo share; null outside a work tree.
+function gitIds(dir) {
+  const out = runGit(dir, ['rev-parse', '--path-format=absolute', '--show-toplevel', '--git-dir', '--git-common-dir']);
+  const [top, gitDir, common] = out ? out.split(/\r?\n/) : [];
+  return top && gitDir && common ? { top: canonical(top), gitDir: canonical(gitDir), common: canonical(common) } : null;
+}
+
+function repoInfo(repo, defaultName) {
   const head = runGit(repo, ['rev-parse', '--verify', '-q', '--short', 'HEAD']);
   return {
     path: repo,
     branch: runGit(repo, ['symbolic-ref', '--short', '-q', 'HEAD']),
     head: head || null,
     origin: stripCredentials(runGit(repo, ['remote', 'get-url', 'origin'])),
-    default_branch: defaultBranch(repo),
+    default_branch: defaultName,
   };
 }
 
-// The project's own git toplevel plus real repos (a .git folder) nested up to two folders down.
-function findRepos(root) {
-  const found = new Map();
-  const top = gitTop(root);
-  if (top) found.set(pathKey(top), top);
+// `git worktree list --porcelain` for the repo `dir` belongs to: the main worktree first, then the linked ones.
+function listCheckouts(dir) {
+  const out = runGit(dir, ['worktree', 'list', '--porcelain']);
+  if (!out) return [];
+  const list = [];
+  for (const block of out.split(/\r?\n\r?\n/)) {
+    const lines = block.split(/\r?\n/);
+    const where = lines.find((l) => l.startsWith('worktree '));
+    if (!where) continue;
+    const branch = lines.find((l) => l.startsWith('branch '));
+    const head = lines.find((l) => l.startsWith('HEAD '));
+    list.push({ path: canonical(where.slice('worktree '.length)), bare: lines.includes('bare'), branch: branch ? branch.slice('branch '.length).replace(/^refs\/heads\//, '') : null, head: head ? head.slice('HEAD '.length) : null });
+  }
+  return list;
+}
+
+// The one checkout of a repo to read as code: the integration branch first, then the repo's default branch, then the newest commit, then path order.
+function pickCheckout(candidates, integrationBranch, defaultName) {
+  const tier = (c) => (integrationBranch && c.branch === integrationBranch ? 0 : defaultName && c.branch === defaultName ? 1 : 2);
+  const best = Math.min(...candidates.map(tier));
+  const tied = candidates.filter((c) => tier(c) === best).map((c) => ({ c, key: pathKey(c.path), time: candidates.length > 1 ? Number(runGit(c.path, ['log', '-1', '--format=%ct', 'HEAD'])) || 0 : 0 }));
+  tied.sort((a, b) => b.time - a.time || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+  return tied[0].c;
+}
+
+// True when the code walk can enter the checkout at `p`: within MAX_SERVICE_DEPTH folders of the project, with no hidden, built-in skip
+// or `supabase/functions` folder on the way (walkProject never descends into those).
+function walkReaches(root, p) {
+  const parts = posix(path.relative(root, p)).split('/');
+  return parts.length <= MAX_SERVICE_DEPTH && parts.every((name, i) => isScanName(name) && !(name === 'functions' && parts[i - 1] === 'supabase'));
+}
+
+// The project's own git toplevel plus real repos nested up to two folders down: a folder with a .git folder, or a linked worktree
+// (a .git file whose git dir differs from the shared one). Each repo is listed once, keyed by its shared git dir. `blocked` holds the
+// other checkouts of those repos that lie inside the project, so the code walk reads one checkout per repo. Only a checkout the walk
+// can reach, and that is not inside another checkout of the same repo, may be the one read; with none of those the repo is not read.
+function findRepos(root, { skipped, integrationBranch }) {
+  const rootKey = pathKey(root);
+  const groups = new Map();
+  const rootIds = gitIds(root);
+  const rootRepo = rootIds ? pathKey(rootIds.common) : null;
+  if (rootIds) groups.set(rootRepo, { path: rootIds.top });
   const visit = (dir, depth) => {
     if (depth > MAX_REPO_DEPTH) return;
     for (const e of entriesOf(dir)) {
       if (!isScanDir(e)) continue;
       const child = path.join(dir, e.name);
+      if (skipped(child)) continue;
       let dotGit = null;
       try {
         dotGit = fs.statSync(path.join(child, '.git'));
       } catch { /* not a repo */ }
-      if (dotGit?.isDirectory()) {
-        const own = gitTop(child);
-        if (own && pathKey(own) === pathKey(child)) found.set(pathKey(own), own);
-      } else if (!dotGit) visit(child, depth + 1);
+      if (dotGit) {
+        const ids = gitIds(child);
+        const linked = dotGit.isFile() && ids !== null && pathKey(ids.gitDir) !== pathKey(ids.common);
+        if (ids && (dotGit.isDirectory() || linked) && pathKey(ids.top) === pathKey(child) && !groups.has(pathKey(ids.common))) groups.set(pathKey(ids.common), { path: ids.top });
+      } else visit(child, depth + 1);
     }
   };
   visit(root, 1);
-  return [...found.values()].sort().map(repoInfo);
+
+  const blocked = new Set();
+  const repos = [];
+  for (const [key, group] of groups) {
+    const checkouts = listCheckouts(group.path);
+    const defaultName = defaultBranch(group.path);
+    const open = checkouts.filter((c) => !c.bare && isWithin(rootKey, c.path) && pathKey(c.path) !== rootKey);
+    const inside = (c) => checkouts.some((o) => o !== c && !o.bare && isWithin(pathKey(o.path), c.path));
+    const usable = open.filter((c) => !skipped(c.path) && fs.existsSync(c.path) && walkReaches(root, c.path) && !inside(c));
+    const chosen = key === rootRepo || pathKey(group.path) === rootKey || !usable.length ? null : pickCheckout(usable, integrationBranch, defaultName);
+    for (const c of open) if (c !== chosen) blocked.add(pathKey(c.path));
+    const main = checkouts[0] && !checkouts[0].bare ? checkouts[0].path : null;
+    repos.push(repoInfo(key === rootRepo ? group.path : main ?? chosen?.path ?? group.path, defaultName));
+  }
+  repos.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+  return { repos, blocked };
 }
 
 // `git worktree list --porcelain` for every repo, each worktree once.
 function findWorktrees(repos) {
   const seen = new Map();
   for (const repo of repos) {
-    const out = runGit(repo.path, ['worktree', 'list', '--porcelain']);
-    if (!out) continue;
     let first = true;
-    for (const block of out.split(/\r?\n\r?\n/)) {
-      const lines = block.split(/\r?\n/);
-      const where = lines.find((l) => l.startsWith('worktree '));
-      if (!where || lines.includes('bare')) continue;
-      const wt = canonical(where.slice('worktree '.length));
-      const branch = lines.find((l) => l.startsWith('branch '));
-      const head = lines.find((l) => l.startsWith('HEAD '));
-      if (!seen.has(pathKey(wt))) seen.set(pathKey(wt), { path: wt, branch: branch ? branch.slice('branch '.length).replace(/^refs\/heads\//, '') : null, head: head ? head.slice('HEAD '.length) : null, main: first });
+    for (const c of listCheckouts(repo.path)) {
+      if (c.bare) continue;
+      if (!seen.has(pathKey(c.path))) seen.set(pathKey(c.path), { path: c.path, branch: c.branch, head: c.head, main: first });
       first = false;
     }
   }
@@ -236,7 +315,8 @@ function readService(dir, rel, names) {
 }
 
 // Walks the project once and returns the service candidates and the deploy config files it passes.
-function walkProject(root) {
+// It skips the owner's skip folders and the extra checkouts of a repo (`blocked`), so each repo is read once.
+function walkProject(root, { skipped, blocked }) {
   const services = [];
   const deployFiles = [];
   let visited = 0;
@@ -252,11 +332,13 @@ function walkProject(root) {
     if (path.basename(dir) === 'supabase' && names.has('config.toml')) deployFiles.push({ dir: rel, file: `${rel}/config.toml`, kind: 'supabase', full: path.join(dir, 'config.toml') });
     for (const e of entries) {
       if (!isScanDir(e)) continue;
+      const child = path.join(dir, e.name);
+      if (skipped(child) || (blocked.size > 0 && blocked.has(pathKey(child)))) continue;
       if (e.name === 'functions' && path.basename(dir) === 'supabase') {
-        for (const fn of entriesOf(path.join(dir, e.name))) {
-          if (fn.isDirectory() && !fn.name.startsWith('_') && !fn.name.startsWith('.')) services.push({ name: fn.name, path: posix(path.relative(root, path.join(dir, e.name, fn.name))), kind: 'supabase-function', refs: [] });
+        for (const fn of entriesOf(child)) {
+          if (fn.isDirectory() && !fn.name.startsWith('_') && !fn.name.startsWith('.') && !skipped(path.join(child, fn.name))) services.push({ name: fn.name, path: posix(path.relative(root, path.join(child, fn.name))), kind: 'supabase-function', refs: [] });
         }
-      } else visit(path.join(dir, e.name), depth + 1);
+      } else visit(child, depth + 1);
     }
   };
   visit(root, 0);
@@ -314,12 +396,13 @@ function declaredName(kind, text) {
   return null;
 }
 
-function findDeployments(root, services, repos, deployFiles) {
+function findDeployments(root, services, repos, deployFiles, skipped) {
   const found = deployFiles.map((d) => ({ d, service: d.kind === 'supabase' ? null : serviceAt(services, d.dir)?.name ?? null, name: declaredName(d.kind, readText(d.full)) }));
   const workflowDirs = new Map();
   for (const base of [root, ...repos.map((r) => r.path)]) workflowDirs.set(pathKey(base), base);
   for (const base of workflowDirs.values()) {
     const dir = path.join(base, '.github', 'workflows');
+    if (skipped(dir)) continue;
     for (const e of entriesOf(dir)) {
       if (!e.isFile() || !/\.ya?ml$/i.test(e.name)) continue;
       const text = readText(path.join(dir, e.name));
@@ -342,16 +425,19 @@ function findDeployments(root, services, repos, deployFiles) {
 // True when the scan found anything worth keeping as the project's system.
 export const isSystemFound = (found) => found.repos.length > 0 || found.services.length > 0 || found.deployments.length > 0;
 
-export function discover(dir, { now } = {}) {
+// `skip`: folders (relative to `dir`) the owner keeps out of the scan. `integrationBranch`: the branch whose checkout is read when a repo has several.
+export function discover(dir, { now, skip, integrationBranch } = {}) {
   const root = canonical(dir);
-  const repos = findRepos(root);
-  const { services: candidates, deployFiles } = walkProject(root);
+  const skipped = skipMatcher(root, skip);
+  const branch = typeof integrationBranch === 'string' && integrationBranch.trim() ? integrationBranch.trim() : null;
+  const { repos, blocked } = findRepos(root, { skipped, integrationBranch: branch });
+  const { services: candidates, deployFiles } = walkProject(root, { skipped, blocked });
   const services = linkServices(root, candidates);
   return {
     scanned_at: new Date(now ?? Date.now()).toISOString(),
     repos,
     worktrees: findWorktrees(repos),
     services,
-    deployments: findDeployments(root, services, repos, deployFiles),
+    deployments: findDeployments(root, services, repos, deployFiles, skipped),
   };
 }

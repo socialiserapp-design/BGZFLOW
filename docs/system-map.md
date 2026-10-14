@@ -11,10 +11,20 @@ BGZFLOW keeps one map of the system you are building: what exists, what is chang
 
 ## Where it lives
 
-- `.bgzflow/project.json`, under `system`: the `owner`, the `integration_branch`, the `detected` scan and your `manual` entries.
+- `.bgzflow/project.json`, under `system`: the `owner`, the `integration_branch`, the optional `skip` list, the `detected` scan and your `manual` entries.
 - `.bgzflow/work-graph.json`: each task may carry a `change` object (see the [work-graph reference](../skills/bg-finish-the-whole-job/references/work-graph.md)).
 
 There is no new tracker or database. The scan never opens `.env` or other secret files.
+
+## Folders to leave out
+
+A folder can hold reference clones you only read, such as third-party code. Name those folders in `system.skip`, an optional list of folders relative to the project folder, and the scan leaves them out. A folder matches when it is an entry or sits under one; either slash style works, and absolute or `..` entries are ignored. Setup keeps the list when you rerun it, and the full `bgz map` names the skipped folders.
+
+```json
+{ "system": { "skip": ["oss"] } }
+```
+
+Each repo counts once, however many linked worktrees it has. The scan walks one checkout per repo (the project's own, else the one on `system.integration_branch`, else the default branch, else the newest commit) and still lists the others under worktrees. Only a checkout the scan can reach is read: not under a hidden, build or skipped folder, not too deep, and not inside another checkout of the same repo.
 
 ## The five stages
 

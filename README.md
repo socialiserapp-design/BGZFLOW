@@ -9,7 +9,7 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.1-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---

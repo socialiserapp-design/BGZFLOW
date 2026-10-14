@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { findProjectDir } from '../../hooks/lib/project.mjs';
 import { normalizePath } from '../facts/facts.mjs';
 import { readTasks } from '../start-now/start-now.mjs';
-import { canonical, defaultBranch, discover, isSecretFile, pathKey, runGit, serviceAt } from './discover.mjs';
+import { canonical, defaultBranch, discover, isSecretFile, pathKey, runGit, serviceAt, skipList } from './discover.mjs';
 
 const USAGE = [
   'usage: map [<dir>] [--json] [--brief]',
@@ -40,6 +40,9 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const rank = (stage) => STAGES.indexOf(stage);
 const higher = (a, b) => (rank(a) >= rank(b) ? a : b);
 const shortSha = (sha) => String(sha).slice(0, 7);
+
+// What the scan is told about the project: the owner's skip folders and integration branch, the same for every live scan so drift compares like with like.
+const scanOptions = (system) => ({ skip: system.skip, integrationBranch: text(system.integration_branch) || undefined });
 
 // ---- arguments ----------------------------------------------------------------------------------------------------
 
@@ -295,7 +298,7 @@ function buildModel(projectDir) {
   const project = readProjectFile(path.join(projectDir, PROJECT_REL));
   const system = isObject(project.doc?.system) ? project.doc.system : {};
   const stored = isObject(system.detected);
-  const live = discover(projectDir);
+  const live = discover(projectDir, scanOptions(system));
   const found = stored ? system.detected : live;
   const manual = isObject(system.manual) ? system.manual : {};
   if (project.problem) notes.push(`${project.problem}.`);
@@ -395,6 +398,7 @@ function buildModel(projectDir) {
     project: canonical(projectDir),
     owner,
     integration_branch: integrationBranch,
+    skip: skipList(system.skip),
     stored,
     scanned_at: found.scanned_at ?? null,
     repos,
@@ -422,6 +426,7 @@ const impactParts = (impact) => [
 function formatView(model) {
   const lines = [`System map for ${model.project}`, `Owner: ${model.owner}. Integration branch: ${model.integration_branch ?? 'unknown (set system.integration_branch in .bgzflow/project.json)'}. ${model.stored ? `Inventory saved ${String(model.scanned_at ?? '').slice(0, 16).replace('T', ' ')} UTC.` : 'Inventory: live scan, not saved.'}`];
   for (const note of model.notes) lines.push(note);
+  if (model.skip.length) lines.push(`Skipped folders (system.skip): ${model.skip.join(', ')}.`);
 
   lines.push('', `Repos (${model.repos.length})`);
   for (const r of model.repos) lines.push(`  ${r.path} - ${r.branch ?? 'no branch'}${r.head ? ` @ ${r.head}` : ''}${r.origin ? ` - ${r.origin}` : ''}`);
@@ -558,7 +563,7 @@ function confirmLive(opts, { projectDir, env, out }) {
   const evidence = text(opts.evidence);
   if (role.toLowerCase() !== owner.toLowerCase()) throw ownerRefusal(`live ${opts.deployment}`, owner, role, [`Live: ${opts.deployment} | evidence: ${evidence}`]);
 
-  const inventory = isObject(system.detected) ? system.detected : discover(projectDir);
+  const inventory = isObject(system.detected) ? system.detected : discover(projectDir, scanOptions(system));
   const detected = matchDeployment(opts.deployment, arr(inventory.deployments).filter(isObject));
   const name = detected ? detected.name : opts.deployment;
   const entry = { name, active: true, evidence, confirmed_by: role, confirmed_at: new Date().toISOString() };

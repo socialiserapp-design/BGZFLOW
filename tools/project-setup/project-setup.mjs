@@ -5,7 +5,8 @@
 // Without a folder it uses the current project (nearest folder with .bgzflow or .git). Re-running refreshes the detected
 // commands and keeps everything under "manual"; a manual command wins when the file is read (readProjectCommands).
 // It also saves a "system" (repos, worktrees, services, declared deployments; see tools/map/discover.mjs) for `bgz map`, keeping
-// system.owner, system.integration_branch and system.manual across runs. A folder with a system but no commands is still saved.
+// system.owner, system.integration_branch, system.skip (folders the scan leaves out) and system.manual across runs. A folder with a
+// system but no commands is still saved.
 // Exit codes: 0 saved, dry run or nothing found; 1 the existing project.json is unreadable or cannot be written; 2 bad usage.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -269,24 +270,31 @@ export class SetupError extends Error {}
 export function setup(dir, { dry = false, now = new Date() } = {}) {
   const file = projectFile(dir);
   const { commands, from } = detect(dir);
-  const found = discover(dir, { now });
+  // The prior file is read first: its system.skip and system.integration_branch steer the scan. A file that cannot be used is reported
+  // once the scan has run (and only if something was found), as before.
+  let manual = {};
+  let prior = {};
+  let problem = null;
+  const text = read(dir, REL_FILE);
+  if (text === null && fs.existsSync(file)) problem = `${REL_FILE} cannot be read; left as it is`;
+  else if (text !== null && text.trim() !== '') {
+    try { prior = JSON.parse(text); } catch { prior = null; }
+    if (!prior || typeof prior !== 'object' || Array.isArray(prior)) {
+      problem = `${REL_FILE} is not valid JSON; left as it is (fix or remove it, then run again)`;
+      prior = {};
+    } else if (prior.manual && typeof prior.manual === 'object' && !Array.isArray(prior.manual)) manual = prior.manual;
+  }
+  const before = prior.system && typeof prior.system === 'object' && !Array.isArray(prior.system) ? prior.system : {};
+  const found = discover(dir, { now, skip: before.skip, integrationBranch: filled(before.integration_branch) ? before.integration_branch : undefined });
   if (!KINDS.some((kind) => commands[kind]) && !isSystemFound(found)) {
     return { file, found: false, written: false, dry, commands, from, manual: {}, effective: readProjectCommands(dir) };
   }
-  let manual = {};
-  let prior = {};
-  const text = read(dir, REL_FILE);
-  if (text === null && fs.existsSync(file)) throw new SetupError(`${REL_FILE} cannot be read; left as it is`);
-  if (text !== null && text.trim() !== '') {
-    try { prior = JSON.parse(text); } catch { prior = null; }
-    if (!prior || typeof prior !== 'object' || Array.isArray(prior)) throw new SetupError(`${REL_FILE} is not valid JSON; left as it is (fix or remove it, then run again)`);
-    if (prior.manual && typeof prior.manual === 'object' && !Array.isArray(prior.manual)) manual = prior.manual;
-  }
-  // The system map keeps what a person set (owner, integration branch, confirmed deployments); only "detected" is refreshed.
-  const before = prior.system && typeof prior.system === 'object' && !Array.isArray(prior.system) ? prior.system : {};
+  if (problem) throw new SetupError(problem);
+  // The system map keeps what a person set (owner, integration branch, skip folders, confirmed deployments); only "detected" is refreshed.
   const system = {};
   if (filled(before.owner)) system.owner = before.owner;
   if (filled(before.integration_branch)) system.integration_branch = before.integration_branch;
+  if (Array.isArray(before.skip) && before.skip.length > 0) system.skip = before.skip;
   system.detected = found;
   system.manual = before.manual && typeof before.manual === 'object' && !Array.isArray(before.manual) ? before.manual : {};
   const record = { schema_version: SCHEMA_VERSION, detected_at: now.toISOString(), commands, from, manual, system };

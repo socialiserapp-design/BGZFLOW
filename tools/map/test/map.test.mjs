@@ -437,3 +437,60 @@ test('a change line with no effect is kept and shown as effect not stated', () =
   assert.equal(t1(fx).change.items.length, 1);
   assert.match(view(fx).stdout, /api handler \(api\/index\.js\): effect not stated/);
 });
+
+// Two third-party style clones under oss/, each with one service and one deploy file.
+function addReferenceClones(fx) {
+  for (const name of ['a', 'b']) {
+    const clone = path.join(fx.proj, 'oss', name);
+    put(clone, 'package.json', pkg(`ref-${name}`));
+    put(clone, 'wrangler.toml', `name = "ref-${name}-worker"\n`);
+    git(clone, 'init', '-b', 'main');
+    git(clone, 'add', '.');
+    git(clone, 'commit', '-m', 'first');
+  }
+}
+
+test('system.skip and system.owner survive a setup rerun, the stored scan honours skip, and the unchanged tree shows no drift', () => {
+  const fx = fixture();
+  addReferenceClones(fx);
+  setup(fx);
+  const first = readJson(fx.projectFile);
+  assert.ok(first.system.detected.services.some((s) => s.path.startsWith('oss/')), 'without skip the reference clones are scanned');
+  assert.equal(first.system.detected.repos.length, 3);
+  assert.equal(first.system.skip, undefined, 'setup does not invent a skip list');
+
+  first.system.skip = ['oss'];
+  first.system.owner = 'ops';
+  writeJson(fx.projectFile, first);
+  setup(fx);
+  setup(fx);
+  const kept = readJson(fx.projectFile).system;
+  assert.deepEqual(kept.skip, ['oss'], 'a rerun keeps system.skip');
+  assert.equal(kept.owner, 'ops', 'a rerun keeps system.owner');
+  assert.equal(kept.detected.repos.length, 1);
+  assert.deepEqual(kept.detected.services.map((s) => s.name).sort(), ['api', 'web']);
+  assert.deepEqual(kept.detected.deployments.map((d) => d.name), ['api-worker']);
+  assert.ok(![...kept.detected.services, ...kept.detected.deployments].some((x) => /(^|\/)oss(\/|$)/.test(JSON.stringify(x))), 'nothing under oss/ is stored');
+
+  const map = viewJson(fx);
+  assert.equal(map.drift.drifted, false, JSON.stringify(map.drift));
+  assert.deepEqual(map.skip, ['oss']);
+  assert.match(view(fx).stdout, /Skipped folders \(system\.skip\): oss\./);
+  assert.ok(!view(fx, '--brief').stdout.includes('Skipped folders'), '--brief stays short');
+});
+
+test('a skip list added after setup shows as drift, and rerunning setup settles it', () => {
+  const fx = fixture();
+  addReferenceClones(fx);
+  setup(fx);
+  const doc = readJson(fx.projectFile);
+  doc.system.skip = ['./oss/', '../outside', 'oss\\a'];
+  writeJson(fx.projectFile, doc);
+  const map = viewJson(fx);
+  assert.equal(map.drift.drifted, true, 'the stored scan still holds the clones');
+  assert.ok(map.drift.removed.some((x) => /ref-/.test(x)), JSON.stringify(map.drift));
+  assert.deepEqual(map.skip, ['oss', 'oss/a'], 'slashes are normalised and a .. entry is ignored');
+  setup(fx);
+  assert.equal(viewJson(fx).drift.drifted, false);
+  assert.equal(readJson(fx.projectFile).system.detected.repos.length, 1);
+});

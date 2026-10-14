@@ -309,6 +309,19 @@ test('a rerun refreshes system.detected and keeps system.owner, integration_bran
   assert.deepEqual(again.system.detected.services.map((s) => s.name).sort(), ['api', 'web']);
 });
 
+test('a rerun keeps system.skip and the scan leaves the skipped folder out', () => {
+  const dir = project({ 'api/package.json': JSON.stringify({ name: 'api' }), 'refs/ref/package.json': JSON.stringify({ name: 'ref' }) });
+  assert.equal(run([dir]).status, 0);
+  const doc = JSON.parse(fs.readFileSync(projectFile(dir), 'utf8'));
+  assert.deepEqual(doc.system.detected.services.map((s) => s.name).sort(), ['api', 'ref']);
+  doc.system.skip = ['refs'];
+  fs.writeFileSync(projectFile(dir), JSON.stringify(doc));
+  assert.equal(run([dir]).status, 0);
+  const again = JSON.parse(fs.readFileSync(projectFile(dir), 'utf8'));
+  assert.deepEqual(again.system.skip, ['refs']);
+  assert.deepEqual(again.system.detected.services.map((s) => s.name), ['api']);
+});
+
 test('--dry reports the system but writes nothing', () => {
   const dir = project({ 'api/package.json': JSON.stringify({ name: 'api' }) });
   const r = run([dir, '--dry']);
