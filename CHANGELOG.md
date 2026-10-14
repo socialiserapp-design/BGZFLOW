@@ -2,6 +2,18 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.8.0 (2026-10-14)
+
+**Start faster: a start-now list, a plan check for extras, automatic project setup, project facts and a getting-started guide.**
+
+- Start-now list: `bgz start-now` lists the work-graph tasks that are planned or ready and whose dependencies are done, so the lead hands out every ready task at once. `--json` for scripts.
+- Plan check for extras: `bgz jev plan` checks each line of a plan against what was asked and flags anything nobody asked for before work is handed out. Build With Me and Finish the Whole Job run it before dispatch. Advice only: it never blocks, adds no review round and asks no one anything.
+- Automatic project setup: `bgz setup` detects the project's build, test and lint commands and saves them to `.bgzflow/project.json`. Starting or continuing a project runs it on its own. It asks nothing, keeps commands you entered by hand and never edits CLAUDE.md or AGENTS.md.
+- Project facts: `bgz facts` keeps short per-project facts in `.bgzflow/facts.json`. `facts for` prints the facts for the files a brief touches so workers start with them, workers can propose facts in their handback evidence, and the lead accepts them with `facts accept`. Advice only.
+- New getting-started guide (`docs/getting-started.md`), linked from the README and the install guide.
+- README: version badge 0.8.0; the skills table lists all nine skills, including Jev.
+- Fixed: the Jev improve test now passes in an exported copy with no git history.
+
 ## 0.7.1 (2026-10-14)
 
 - BG Ship And Recover step 5: a passing rehearsal with no open reproduced blocker is the go-ahead, so the lead switches on without asking the founder to approve, confirm or authorise the release. Authority, budget, owner and holds come from the brief, the founder's decisions file or the release record; when none is recorded, the lead switches on and notes the gap in the handback. Only a recorded founder hold, new spending or an app-store submission the brief doesn't name waits for the founder. Skill gate: the switch-on case passes 1 of 3 runs (0.7.0: 0 of 3) and no reply asks the founder to approve the release; replies can still pause to ask where the release record lives.

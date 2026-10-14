@@ -584,21 +584,18 @@ describe('improve(): the full pass with the outside world stubbed', () => {
   });
 
   it('a candidate whose generated new-skill name already exists is deferred, not overwritten', async () => {
-    // jobType "improve-test-exists" generates bg-improve-test-exists-workflow, which this test creates under skills/ then removes.
-    const skillDir = path.join(ROOT, 'skills', 'bg-improve-test-exists-workflow');
-    const existed = fs.existsSync(skillDir);
-    assert.equal(existed, false, 'test precondition: the folder is not part of the repo');
-    fs.mkdirSync(skillDir, { recursive: true });
-    try {
-      fs.writeFileSync(path.join(skillDir, 'SKILL.md'), 'keep me\n');
-      const rows = [...many(3, { value: 0.9, jobType: 'improve-test-exists' }), ...chore(3, 0.5)];
-      const s = scenario({ rows, deps: { match: async () => ({ ok: true, skill: 'new', confidence: 0.2, file: null }) } });
-      const out = await s.run({ dry: true });
-      assert.match(out.deferred[0].why, /already exists/);
-      assert.equal(fs.readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8'), 'keep me\n');
-    } finally {
-      removeDir(skillDir);
-    }
+    // jobType "improve-test-exists" generates bg-improve-test-exists-workflow. The write target is pinned to a scratch folder:
+    // by default improve() writes to this checkout's skills/ only when the checkout has a .git folder (a source repo), and to
+    // the overlay otherwise (a `git archive` export or an install), so the default would make this test depend on where it runs.
+    const rows = [...many(3, { value: 0.9, jobType: 'improve-test-exists' }), ...chore(3, 0.5)];
+    const s = scenario({ rows, deps: { match: async () => ({ ok: true, skill: 'new', confidence: 0.2, file: null }) } });
+    const skillsOut = path.join(s.d, 'skills-out');
+    const kept = write(skillsOut, path.join('bg-improve-test-exists-workflow', 'SKILL.md'), 'keep me\n');
+    s.deps.target = { dir: skillsOut, kind: 'source' };
+    const out = await s.run({ dry: true });
+    assert.equal(out.deferred.length, 1);
+    assert.match(out.deferred[0].why, /already exists/);
+    assert.equal(fs.readFileSync(kept, 'utf8'), 'keep me\n');
   });
 
   it('a new skill (match says "new") is previewed under --dry without touching the repo skills folder', async () => {

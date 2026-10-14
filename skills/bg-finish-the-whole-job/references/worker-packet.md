@@ -96,6 +96,7 @@ Its first fields are SWARM, PIECE, KIND and OWNS. Use the qualified provider tie
 13. **Maps first:** `codegraph ...` or `graft ...` for code, `notes-map ask "<question>"` for notes, `rg -n` as the fallback; never open a notes or log file over `BGZFLOW_BIG_READ_KB` whole.
 14. **System-clock timestamps,** never estimates.
 15. **Only what was asked.** The worker adds no customer-facing wait, refusal, hold, gate, cap, block or expiry the brief does not ask for; an unrequested stop path is a defect. The handback lists every stop path added or changed, or none.
+16. **Known facts** (advice, never a gate): when `bgz facts for --brief <brief>` prints anything, paste its output into the brief as a "Known facts" block. These are notes the project has kept from earlier jobs. The worker may use them; no check, rule or stop depends on them.
 
 The template covers the goal, pointers, owned paths, permissions, caps, done-when and short return. Add these delivery fields:
 
@@ -172,9 +173,10 @@ once-agreed ceiling/reserve | next capacity action].
 Result: [saved location/hash; job/thread correlation; wait/result outcomes].
 Next action: [queue exact candidate / same-worker repair / concrete blocker + owner].
 Dependency/integration acceptance: pending controller inspection.
+Proposed facts (optional, last): [one line each, "- <glob,...> :: <fact>", or "- <fact>" for the whole project; leave out when there are none].
 ```
 
-**Handback check (lead).** The chat return is 10 lines or fewer; every required output exists in the receipt; every pointer resolves; executor, exit status and live-log path are recorded; created resources are listed; every listed stop path traces to the brief; evidence is pointers and hashes, not pasted logs. A gap stays a named gap and never becomes a pass.
+**Handback check (lead).** The chat return is 10 lines or fewer; every required output exists in the receipt; every pointer resolves; executor, exit status and live-log path are recorded; created resources are listed; every listed stop path traces to the brief; evidence is pointers and hashes, not pasted logs. A gap stays a named gap and never becomes a pass. If the evidence file ends with proposed facts, the lead reads them and keeps the useful ones with `bgz facts accept --handback <evidence file>` (or one at a time with `bgz facts add --text "<fact>" [--paths <glob,...>]`); nothing waits on this and a fact never blocks a job.
 
 ## Consolidated repair
 

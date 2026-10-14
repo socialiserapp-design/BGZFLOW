@@ -16,6 +16,8 @@ const USAGE = [
   '  arch --base <ref> [--files a,b] [--brief <brief.md>]                  architecture and logic leads on a diff, per file and over the whole diff',
   '  unasked --base <ref> [--asks <decisions file|brief,...>]               changes that add a customer-facing stop or a new rule nobody asked for',
   '        (no --asks: $BGZFLOW_DECISIONS_FILE, else the overlay config.json decisionsFile, else DECISIONS.md, in the repo or .bgzflow/)',
+  '  plan --plan <plan file> [--asks <decisions file|brief,...>]            before the first dispatch: plan items that add a customer-facing stop or a new rule nobody asked for',
+  '        (advice for the handback, never a block; no --asks: the same lookup as unasked)',
   '  grade <job-output-file> --brief <brief.md> --role <role> --worker <model/tool> [--cost-usd N]   score a finished job',
   '  league [--json] [--since ISO]                                        average grade per role and worker',
   '  outcomes [--dry] [--max-jobs N] [--budget-ms MS] [--background=1]   adjust grades by real outcomes (reverts, review flags, lessons); no model calls',
@@ -68,6 +70,10 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     if (sub === 'arch' || sub === 'unasked') {
       const r = await import('./review.mjs');
       return out(await (sub === 'arch' ? r.runArch : r.runUnasked)({ flags, rest, timeoutMs: flags.timeout ? timeoutMs : 15000, env }));
+    }
+    if (sub === 'plan') {
+      const p = await import('./plan.mjs');
+      return out(await p.runPlan({ flags, rest, timeoutMs: flags.timeout ? timeoutMs : 10000, env }));
     }
     if (sub === 'grade' || sub === 'league') {
       const g = await import('./grade.mjs');

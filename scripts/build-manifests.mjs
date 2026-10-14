@@ -92,8 +92,8 @@ const tools = [
   },
   {
     name: "jev",
-    hint: "<ask|file|files|score|route|skills|arch|unasked|grade|league|outcomes|improve|bench|regress> [options]",
-    about: "Ask Jev, the fast cheap judge: file questions, routing, skill picks, guardrail scores and worker grades",
+    hint: "<ask|file|files|score|route|skills|arch|unasked|plan|grade|league|outcomes|improve|bench|regress> [options]",
+    about: "Ask Jev, the fast cheap judge: file questions, routing, skill picks, guardrail scores, plan checks and worker grades",
     footer: "Same as `bgz jev`. A failed or missing Jev prints {\"ok\":false,...} and exits 1; fall back to the main model once. The key is read from TYPESAFE_API_KEY or ~/.typesafe_key and is never printed. With no arguments, run it with `--help` first.",
   },
   {
@@ -110,6 +110,21 @@ const tools = [
     name: "startup-check",
     hint: "[<project-dir>] [--json] [--budget <words>]",
     about: "Check the start-up reading budget, the checkpoint and the owners block",
+  },
+  {
+    name: "project-setup",
+    hint: "[<project-dir>] [--json] [--dry]",
+    about: "Detect the project's build, test and lint commands and save them in .bgzflow/project.json",
+  },
+  {
+    name: "start-now",
+    hint: "[<project-dir>] [--graph <file>] [--json]",
+    about: "List work-graph tasks that are planned or ready and whose dependencies are done",
+  },
+  {
+    name: "facts",
+    hint: "<for|add|accept|list> [options]",
+    about: "Keep per-project facts and print the ones relevant to a brief's files",
   },
 ];
 

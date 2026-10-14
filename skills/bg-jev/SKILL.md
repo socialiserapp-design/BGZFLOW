@@ -23,6 +23,7 @@ Below 0.5: send to the lead or a person. 0.9 or above: act. In between: confirm 
 - `jev skills --brief brief.md --write`: liberal list of skills (keeps score 0.35 or more, anything the brief names, the BG skills for the stage) written into the brief as "Skills to load".
 - `jev grade <output> --brief <brief> --role <role> --worker <model/tool>`: rubric score (met checks with evidence, stayed in scope, claims backed by proof, cost). Run it on every finished job. `jev league` shows the average by role and worker; reorder STATUS fallbacks from it.
 - `jev arch --base <ref>`: logic and architecture leads per file and for the whole diff. `jev unasked --base <ref> --asks DECISIONS.md,brief.md`: changes nobody asked for (customer stops, new rules). Leads for the lead and the reviewer, not verdicts. Run both when a builder finishes.
+- `jev plan --plan <plan file> --asks DECISIONS.md,brief.md`: the same unasked check on a plan, before the first dispatch, so an extra is caught while it is still one line of text. Advice for the handback only: it never blocks dispatch and adds no review round. No asks text, or any Jev error, prints `{"ok":false}`: carry on once without it.
 
 ## Recipes (level 10)
 - **Test failure type**: `jev ask --cmd "npm test" --q "Is this failure flaky, real or environment?" --type choice --options flaky,real,environment`. Real: fix. Flaky: rerun once. Environment: report the missing piece.

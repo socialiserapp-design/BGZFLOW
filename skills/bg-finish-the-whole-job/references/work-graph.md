@@ -145,6 +145,12 @@ Wrap the rows in a graph envelope: `schema_version: 1`, `project_id`, `plan_ref`
 
 `model_tier` names the needed capability, such as `economical-qualified`; `route_receipt.executor` records the model and effort that actually ran, because a tier alone proves nothing. A task's `tests` are its fast checks only: type check, lint and the unit tests it touched. The full suite and critical journeys live only in the envelope's `whole_candidate_checks`, run once by the integration job (build first, check once). `acceptance_command` is a real fast command for the finished assignment; for non-code work use the artifact or render checker, or record an observed acceptance procedure in `tests`.
 
+## Start-now list
+
+`bgz start-now [<project-dir>] [--graph <file>] [--json]` is a read-only look at the graph; it assigns nothing and writes nothing. It reads `<project>/.bgzflow/work-graph.json` (the envelope, or a bare array of tasks) unless `--graph` names another file.
+It lists every task that is `planned` or `ready`, and whose every `dependsOn` edge has met its gate. An `accepted-dependency` edge is met when the prerequisite's `dependency_acceptance.state` is `accepted` or its `integration.state` is `integrated`; an `integrated` edge needs `integration.state: integrated`. A dependency that is not in the graph is never met.
+`--json` adds the tasks still waiting and what they wait on. It is a convenience view: the controller still admits and dispatches from the graph.
+
 ## Readiness and state invariants
 
 ### Route receipt extension

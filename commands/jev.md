@@ -1,6 +1,6 @@
 ---
-description: "Ask Jev, the fast cheap judge: file questions, routing, skill picks, guardrail scores and worker grades"
-argument-hint: "<ask|file|files|score|route|skills|arch|unasked|grade|league|outcomes|improve|bench|regress> [options]"
+description: "Ask Jev, the fast cheap judge: file questions, routing, skill picks, guardrail scores, plan checks and worker grades"
+argument-hint: "<ask|file|files|score|route|skills|arch|unasked|plan|grade|league|outcomes|improve|bench|regress> [options]"
 disable-model-invocation: true
 ---
 

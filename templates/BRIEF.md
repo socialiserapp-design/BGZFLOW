@@ -14,6 +14,7 @@ OWNS: ["<owned relative path>"]
 - Project: <worktree, branch, admitted base commit>
 - Requirements: <IDs>; accepted decisions to honour: DECISIONS.md <IDs>
 - Read (pointers): CHECKPOINT.md; <path:line-range>; <commit>; canonical live log: <path>
+- Known facts (optional): <paste the output of `bgz facts for --brief <this file>`; leave out when it prints nothing. Advice from earlier jobs, never a rule or a gate>
 - Skills or capabilities: <body path + SHA-256, or capability + pack method>
 - Read and use bg-efficiency, test-driven-development, systematic-debugging and verification-before-completion; record full body reads or the documented equivalent-method fallback.
 - Owned paths (write only here): <…>; everything else is read-only

@@ -12,6 +12,9 @@ const SCRIPTS = {
   'skill-gate': 'skill-gate/skill-gate.mjs',
   jev: 'jev/cli.mjs',
   preflight: 'jev/preflight.mjs',
+  setup: 'project-setup/project-setup.mjs',
+  'start-now': 'start-now/start-now.mjs',
+  facts: 'facts/facts.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -19,8 +22,11 @@ const USAGE = [
   '  receipt <file-or-dir>... [--json] hashes, sizes and counts for a handback',
   '  usage [--since ISO] [--json]      where the tokens went, from local transcripts',
   '  skill-gate --run --previous <ref>  check each skill\'s evals match or beat the previous version',
-  '  jev <ask|file|files|score|route|skills|arch|unasked|grade|league|outcomes|improve|bench|regress>  cheap Jev judgements (bgz jev --help)',
+  '  jev <ask|file|files|score|route|skills|arch|unasked|plan|grade|league|outcomes|improve|bench|regress>  cheap Jev judgements (bgz jev --help)',
   '  preflight                         read-only worker-start check: stray skills, long plugin overviews, ANTHROPIC_API_KEY',
+  '  setup [<project-dir>] [--dry]     detect build, test and lint commands into .bgzflow/project.json',
+  '  start-now [<project-dir>] [--json] list work-graph tasks that are ready to start (dependencies done)',
+  '  facts <for|add|accept|list>       per-project facts for the files a brief touches',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);

@@ -4,13 +4,19 @@
 
 BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead agent plans the work, a swarm of workers builds every piece in parallel, and the whole product is then tested once on the real platform before it goes live. It runs on the agents and subscriptions you already have.
 
+**New here? Start with the [getting started guide](docs/getting-started.md): your first ten minutes.**
+
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.0-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.8.0: start faster
+
+BGZFLOW 0.8.0 helps a project start faster, with a start-now list of ready tasks, a plan check for extras nobody asked for, automatic project setup, project facts and a getting-started guide.
 
 ## New in 0.7.0: build the way professional teams do
 
@@ -125,7 +131,7 @@ Reports distinguish **BUILT**, **REACHED** and **USED**; only a real journey wit
 
 ## What's inside
 
-**Eight skills**, each loaded only when its stage applies:
+**Nine skills**, each loaded only when its stage applies:
 
 | Skill | Use it for |
 |---|---|
@@ -137,6 +143,7 @@ Reports distinguish **BUILT**, **REACHED** and **USED**; only a real journey wit
 | Ship and Recover | Switching accepted work on, the first live hour, rollback and incidents |
 | Continue My Project | Resuming after a crash, a break or a host or account change without losing work |
 | Efficiency | Saving tokens and usage without cutting scope or quality |
+| Jev | Quick scored checks before dispatching, reading files or judging work: test failures, diff risk, plans and unasked changes |
 
 **Local guard tools and hooks**: the swarm gate (resources, usage limits, ownership, retry and release order), resource and status views, a heavy-job queue, a resource governor that protects disk and build slots, a worker mailbox, account-route receipts and a real-clock hook. See [swarm gate](docs/swarm-gate.md), [testing ladder](docs/testing-ladder.md), [mailbox](docs/mailbox.md), [resource governor](docs/resource-governor.md) and [account routing](docs/account-routing.md).
 
