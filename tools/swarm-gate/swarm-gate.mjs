@@ -188,7 +188,8 @@ export function startSwarm(project, swarm, config, env = process.env) {
     const pieces = {};
     for (const [id, piece] of Object.entries(config.pieces)) {
       if (!validId(id) || !object(piece)) throw new Error('invalid piece identity');
-      pieces[id] = { owns: normalOwns(piece.owns, project), status: 'pending',goal:safe(piece.goal||id) };
+      const triage = ['rebuild', 'evolve', 'keep-shared-brain'].includes(piece.triage) ? piece.triage : undefined;
+      pieces[id] = { owns: normalOwns(piece.owns, project), status: 'pending', goal: safe(piece.goal || id), ...(triage ? { triage } : {}) };
     }
     const releaseId=config.releaseId||swarm;if(!validId(releaseId))throw new Error('release ID must be stable and valid');
     const state = { schemaVersion: 1, swarm, active: true, createdAt: clock(), project,
@@ -196,7 +197,7 @@ export function startSwarm(project, swarm, config, env = process.env) {
       approvedResources: [...new Set(config.resources)], limit, reserve, policy, wave0Sha: config.wave0Sha,
       pieces, dispatches: [], failures: {}, candidateSha: null, results: {}, findings: {}, fixWaves: 0,
       overrides: [], blocked: {}, notices: {}, waveOpen: false, releasePatterns: config.releasePatterns || [], suitePatterns: config.suitePatterns || [],
-      acceptanceScript:config.acceptanceScript||[],judgments:[],warnings:[],modelMap:structuredClone(config.modelMap||{providers:policy.providers||{}}) };
+      acceptanceScript:config.acceptanceScript||[],outcomeContract:config.outcomeContract?structuredClone(config.outcomeContract):null,groundTruth:Array.isArray(config.groundTruth)?structuredClone(config.groundTruth):[],slices:{},judgments:[],warnings:[],modelMap:structuredClone(config.modelMap||{providers:policy.providers||{}}) };
     writeAtomic(file, state);
     writeAtomic(path.join(project, '.bgzflow', 'swarm-defaults.json'), { resources: state.approvedResources, limit, reserve });
     return state;
@@ -248,6 +249,7 @@ function readBrief(file, cwd) {
   if (missing.length || !/\bfast checks only\b/i.test(body) || !/\bproof handback\b/i.test(body)) return { error: 'Brief needs the quality skills, fast checks only and proof handback.' };
   return { swarm: header.SWARM, piece: header.PIECE, kind: header.KIND, owns, body,
     readOnly: header.READ_ONLY === 'true', unsplit: header.UNSPLIT === 'true', targetKind: header.TARGET_KIND,crossFamily:header.CROSS_FAMILY==='true',qualification:header.QUALIFICATION==='true',
+    role: header.ROLE ? safe(header.ROLE) : null, triage: header.TRIAGE ? safe(header.TRIAGE) : null,
     stage: header.CHECK || 'review',releaseId:header.RELEASE_ID,reviewTarget:header.REVIEW_TARGET||'candidate', hours: header.HOURS ? Number(header.HOURS) : null, file: path.resolve(cwd, file) };
 }
 function workerResource(command, t, input) {
@@ -494,6 +496,7 @@ function dispatchCheck(entry, input, env) {
   }
   return { allowed: true, job: { piece: b.piece, kind: b.kind, resource, model, effort, owns, promptFile: b.file, briefHash: digest(b.body), cwd,
     readOnly: b.readOnly,crossFamily:b.crossFamily, targetKind: b.targetKind || null, stage: b.kind === 'check' ? b.stage : null,releaseId:state.releaseId,reviewTarget:b.reviewTarget,goal,logicalKey:key,rootCauseHash:failed?.rootCause?.noteHash||null,tier,escalated:!!target&&target.count>=2,mappingSetting:required||null,baseSha:currentSha(cwd)||state.wave0Sha,
+    ...(b.role ? { role: b.role } : {}), ...(b.triage || state.pieces[b.piece]?.triage ? { triage: b.triage || state.pieces[b.piece].triage } : {}),
     commandHash: digest(command || JSON.stringify({ model, effort, file: b.file })), reservedHours: hours,
     account: route.account, environment: route.environment, startedAt: clock(), status: 'running' } };
 }
@@ -601,7 +604,7 @@ export function recordState(project, type, value, swarm,options={}) {
         if(object(s.policy.providers)&&['quota-or-rate','network','provider-outage'].includes(j.failureClass)){s.routeUnavailable||={};s.routeUnavailable[j.resource]={available:false,reason:safe(value.error),at:clock()};}
         if (j.failureClass === 'counted') {
           const key = j.logicalKey||j.piece+':'+j.kind, f = s.failures[key] ||= { count: 0, rootCause: null };
-          f.count++;f.error=safe(value.error);f.cause=failureCause(str(value.error));f.family=s.policy.providers?.[j.resource]?.family||j.resource;f.remediated=false;if (f.rootCause?.used) f.needsHuman = true;
+          f.count++;f.error=safe(value.error);f.cause=failureCause(str(value.error));f.family=s.policy.providers?.[j.resource]?.family||j.resource;f.remediated=false;if (f.rootCause?.used) f.needsHuman = true;if(f.count>=2)f.rebuildRecommended=true;
           if(f.count===2&&f.cause==='unknown'){const r=judgment(s,{event:'failure',eventId:key+':2',failed:[{step:key,goal:s.pieces[j.piece]?.goal,error:f.error}],evidence:{}},options.judgeRunner);if(r.failureClass)f.cause=r.failureClass;}
           if(/model[- ]not[- ]found|unknown model|deprecated/i.test(str(value.error))){s.modelRefreshNeeded||={};s.modelRefreshNeeded[j.resource]={model:j.model,error:safe(value.error),at:clock()};}
         }
@@ -621,8 +624,8 @@ export function recordState(project, type, value, swarm,options={}) {
         try{handback=JSON.parse(evidenceFile(project,value.handbackFile||value.evidence));result=admitEvidence(project,handback,{baseSha:job?.baseSha||s.wave0Sha,sha:value.returnRef});}catch{result={allowed:false,reason:'Returned piece needs a readable structured handback and real fast-check output.'};}
         if(result.allowed&&handback.jobId&&job&&handback.jobId!==job.id)result={allowed:false,reason:'Handback belongs to a different worker job.'};
         if(result.allowed){const semantic=judgment(s,{event:'admission',eventId:value.piece+':'+value.returnRef,evidence:{goal:p.goal,files:result.files,testNames:result.testNames,diffSummary:result.diffSummary,fastOutput:result.fastOutput,handbackClaim:JSON.stringify(handback.checks.map(c=>({counts:c.counts,exitCode:c.exitCode})))}},options.judgeRunner);if(semantic.decision==='block')result={allowed:false,reason:'Jev found tests unrelated to the goal or a handback claim/output mismatch: '+semantic.reasons.join('; ')};else result.judgment={decision:semantic.decision,warning:semantic.warning||null};}
-        if(!result.allowed){const key=job?.logicalKey||value.piece+':'+(job?.kind||'build'),f=s.failures[key]||={count:0,rootCause:null};const pickup=digest(JSON.stringify({piece:value.piece,sha:value.returnRef,handback:handback||value.evidence}));f.admissionPickups||=[];if(!f.admissionPickups.includes(pickup)){f.admissionPickups.push(pickup);f.count++;f.cause='logic';f.error=result.reason;if(f.rootCause?.used)f.needsHuman=true;}p.status='pending';const denied=block('admission',result.reason,'Return this proof to the same worker job '+(job?.id||value.jobId||'recorded owner')+' for repair; after two failures use the diagnosis ladder.');s.blocked['admission:'+value.piece]={rule:denied.rule,reason:denied.reason,next:denied.next};persist(entry);return denied;}
-        delete result.fastOutput;p.admission=result;delete s.blocked['admission:'+value.piece];
+        if(!result.allowed){const key=job?.logicalKey||value.piece+':'+(job?.kind||'build'),f=s.failures[key]||={count:0,rootCause:null};const pickup=digest(JSON.stringify({piece:value.piece,sha:value.returnRef,handback:handback||value.evidence}));f.admissionPickups||=[];if(!f.admissionPickups.includes(pickup)){f.admissionPickups.push(pickup);f.count++;f.cause='logic';f.error=result.reason;if(f.rootCause?.used)f.needsHuman=true;if(f.count>=2)f.rebuildRecommended=true;}p.status='pending';const denied=block('admission',result.reason,'Return this proof to the same worker job '+(job?.id||value.jobId||'recorded owner')+' for repair; after two failures use the diagnosis ladder.');s.blocked['admission:'+value.piece]={rule:denied.rule,reason:denied.reason,next:denied.next};persist(entry);return denied;}
+        delete result.fastOutput;p.admission=result;if(result.triageMode)p.triage=result.triageMode;delete s.blocked['admission:'+value.piece];
       }
       Object.assign(p, { status: value.status, returnRef: safe(value.returnRef), evidence: safe(value.evidence), reason: safe(value.reason) });
     } else if (type === 'candidate') {
@@ -653,7 +656,7 @@ export function recordState(project, type, value, swarm,options={}) {
       const category=value.category||prior?.category||'unknown',reproduction=safe(value.reproduction||prior?.reproduction),blocking=['wrong-money','data-loss','security','privacy','security/privacy','missing-rollback','unapproved-stop-path'].includes(category)&&!!reproduction.trim();
       s.findings[value.id] = { id: value.id, status: value.status, category,reproduction,blocking,disposition:blocking?'blocker':'after-launch', detail: safe(value.detail || prior?.detail), evidence: safe(value.evidence), sha: value.sha || null,piece:piece||null,waves };
       if(value.status==='open'&&!blocking&&['wrong-money','data-loss','security','privacy','missing-rollback','unapproved-stop-path'].includes(category)){s.warnings||=[];s.warnings.push({at:clock(),message:'Finding '+value.id+' needs reproduction; lead must investigate the claim.'});}
-      if(piece&&s.pieces[piece]&&s.findings[value.id].blocking&&value.status==='open'&&waves.length>=2){const f=s.failures[piece+':fix']||={count:0,rootCause:null};f.count=Math.max(f.count,2);f.cause=failureCause(s.findings[value.id].detail);f.error=s.findings[value.id].detail;f.finding=value.id;}
+      if(piece&&s.pieces[piece]&&s.findings[value.id].blocking&&value.status==='open'&&waves.length>=2){const f=s.failures[piece+':fix']||={count:0,rootCause:null};f.count=Math.max(f.count,2);f.cause=failureCause(s.findings[value.id].detail);f.error=s.findings[value.id].detail;f.finding=value.id;f.rebuildRecommended=true;}
     } else if (type === 'fix-wave') {
       if (s.fixWaves >= 2 && !human(value)) {
         const denied = block('fix-wave', 'Two fix waves are already recorded.', 'Send the human the open finding list and a recommendation for a third wave.', { humanAction: 'third-wave' });
@@ -690,6 +693,15 @@ export function recordState(project, type, value, swarm,options={}) {
       const actual = digest(read(path.resolve(project, value.artifact), 1_073_741_824, null));
       if (actual !== value.hash) throw new Error('release artifact hash mismatch');
       s.releaseIntent = { sha: value.sha, commandHash: digest(value.command), artifact: value.artifact, hash: actual };
+    } else if (type === 'ground-truth') {
+      if (!str(value.claim).trim() || !str(value.source).trim() || !['verified','refuted'].includes(value.status) || !str(value.evidence).trim()) throw new Error('ground-truth probe needs claim, source, verified/refuted status, and evidence');
+      s.groundTruth ||= [];
+      s.groundTruth.push({ claim: safe(value.claim), source: safe(value.source), status: value.status, evidence: safe(value.evidence), at: clock() });
+    } else if (type === 'slice') {
+      if (!validId(value.slice) || !['passed','failed'].includes(value.status) || !str(value.surface).trim() || !str(value.usedOutcome).trim() || !str(value.evidence).trim()) throw new Error('vertical slice verification needs slice ID, passed/failed status, surface, usedOutcome, and evidence');
+      if (value.piece && !s.pieces[value.piece]) throw new Error('unknown slice piece');
+      s.slices ||= {};
+      s.slices[value.slice] = { slice: value.slice, piece: value.piece || null, sha: SHA.test(value.sha || '') ? value.sha : null, status: value.status, surface: safe(value.surface), usedOutcome: safe(value.usedOutcome), evidence: safe(value.evidence), at: clock() };
     } else if (type === 'notice') {
       if (!['limit','third-wave'].includes(value.type) || !str(value.chatRef)) throw new Error('notice needs type and sent-chat reference');
       s.notices[value.type] = { chatRef: safe(value.chatRef), at: clock() };

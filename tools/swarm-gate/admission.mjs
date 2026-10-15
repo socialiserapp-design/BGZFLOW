@@ -55,6 +55,20 @@ export function admitEvidence(root,handback,{baseSha,sha}={}) {
     if(added.some(forbidden))return failed('New skip, only, xfail, todo, placeholder or TODO marker in changed lines.');
     const audit=handback.audit||{available:false,reason:'jev-audit not installed'};
     if(audit.available===true&&(!Array.isArray(audit.before)||!Array.isArray(audit.after)))return failed('Available jev-audit needs before and after findings in the handback.');
-    return {allowed:true,counts:total,files,testNames:names,fastOutput:fastOutput.slice(0,32768),diffSummary:`${files.length} changed files; ${added.length} added lines`,outputs,audit};
+    if(handback.triageMode!==undefined&&!['rebuild','evolve','keep-shared-brain'].includes(handback.triageMode))return failed('Invalid triageMode in handback; expected rebuild, evolve or keep-shared-brain.');
+    if(handback.retiredGuards!==undefined){
+      if(!Array.isArray(handback.retiredGuards)||handback.retiredGuards.some(g=>!g||typeof g.file!=='string'||!g.file.trim()||typeof g.reason!=='string'||!g.reason.trim()))return failed('Retired source-shape guards must each name the file and reason.');
+      if(handback.retiredGuards.length>0&&handback.triageMode&&handback.triageMode!=='rebuild')return failed('Only a rebuild piece may retire brittle source-shape guards.');
+    }
+    if(handback.outcomeContract!==undefined){
+      const oc=handback.outcomeContract;
+      if(!oc||typeof oc!=='object'||typeof oc.used!=='string'||!oc.used.trim()||typeof oc.surfaceEvidence!=='string'||!oc.surfaceEvidence.trim())return failed('Outcome contract in handback needs a plain-English used outcome and surfaceEvidence path.');
+      if(/(?:^|[/\\])(?:auth\.json|\.env(?:\..*)?|credentials)(?:$|[/\\])/i.test(oc.surfaceEvidence))return failed('Outcome contract surfaceEvidence cannot reference credential files.');
+    }
+    const extra={};
+    if(handback.triageMode!==undefined)extra.triageMode=handback.triageMode;
+    if(handback.retiredGuards!==undefined)extra.retiredGuards=handback.retiredGuards;
+    if(handback.outcomeContract!==undefined)extra.outcomeContract=handback.outcomeContract;
+    return {allowed:true,counts:total,files,testNames:names,fastOutput:fastOutput.slice(0,32768),diffSummary:`${files.length} changed files; ${added.length} added lines`,outputs,audit,...extra};
   }catch(e){return failed(e.message||'Piece evidence could not be verified.');}
 }

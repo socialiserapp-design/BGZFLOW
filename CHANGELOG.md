@@ -2,6 +2,17 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.2 (2026-10-15)
+
+**BGZFLOW Next: outcome contracts, pre-decision ground truth, Jev goal-clarity interrogation, 3-model vertical slices, and rebuild-vs-evolve triage.**
+
+- **Pillar 1 — Universal Outcome Contracts (`BUILT -> REACHED -> USED`) & Vertical-Slice Real-Surface Verification**: `swarm-gate start` and piece admission now accept `outcomeContract`, and `swarm-gate record slice` records per-slice verification on the real surface (device/simulator, browser, live API or primary document) before the next slice begins. Splitting a vertical slice into a "Stage A UI shell" and "Stage B wiring" is banned.
+- **Pillar 2 — Mandatory Pre-Decision Ground-Truth Research ("The Zernio Rule")**: `swarm-gate record ground-truth` records verified or refuted primary-source/API probes (`{claim, source, status, evidence}`) before architectural, legal, scientific or commercial decisions are locked.
+- **Pillar 3 — Open-World Jev-Calibrated Goal Interrogation (`goal-clarity >= 0.88`)**: `bgz jev score --preset goal-clarity --state <text|@file>` scores `outcome` (0.35), `constraints` (0.25), `verification` (0.25) and `authority` (0.15), returning `ready_to_execute: true` at `>= 0.88` and `missing_dimensions` below it. Never hardcoded to fixed user personas; includes opt-in milestone check-ins for long-horizon tasks.
+- **Pillar 4 — 3-Model Upfront Council + Single Vertical-Slice Executor + Cross-Model Adversarial Verifier**: worker briefs and `swarm-gate` dispatches support `ROLE: architect | executor | verifier`.
+- **Pillar 5 — Rebuild vs. Evolve Subsystem Triage & Guard-Test Retirement**: pieces, briefs and handbacks support `TRIAGE: rebuild | evolve | keep-shared-brain` (`triageMode`) and `retiredGuards` (`[{file, reason}]`, allowed only in `rebuild` mode). Two counted failures on a legacy patch automatically set `rebuildRecommended: true` on the failure ledger.
+- **All self-improvement and communication tools preserved**: `bgz lessons` (`due`, `rework`, `add`, `review`), `bgz jev` (`grade`, `league`, `outcomes`, `improve`, `arch`, `unasked`, `plan`), `bgz facts`, `bgz map`, `bg-mail`, `BUILT/REACHED/USED` and `bg-plain-english-builder` remain 100% intact.
+
 ## 0.9.1 (2026-10-14)
 
 **The system map counts each repo once.**

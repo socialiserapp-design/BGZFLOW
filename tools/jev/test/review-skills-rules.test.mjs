@@ -169,6 +169,35 @@ describe('diff-risk: weights are in code, the server only answers the five quest
     assert.match(c.stderr, /git diff no-such-ref failed/);
     assert.equal(m.calls.length, 0);
   });
+
+  it('bgz jev score --preset goal-clarity computes ready_to_execute at >= 0.88 and lists missing_dimensions when below', async () => {
+    const d = scratch();
+    const readyAnswers = {
+      outcome: { score: 4, confidence: 0.95 },
+      constraints: { score: 4, confidence: 0.95 },
+      verification: { score: 3.6, confidence: 0.92 },
+      authority: { score: 3.6, confidence: 0.91 },
+    };
+    const mReady = await mock(() => readyAnswers);
+    const ok = await cli(['score', '--preset', 'goal-clarity', '--state', 'Clear outcome and verification'], d, mReady);
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.equal(ok.json.ok, true);
+    assert.equal(ok.json.preset, 'goal-clarity');
+    assert.equal(ok.json.ready_to_execute, true);
+    assert.deepEqual(ok.json.missing_dimensions, []);
+
+    const partialAnswers = {
+      outcome: { score: 4, confidence: 0.95 },
+      constraints: { score: 2, confidence: 0.95 },
+      verification: { score: 1, confidence: 0.95 },
+      authority: { score: 4, confidence: 0.95 },
+    };
+    const mPartial = await mock(() => partialAnswers);
+    const part = await cli(['score', '--preset', 'goal-clarity', '--state', 'Vague verification and constraints'], d, mPartial);
+    assert.equal(part.status, 0, part.stderr);
+    assert.equal(part.json.ready_to_execute, false);
+    assert.deepEqual(part.json.missing_dimensions, ['verification', 'constraints']);
+  });
 });
 
 describe('route(): a role from the STATUS section text', () => {

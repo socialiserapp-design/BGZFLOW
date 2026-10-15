@@ -44,3 +44,14 @@ test('E13 bounded admission tolerates slow Git startup under the heavy route wit
   try {const result=admit(f);assert.equal(result.allowed,true,result.reason);}
   finally {slow.mock.restore();syncBuiltinESMExports();}
 });
+test('E14 admission validates triageMode, retiredGuards (rebuild-only), and outcomeContract',()=>{
+  const f=fixture();
+  const okRebuild=admit(f,{triageMode:'rebuild',retiredGuards:[{file:'old-guard.test.mjs',reason:'Replaced by new vertical slice contract'}],outcomeContract:{used:'User completes onboarding and sees live First Ad preview',surfaceEvidence:'sim-shots/01-first-ad.png'}});
+  assert.equal(okRebuild.allowed,true,okRebuild.reason);
+  assert.equal(okRebuild.triageMode,'rebuild');
+  assert.equal(okRebuild.retiredGuards.length,1);
+  assert.equal(okRebuild.outcomeContract.used,'User completes onboarding and sees live First Ad preview');
+  assert.equal(admit(f,{triageMode:'evolve',retiredGuards:[{file:'old-guard.test.mjs',reason:'not allowed in evolve'}]}).allowed,false);
+  assert.equal(admit(f,{triageMode:'invalid-mode'}).allowed,false);
+  assert.equal(admit(f,{outcomeContract:{used:'only used'}}).allowed,false);
+});

@@ -9,10 +9,19 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.1-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.2-informational.svg)](CHANGELOG.md)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.2: BGZFLOW Next (Outcome Contracts, Ground-Truth Research, Jev Goal Clarity & Rebuild Mode)
+
+BGZFLOW 0.9.2 upgrades the workflow around five universal pillars while keeping every existing self-improvement (`bgz lessons`, `bgz jev grade/league/outcomes/improve`, `bgz facts`) and communication (`bg-plain-english-builder`, `bg-mail`, `bgz map`) tool intact:
+- **Outcome Contracts & Vertical-Slice Real-Surface Testing (`record slice`)**: done means **USED** on the real surface, never just a commit or PR, and never a "Stage A shell / Stage B wiring" split.
+- **Pre-Decision Ground-Truth Research (`record ground-truth`)**: verify external APIs (like Zernio), statutes, papers or schemas before locking decisions.
+- **Open-World Jev Goal Interrogation (`bgz jev score --preset goal-clarity`)**: dynamically discover any user domain and interrogate only until `goal-clarity >= 0.88` (`ready_to_execute: true`), with opt-in milestone check-ins for long-horizon tasks.
+- **3-Model Council (`ROLE: architect | executor | verifier`)**: upfront 3-model spec/contract alignment, single vertical-slice executor, and cross-model adversarial verification.
+- **Rebuild vs. Evolve Triage (`TRIAGE: rebuild | evolve | keep-shared-brain`)**: first-class clean rebuild mode with explicit `retiredGuards` for superseded source-shape tests and automatic `rebuildRecommended` escalation after 2 failures on a legacy patch.
 
 ## New in 0.9.0: one system map, kept by one owner
 

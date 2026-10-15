@@ -17,6 +17,7 @@ Jev answers many small questions about a situation in about one second for a fra
 Below 0.5: send to the lead or a person. 0.9 or above: act. In between: confirm with one cheap check. These bands are in code (`bgz jev` prints `band`).
 
 ## Everyday commands
+- `jev score --preset goal-clarity --state @brief.md`: weighted clarity of a goal before building (`outcome` 0.35, `constraints` 0.25, `verification` 0.25, `authority` 0.15). Interrogate the user on `missing_dimensions` until `value >= 0.88` (`ready_to_execute: true`), then stop asking and build.
 - `jev score --preset diff-risk --diff <ref>`: weighted risk of a diff (money/data 0.35, security 0.25, customer stop 0.2, scope 0.1, proof 0.1).
 - `jev route --job @brief.md`: one choice before dispatch. Pick a role from STATUS section 1, then a model and effort score; code still applies STATUS allowance and job limits.
 - `jev file <path> --q "..."` / `jev files <globs> --q "..."`: ask a file, never open it. Skips node_modules, .git, binaries, files over 200 KB; at most 255 files.

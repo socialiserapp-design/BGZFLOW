@@ -10,7 +10,7 @@ const USAGE = [
   '        [--state <text|@file>] [--paths a,b] [--cmd "<command>"] [--questions @file.json]   state, files and one gated command',
   '  file  <path> --q "..." [--type ...] [--options ...|--levels ...]   one file question; the answer comes back, never the file',
   '  files <globs|dirs...> --q "..." [--type ...]                        prune, ask per file in parallel, then pick the first file to open',
-  '  score --preset diff-risk [--state <text|@file> | --diff <ref>]      composite score with weights kept in code',
+  '  score --preset diff-risk|goal-clarity [--state <text|@file> | --diff <ref>]   composite score with weights kept in code',
   '  route --job "<text|@file>"                                           role, model tier and effort for a job (code then applies STATUS limits)',
   '  skills --brief <brief.md> [--stage <stage>] [--write|--dry]          liberal skill list for a job (keeps score >= 0.35 and anything the brief names)',
   '  arch --base <ref> [--files a,b] [--brief <brief.md>]                  architecture and logic leads on a diff, per file and over the whole diff',

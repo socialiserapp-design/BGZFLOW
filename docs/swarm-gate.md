@@ -51,14 +51,16 @@ Refresh the existing resource state with `swarm-resources --observe nonsecret-st
 
 An identity may contain `allowance:{available:true,usedPercent,at,source}` **only when a supported status surface actually exposes it**. The same five-minute freshness requirement applies. `providerPercent` enforces that reading where available. Otherwise status says **unavailable**, and job/hour limits still apply. Never add percentages from shared quotas or infer allowance from installation or login.
 
-## Brief and dispatch
+### Brief and dispatch
 
-Every brief begins with the four fields below, then a blank line. `OWNS` is a JSON array of paths relative to that worker's tree. Directory ownership includes descendants; aliases and traversal cannot evade overlap checks.
+Every brief begins with the four fields below (plus optional `ROLE: architect|executor|verifier` and `TRIAGE: rebuild|evolve|keep-shared-brain`), then a blank line. `OWNS` is a JSON array of paths relative to that worker's tree. Directory ownership includes descendants; aliases and traversal cannot evade overlap checks.
 
 ```text
 SWARM: build-01
 PIECE: storage
 KIND: build
+ROLE: executor
+TRIAGE: rebuild
 OWNS: ["src/storage.mjs"]
 HOURS: 1
 
@@ -83,14 +85,14 @@ The CLI exits 2 with JSON `rule`, `reason`, `next` and, for a policy error, `cor
 
 For a host without a native prompt-file flag (including Codex cloud exec), pass `--prompt-file` to **swarm-gate dispatch**, and put the actual supported launch in `--command`. Embed or transport that brief and the full selected skills to the worker through the qualified cloud route. Claude's launch hook claims the same command reservation once, rechecks its unchanged brief/current proof and binds the returned job ID. It neither adds unsupported host flags nor charges a second job. Inline account-home changes are checked against the observed scope.
 
-Two counted failures of `swarm + piece + kind` block the next attempt, including a blocking finding surviving two fix waves. Code classifies known causes first; optional Jev classifies ambiguous causes once. Environment/access/login and flaky infrastructure need lead remediation evidence, without a heavier model. Unclear contracts go to the lead; only a product decision needs the human. Code/logic and unknown failures require one `heavy-read` diagnosis. A completed diagnosis must supply nonempty **Cause** and **Evidence** via `record root-cause`. Include that note in the one next `heavy-write` attempt. If it fails, report the problem and recommendation to the human; no further escalation. `crossFamilyDiagnosis` optionally permits one additional read-only diagnosis on a different approved, proven family with `CROSS_FAMILY: true`. It counts toward usage. Quota/rate, network, provider outage and cancellation errors do not count as logical failures, but consume usage. `record remediation` stores the lead's environment/flaky/contract fix evidence.
+Two counted failures of `swarm + piece + kind` block the next attempt (and flag `rebuildRecommended: true` on the failure record so the lead switches from patching broken legacy code to a clean `rebuild` when appropriate), including a blocking finding surviving two fix waves. Code classifies known causes first; optional Jev classifies ambiguous causes once. Environment/access/login and flaky infrastructure need lead remediation evidence, without a heavier model. Unclear contracts go to the lead; only a product decision needs the human. Code/logic and unknown failures require one `heavy-read` diagnosis. A completed diagnosis must supply nonempty **Cause** and **Evidence** via `record root-cause`. Include that note in the one next `heavy-write` attempt. If it fails, report the problem and recommendation to the human; no further escalation. `crossFamilyDiagnosis` optionally permits one additional read-only diagnosis on a different approved, proven family with `CROSS_FAMILY: true`. It counts toward usage. Quota/rate, network, provider outage and cancellation errors do not count as logical failures, but consume usage. `record remediation` stores the lead's environment/flaky/contract fix evidence. `record ground-truth` records verified/refuted pre-decision probes (`{claim,source,status,evidence}`), and `record slice` records per-slice real-surface USED verifications (`{slice,piece,sha,status,surface,usedOutcome,evidence}`).
 
 ## Piece admission
 
-`record piece` with `status:returned` first checks the saved handback. A claim alone cannot enter integration. Use `jobId`, `returnRef` (SHA), `evidence` and `handbackFile` pointing to the structured JSON below; all output paths must be inside the project and outside credential stores. Transport worker evidence into that owned location while retaining its original hashes.
+`record piece` with `status:returned` first checks the saved handback. A claim alone cannot enter integration. Use `jobId`, `returnRef` (SHA), `evidence` and `handbackFile` pointing to the structured JSON below; all output paths must be inside the project and outside credential stores. Optional `triageMode` (`rebuild` | `evolve` | `keep-shared-brain`), `retiredGuards` (`[{file,reason}]`, permitted only when `triageMode` is `rebuild`), and `outcomeContract` (`{used,surfaceEvidence}`) record subsystem triage and real-surface verification. Transport worker evidence into that owned location while retaining its original hashes.
 
 ```json
-{"jobId":"worker-01","source":{"baseSha":"<base SHA>","sha":"<returned SHA>"},"checks":[{"argv":["node","--test","test/storage.test.mjs"],"exitCode":0,"stdoutFile":"evidence/fast.log","counts":{"tests":3,"pass":3,"fail":0,"skip":0}}],"audit":{"available":false,"reason":"jev-codes not installed"}}
+{"jobId":"worker-01","triageMode":"rebuild","retiredGuards":[{"file":"test/legacy-shape.test.mjs","reason":"Replaced by vertical-slice contract"}],"outcomeContract":{"used":"User completes setup and sees live preview","surfaceEvidence":"evidence/slice-01.png"},"source":{"baseSha":"<base SHA>","sha":"<returned SHA>"},"checks":[{"argv":["node","--test","test/storage.test.mjs"],"exitCode":0,"stdoutFile":"evidence/fast.log","counts":{"tests":3,"pass":3,"fail":0,"skip":0}}],"audit":{"available":false,"reason":"jev-audit not installed"}}
 ```
 
 Admission parses TAP/Node, pytest, unittest or `RESULT files N errors M` output and compares actual counts with claims. Source changes require test-file changes, except docs/config-only pieces. Newly added skip/only/xfail/todo markers and unfinished TODO/placeholder lines fail; negative-example strings and regexes are data. The base and return must match the exact physical diff. When installed, the worker runs `jev-codes audit --json` under the jev-audit skill, fixes confirmed findings in the same job and returns `audit:{available:true,before:[...],after:[...]}` with reported usage. Missing tooling is skipped with a reason.

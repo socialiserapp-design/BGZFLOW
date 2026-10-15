@@ -63,6 +63,41 @@ export const DIFF_RISK = {
   },
 };
 
+export const GOAL_CLARITY_READY_AT = 0.88;
+export const GOAL_CLARITY = {
+  weights: { outcome: 0.35, constraints: 0.25, verification: 0.25, authority: 0.15 },
+  questions: {
+    outcome: score('How clear is the concrete real-world outcome the user wants when this job is finished (what works, exists, or is decided in reality)?', [
+      'no concrete outcome is stated yet',
+      'a general topic is named, but the finished end-state is vague',
+      'the main outcome is named, with some ambiguity in how it works',
+      'the concrete outcome and user journey are clear, with minor edge details open',
+      'the exact real-world outcome, user experience, and finish line are unmistakable',
+    ]),
+    constraints: score('How clear are the material boundaries, existing parts to keep vs rebuild from scratch, and unrequested stops/caps to avoid?', [
+      'boundaries and existing-system triage are unknown',
+      'some context is present, but keep-vs-rebuild or key constraints are unclear',
+      'main constraints are known, with a few open boundary questions',
+      'constraints and keep-vs-rebuild triage are clear for almost every touched area',
+      'all material constraints, triage modes, and non-goals are explicitly settled',
+    ]),
+    verification: score('How clear is how the outcome will be verified on a real-world surface or primary source alongside synthetic checks?', [
+      'no verification surface or primary source is identified',
+      'only synthetic unit tests or code compilation are mentioned',
+      'a real surface or primary source is named, but the verification steps are rough',
+      'real-world surface checks and synthetic checks are defined for the main slices',
+      'exact real-world tool verification (device/browser/API/primary source) and synthetic checks are locked for every slice',
+    ]),
+    authority: score('How clear are the spending, external action, and long-horizon milestone check-in preferences?', [
+      'authority, budget, and check-in preferences are unknown where material',
+      'only partial authority or budget context is known',
+      'safe defaults cover most work, with one external or budget choice open',
+      'authority, budget, and milestone check-in preferences are clear for normal execution',
+      'all authority, budget, and opt-in milestone check-in rules are explicitly settled',
+    ]),
+  },
+};
+
 export async function compositeScore({ preset, text, env, timeoutMs, caller }) {
   const questions = preset.questions;
   const r = await askDetailed({ caller, state: { text: safeText(text, 24000) }, questions, timeoutMs, env });
@@ -91,11 +126,39 @@ export async function runScore({ flags, timeoutMs, env }) {
     ({ text, dropped: droppedSecret } = dropSecretDiffs(g.stdout));
   }
   if (flags.preset) {
-    if (flags.preset !== 'diff-risk') throw new Error('unknown --preset (diff-risk)');
-    if (!text.trim()) throw new Error('diff-risk needs --state <text|@file> or --diff <ref>');
-    const res = await compositeScore({ preset: DIFF_RISK, text, env, timeoutMs: timeoutMs < 8000 ? 8000 : timeoutMs, caller: 'jev-score-diff-risk' });
+    if (flags.preset !== 'diff-risk' && flags.preset !== 'goal-clarity') {
+      throw new Error('unknown --preset (diff-risk|goal-clarity)');
+    }
+    if (!text.trim()) throw new Error(`${flags.preset} needs --state <text|@file>${flags.preset === 'diff-risk' ? ' or --diff <ref>' : ''}`);
+    const isGoal = flags.preset === 'goal-clarity';
+    const res = await compositeScore({
+      preset: isGoal ? GOAL_CLARITY : DIFF_RISK,
+      text,
+      env,
+      timeoutMs: timeoutMs < 8000 ? 8000 : timeoutMs,
+      caller: isGoal ? 'jev-score-goal-clarity' : 'jev-score-diff-risk',
+    });
     const skippedNote = droppedSecret.length ? { skipped_secret_files: droppedSecret } : {};
-    return res.ok ? { ...res, preset: 'diff-risk', note: 'value is 0 (safe) to 1 (risky); a lead, not a verdict', ...skippedNote } : res;
+    if (!res.ok) return res;
+    if (isGoal) {
+      const missing_dimensions = Object.entries(res.parts)
+        .filter(([, p]) => p.norm < GOAL_CLARITY_READY_AT)
+        .sort((a, b) => a[1].norm - b[1].norm)
+        .map(([k]) => k);
+      const ready_to_execute = res.value >= GOAL_CLARITY_READY_AT && res.confidence >= AXES.escalate;
+      return {
+        ...res,
+        preset: 'goal-clarity',
+        ready_at: GOAL_CLARITY_READY_AT,
+        ready_to_execute,
+        missing_dimensions,
+        note: ready_to_execute
+          ? 'goal clarity >= 0.88: stop interrogating the user and start executing'
+          : `goal clarity < 0.88: ask only about unresolved dimensions (${missing_dimensions.join(', ') || 'confidence'})`,
+        ...skippedNote,
+      };
+    }
+    return { ...res, preset: 'diff-risk', note: 'value is 0 (safe) to 1 (risky); a lead, not a verdict', ...skippedNote };
   }
   const q = questionFromFlags({ ...flags, type: 'score' });
   const r = await askDetailed({ caller: 'jev-score', state: { text: safeText(text, 24000) }, questions: { q }, timeoutMs, env });

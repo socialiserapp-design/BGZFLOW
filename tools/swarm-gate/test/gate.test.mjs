@@ -435,3 +435,21 @@ test('A34 supported Boolean true dry-runs allow and custom production aliases st
   const f=fixture();start(f);
   for(const cmd of ['npm publish --dry-run','npm publish --dry-run true','npm publish --dry-run="true"','pnpm publish --dry-run=true','supabase db push --dry-run']) assert.equal(pre(f,cmd).stdout,'',cmd);
 });
+test('A35 records ground-truth probes, vertical slice verifications, role/triage headers, and recommends rebuild after 2 counted failures',()=>{
+  const f=fixture({outcomeContract:{used:'User completes setup and sees live preview',surface:'ios-simulator'}});start(f);
+  assert.equal(record(f,'ground-truth',{claim:'Zernio supports webhook callbacks',source:'https://docs.zernio.example/webhooks',status:'verified',evidence:'HTTP 200 schema probe'}).status,0);
+  assert.equal(record(f,'slice',{slice:'slice-1-onboarding',piece:'p1',status:'passed',surface:'ios-simulator',usedOutcome:'User links account and sees live First Ad preview',evidence:'sim-shots/01-onboarding.png'}).status,0);
+  const bFile=path.join(f.root,'brief-role.md');
+  fs.writeFileSync(bFile,'SWARM: s1\nPIECE: p1\nKIND: build\nROLE: executor\nTRIAGE: rebuild\nOWNS: ["src/a.mjs"]\n\nRead bg-efficiency, test-driven-development, systematic-debugging, verification-before-completion.\nFast checks only.\nProof handback: exact SHA, evidence, exit codes, skills read, confidence.\n');
+  assert.equal(run(f,['dispatch','--job-id','job-r1','--resource','codex-local','--worker-hours','1','--command',command(bFile)]).status,0);
+  assert.equal(record(f,'job',{id:'job-r1',status:'failed',error:'assertion failed in legacy wrapper',evidence:'fail 1'}).status,0);
+  assert.equal(run(f,['dispatch','--job-id','job-r2','--resource','codex-local','--worker-hours','1','--command',command(bFile)]).status,0);
+  assert.equal(record(f,'job',{id:'job-r2',status:'failed',error:'assertion failed in legacy wrapper again',evidence:'fail 2'}).status,0);
+  const st=run(f,['status']).data;
+  assert.equal(st.groundTruth.length,1);
+  assert.equal(st.slices['slice-1-onboarding'].status,'passed');
+  assert.equal(st.dispatches[0].role,'executor');
+  assert.equal(st.dispatches[0].triage,'rebuild');
+  assert.equal(st.failures['p1:build'].rebuildRecommended,true);
+});
+
