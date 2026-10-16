@@ -5,21 +5,24 @@ const usage = `usage: bgz lessons <add|list|due|rework|review|status> [roots...]
   add --project NAME --stage STAGE --what TEXT --key PATTERN [--root DIR]
       [--evidence PATH_OR_LINK] [--severity normal|high] [--id ID] [--date ISO]
       [--system NAME] [--cause NAME] [--release VERSION]
+      [--scope project|global] [--kind defect|preference|pattern]
+      [--review-by YYYY-MM-DD] [--verified-by VERIFIER]
   list [roots...] [--open] [--key PATTERN]   every lesson: id, date, project, stage, key, severity, status
   due [roots...]                    two open lessons per key, or one high
   rework [roots...] [--since ISO]   repeat fixes: same system and cause recorded twice or more
   review [roots...] --key PATTERN --outcome promoted|dismissed
       [--to HOOK_TEST_FIELD_OR_SKILL_PATH] [--reason TEXT]
+      [--scope project|global] [--review-by YYYY-MM-DD] [--verified-by VERIFIER]
   status [roots...]                counts and open groups
 Defaults to the current project; storage: .bgzflow/lessons.jsonl.
 list, due, rework and status only read: they need no write access.
-Promoted requires --to; dismissed requires --reason. Review records existing
-lesson IDs only; new occurrences remain open. No rules are edited by this tool.`;
+Promoted requires --to; dismissed requires --reason. Global scope requires evidence, review-by and verified-by.
+Preferences are never turned into blocking rules.`;
 
 const OPTIONS = {
-  add: ['project', 'stage', 'what', 'key', 'root', 'evidence', 'severity', 'id', 'date', 'system', 'cause', 'release'],
+  add: ['project', 'stage', 'what', 'key', 'root', 'evidence', 'severity', 'id', 'date', 'system', 'cause', 'release', 'scope', 'kind', 'review-by', 'verified-by'],
   list: ['root', 'key'], due: ['root'], rework: ['root', 'since'], status: ['root'],
-  review: ['root', 'key', 'outcome', 'to', 'reason'],
+  review: ['root', 'key', 'outcome', 'to', 'reason', 'scope', 'review-by', 'verified-by'],
 };
 const FLAGS = { list: ['open'] };
 

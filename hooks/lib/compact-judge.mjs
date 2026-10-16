@@ -3,6 +3,7 @@
 // Result: 'silent' | 'notice' | 'recommend' | 'request'. Nothing is injected on silent. Fails open to the 0.5.0 rule
 // (a line only when the chat is over the cap).
 import fs from 'node:fs';
+import path from 'node:path';
 import { askDetailed, jevUsable, noul, safeText, sanitize, score } from '../../tools/jev/jev.mjs';
 import { formatMb, transcriptBytes } from './chat-size.mjs';
 
@@ -91,6 +92,30 @@ export function lineFor(level, bytes, cfg) {
   if (level === 'recommend') return `This chat is ${mb} MB and this looks like a good break. Write a one-page handoff (templates/HANDOFF.md) and start fresh.`;
   if (level === 'notice') return `Chat size ${mb} MB. If the next piece of work is separate, a fresh chat would be cheaper.`;
   return undefined;
+}
+
+export function dedupeH3Level(projectDir, transcript, level) {
+  if (!projectDir || !transcript || (level !== 'notice' && level !== 'recommend')) return level;
+  try {
+    const dir = path.join(projectDir, '.bgzflow');
+    fs.mkdirSync(dir, { recursive: true });
+    const file = path.join(dir, 'h3-announced.json');
+    let state = {};
+    try {
+      state = JSON.parse(fs.readFileSync(file, 'utf8')) || {};
+    } catch {
+      state = {};
+    }
+    const prev = state[transcript];
+    if (prev === level || (prev === 'recommend' && level === 'notice')) {
+      return 'silent';
+    }
+    state[transcript] = level;
+    fs.writeFileSync(file, JSON.stringify(state, null, 2));
+    return level;
+  } catch {
+    return level;
+  }
 }
 
 export async function chatSizeDecision({ transcript, prompt, cfg, env = process.env, ask = askDetailed }) {

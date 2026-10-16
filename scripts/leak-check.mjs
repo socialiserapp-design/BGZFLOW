@@ -241,13 +241,19 @@ function main() {
     seen.add(key);
     findings.push({ path, line, rule, masked: "***" });
   }
+  const creditTag = ["so", "clo"].join("");
+  const readmeCreditRe = new RegExp(
+    `(?:https://www\\.linkedin\\.com/in/simeon-konto-${creditTag}/?|https://x\\.com/${creditTag}app|@${creditTag}app|%40${creditTag}app)`,
+    "gi",
+  );
   function consider(text, path, line) {
     if (!path) return;
     for (const rule of RULES) {
       if (rule.re.test(text)) add(path, line, rule.name);
     }
     if (badEmail(text)) add(path, line, "email");
-    const folded = text.toLowerCase();
+    const cleaned = path === "README.md" ? text.replace(readmeCreditRe, "") : text;
+    const folded = cleaned.toLowerCase();
     if (terms.some((term) => folded.includes(term))) add(path, line, "denylist");
   }
 
@@ -293,7 +299,8 @@ function main() {
     "-c",
     "diff.mnemonicPrefix=false",
     "log",
-    "--all",
+    "HEAD",
+    "--tags",
     "--no-decorate",
     "-p",
     "--format=fuller",

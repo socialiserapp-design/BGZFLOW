@@ -191,6 +191,9 @@ function collect(from, remove) {
 }
 
 function answer(message, now = Date.now()) {
+  if (message.acted) {
+    return { state: 'acted_upon', answer: message.acted.effect, message };
+  }
   if (message.reply) {
     return { state: 'answered', answer: message.reply.body, message };
   }
@@ -206,9 +209,12 @@ async function main() {
     const to = safe(flag('to'), 'to');
     const body = flag('body');
     const fallback = flag('default');
+    const kindFlag = flag('kind');
+    const topicFlag = flag('topic');
+    const priorityFlag = flag('priority');
     const waitMinutes = Number(flag('wait-minutes') || 15);
     if (!project || !body) {
-      throw new Error('post needs --project --from --to --body [--default TEXT] [--wait-minutes N]');
+      throw new Error('post needs --project --from --to --body [--default TEXT] [--wait-minutes N] [--kind KIND] [--topic SLUG] [--priority urgent|normal]');
     }
     if (!Number.isFinite(waitMinutes) || waitMinutes < 0) {
       throw new Error('wait-minutes must be zero or greater');
@@ -220,16 +226,41 @@ async function main() {
       project,
       from,
       to,
-      kind: 'question',
+      kind: kindFlag ? safe(kindFlag, 'kind') : 'question',
       body,
       default: fallback || null,
       waitMinutes,
       createdAt: new Date().toISOString(),
       state: 'open',
+      ...(topicFlag ? { topic: safe(topicFlag, 'topic') } : {}),
+      ...(priorityFlag ? { priority: safe(priorityFlag, 'priority') } : {}),
     };
     const file = path.join(box(project), `${id}.json`);
     try {
       atomic(file, message);
+      // Auto-supersede older open messages from the same sender->recipient on the same topic (or progress/status updates)
+      if (topicFlag || message.kind === 'progress' || message.kind === 'status') {
+        try {
+          const existing = rows(project);
+          for (const prev of existing) {
+            if (
+              prev.id !== id &&
+              prev.state === 'open' &&
+              prev.from === from &&
+              prev.to === to &&
+              ((topicFlag && prev.topic === topicFlag) || (!topicFlag && (prev.kind === 'progress' || prev.kind === 'status')))
+            ) {
+              const prevFile = path.join(box(project), `${prev.id}.json`);
+              prev.state = 'superseded';
+              prev.supersededBy = id;
+              prev.supersededAt = message.createdAt;
+              atomic(prevFile, prev);
+            }
+          }
+        } catch {
+          // non-fatal
+        }
+      }
     } catch (error) {
       // Only a folder the worker may not write to is worked around; a link or any other refusal still fails.
       if (whyNotWritable(path.dirname(file)) !== 'permission') throw error;
@@ -237,6 +268,129 @@ async function main() {
       return;
     }
     console.log(JSON.stringify(message));
+    return;
+  }
+
+  if (command === 'ack') {
+    const project = flag('project');
+    const id = path.basename(flag('id') || '');
+    const from = safe(flag('from'), 'from');
+    if (!project || !id) throw new Error('ack needs --project --id --from');
+    const file = path.join(box(project), `${id}.json`);
+    const lock = `${file}.reply.lock`;
+    withOwnedLock(file, () => {
+      const message = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (message.to !== from && message.to !== 'all' && message.to !== 'broadcast') {
+        throw new Error('only the addressed recipient can ack');
+      }
+      if (message.state !== 'open' && message.state !== 'acknowledged') throw new Error('message is already closed');
+      message.ack = { from, at: new Date().toISOString() };
+      message.state = 'acknowledged';
+      atomic(file, message);
+      console.log(JSON.stringify(message));
+    }, lock);
+    return;
+  }
+
+  if (command === 'ack-all') {
+    const project = flag('project');
+    const to = safe(flag('to') || flag('from'), 'to');
+    if (!project || !to) throw new Error('ack-all needs --project --to <role>');
+    const all = rows(project);
+    const acked = [];
+    for (const msg of all) {
+      if (msg.state === 'open' && (msg.to === to || msg.to === 'all' || msg.to === 'broadcast')) {
+        const file = path.join(box(project), `${msg.id}.json`);
+        try {
+          msg.ack = { from: to, at: new Date().toISOString() };
+          msg.state = 'acknowledged';
+          atomic(file, msg);
+          acked.push(msg.id);
+        } catch {
+          // ignore
+        }
+      }
+    }
+    console.log(JSON.stringify({ ok: true, project, to, ackedCount: acked.length, acked }));
+    return;
+  }
+
+  if (command === 'compact') {
+    const project = flag('project');
+    if (!project) throw new Error('compact needs --project');
+    const archiveHours = Number(flag('archive-hours') ?? 2);
+    const now = Date.now();
+    const directory = box(project);
+    const archiveDir = path.join(directory, 'archive');
+    const all = rows(project);
+    let superseded = 0;
+    let expired = 0;
+    let archived = 0;
+    const latestOpenByKey = new Map();
+
+    // Newest first to supersede older duplicate status/topic messages
+    for (const msg of [...all].reverse()) {
+      if (msg.state !== 'open') continue;
+      const ageMin = (now - Date.parse(msg.createdAt || '')) / 60_000;
+      const ttlMin = Number.isFinite(msg.waitMinutes) && msg.waitMinutes > 0 ? msg.waitMinutes : 60;
+      if (ageMin > ttlMin && (msg.default !== null || ageMin > 120)) {
+        msg.state = 'expired';
+        msg.expiredAt = new Date(now).toISOString();
+        atomic(path.join(directory, `${msg.id}.json`), msg);
+        expired++;
+        continue;
+      }
+      const key = `${msg.from}->${msg.to}:${msg.topic || msg.kind || 'question'}`;
+      if ((msg.topic || msg.kind === 'progress' || msg.kind === 'status') && latestOpenByKey.has(key)) {
+        msg.state = 'superseded';
+        msg.supersededBy = latestOpenByKey.get(key);
+        msg.supersededAt = new Date(now).toISOString();
+        atomic(path.join(directory, `${msg.id}.json`), msg);
+        superseded++;
+      } else {
+        latestOpenByKey.set(key, msg.id);
+      }
+    }
+
+    // Move closed/answered/superseded/expired messages older than archiveHours to archive/
+    if (archiveHours >= 0 && fs.existsSync(directory)) {
+      fs.mkdirSync(archiveDir, { recursive: true });
+      for (const msg of rows(project)) {
+        if (msg.state === 'open') continue;
+        const ageHours = (now - Date.parse(msg.createdAt || '')) / 3_600_000;
+        if (ageHours >= archiveHours) {
+          const src = path.join(directory, `${msg.id}.json`);
+          const dst = path.join(archiveDir, `${msg.id}.json`);
+          try {
+            fs.renameSync(src, dst);
+            archived++;
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+
+    console.log(JSON.stringify({ ok: true, project, superseded, expired, archived }));
+    return;
+  }
+
+  if (command === 'act') {
+    const project = flag('project');
+    const id = path.basename(flag('id') || '');
+    const from = safe(flag('from'), 'from');
+    const effect = flag('effect') || flag('body');
+    if (!project || !id || !effect) throw new Error('act needs --project --id --from --effect');
+    const file = path.join(box(project), `${id}.json`);
+    const lock = `${file}.reply.lock`;
+    withOwnedLock(file, () => {
+      const message = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (message.to !== from) throw new Error('only the addressed recipient can act');
+      message.acted = { from, effect, at: new Date().toISOString() };
+      message.state = 'acted_upon';
+      atomic(file, message);
+      console.log(JSON.stringify(message));
+    }, lock);
     return;
   }
 
@@ -251,7 +405,7 @@ async function main() {
     withOwnedLock(file, () => {
       const message = JSON.parse(fs.readFileSync(file, 'utf8'));
       if (message.to !== from) throw new Error('only the addressed recipient can reply');
-      if (message.state !== 'open') throw new Error('message is already closed');
+      if (message.state !== 'open' && message.state !== 'acknowledged') throw new Error('message is already closed');
       message.reply = { from, body, at: new Date().toISOString() };
       message.state = 'answered';
       atomic(file, message);
@@ -280,7 +434,7 @@ async function main() {
     const to = safe(flag('to'), 'to');
     if (!project) throw new Error('watch needs --project --to');
     while (true) {
-      const message = rows(project).find((row) => row.to === to && row.state === 'open');
+      const message = rows(project).find((row) => row.to === to && (row.state === 'open' || row.state === 'acknowledged'));
       if (message) {
         console.log(JSON.stringify(message));
         return;
@@ -292,8 +446,12 @@ async function main() {
   if (command === 'list') {
     const project = flag('project');
     const to = flag('to');
+    const stateFilter = flag('state');
+    const limitFlag = Number(flag('limit') || 0);
     if (!project) throw new Error('list needs --project');
-    console.log(JSON.stringify(rows(project).filter((row) => !to || row.to === to)));
+    let filtered = rows(project).filter((row) => (!to || row.to === to) && (!stateFilter || row.state === stateFilter));
+    if (limitFlag > 0) filtered = filtered.slice(-limitFlag);
+    console.log(JSON.stringify(filtered));
     return;
   }
 
@@ -306,7 +464,7 @@ async function main() {
     return;
   }
 
-  throw new Error('usage: bg-mail post|reply|wait|watch|list|collect ...');
+  throw new Error('usage: bg-mail post|ack|ack-all|act|reply|wait|watch|list|compact|collect ...');
 }
 
 // Name the failing check without printing the inbox, working-folder or home paths.

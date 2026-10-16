@@ -30,9 +30,11 @@ function forbidden(line) {
   const code=line.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g,'').replace(/(?<=[=(:,;])\s*\/(?:[^/\\\n]|\\.)+\/[a-z]*/g,'');
   return /\b(?:TODO|TBD|placeholder)\b|\b(?:skip|only|xfail|todo)\s*:\s*true\b|\b(?:test|it|describe)\s*[.]\s*(?:skip|only|todo)\s*\(|pytest[.]mark[.](?:skip|skipif|xfail)\b|@(?:unittest[.])?skip\b/i.test(code);
 }
+const TIER1_TEST=/(?:tier[-_]?1|invariant|money|billing|charge[-_]once|owner[-_]isolation|tenant[-_]isolation|consent|idempotenc|rollback)/i;
 export function admitEvidence(root,handback,{baseSha,sha}={}) {
   try {
     if(!handback||handback.source?.baseSha!==baseSha||handback.source?.sha!==sha||!SHA.test(baseSha||'')||!SHA.test(sha||''))return failed('Handback source proof does not match the piece base and returned SHA.');
+    if(handback.verificationStatus==='passed'||handback.outcomeContract?.verificationStatus==='passed'||(handback.verification?.status==='passed'&&(!handback.verification?.verifier||handback.verification.verifier===handback.builder||handback.role==='executor')))return failed('A builder cannot self-certify verification status passed; only an independent verifier (verifier !== builder) may record passed.');
     if(!Array.isArray(handback.checks)||!handback.checks.length)return failed('Handback needs fast-check output with exit codes and counts.');
     let total={},fastOutput='',names=[];const outputs=[];
     for(const check of handback.checks){
@@ -59,16 +61,30 @@ export function admitEvidence(root,handback,{baseSha,sha}={}) {
     if(handback.retiredGuards!==undefined){
       if(!Array.isArray(handback.retiredGuards)||handback.retiredGuards.some(g=>!g||typeof g.file!=='string'||!g.file.trim()||typeof g.reason!=='string'||!g.reason.trim()))return failed('Retired source-shape guards must each name the file and reason.');
       if(handback.retiredGuards.length>0&&handback.triageMode&&handback.triageMode!=='rebuild')return failed('Only a rebuild piece may retire brittle source-shape guards.');
+      if(handback.retiredGuards.some(g=>TIER1_TEST.test(g.file))&&(!handback.verifierSignOff||typeof handback.verifierSignOff!=='string'||!handback.verifierSignOff.trim()))return failed('Tier-1 behavioural safety tests (money, owner isolation, consent, idempotency, rollback) cannot be retired or weakened without verifierSignOff.');
+    }
+    if(handback.paidOrExternalWrites===true||handback.operations!==undefined){
+      if(!Array.isArray(handback.operations)||!handback.operations.length||handback.operations.some(op=>!op||typeof op.id!=='string'||!op.id.trim()||typeof op.owner!=='string'||!op.owner.trim()||typeof op.intent!=='string'||!op.intent.trim()||typeof op.reconciliationMethod!=='string'||!op.reconciliationMethod.trim())){
+        return failed('Paid or external writes require an operation record with id, owner, intent and reconciliationMethod.');
+      }
     }
     if(handback.outcomeContract!==undefined){
       const oc=handback.outcomeContract;
       if(!oc||typeof oc!=='object'||typeof oc.used!=='string'||!oc.used.trim()||typeof oc.surfaceEvidence!=='string'||!oc.surfaceEvidence.trim())return failed('Outcome contract in handback needs a plain-English used outcome and surfaceEvidence path.');
       if(/(?:^|[/\\])(?:auth\.json|\.env(?:\..*)?|credentials)(?:$|[/\\])/i.test(oc.surfaceEvidence))return failed('Outcome contract surfaceEvidence cannot reference credential files.');
+      if(oc.surfaceStatus==='unavailable'&&oc.claimedLevel==='USED')return failed('An unavailable verification surface stays BUILT and cannot be claimed as USED.');
     }
     const extra={};
     if(handback.triageMode!==undefined)extra.triageMode=handback.triageMode;
     if(handback.retiredGuards!==undefined)extra.retiredGuards=handback.retiredGuards;
-    if(handback.outcomeContract!==undefined)extra.outcomeContract=handback.outcomeContract;
+    if(handback.operations!==undefined)extra.operations=handback.operations;
+    if(handback.outcomeContract!==undefined){
+      extra.outcomeContract={
+        ...handback.outcomeContract,
+        verificationLevel:handback.outcomeContract.surfaceStatus==='unavailable'?'BUILT':'BUILT_READY_FOR_VERIFIER',
+      };
+    }
     return {allowed:true,counts:total,files,testNames:names,fastOutput:fastOutput.slice(0,32768),diffSummary:`${files.length} changed files; ${added.length} added lines`,outputs,audit,...extra};
   }catch(e){return failed(e.message||'Piece evidence could not be verified.');}
 }
+

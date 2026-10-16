@@ -66,7 +66,7 @@ HOURS: 1
 
 Read bg-efficiency, test-driven-development, systematic-debugging,
 verification-before-completion and the selected domain skills in full.
-Fast checks only on owned files.
+Fast checks on owned files plus slice effect read-back.
 Proof handback: exact SHA, changed files, commands, exit codes, evidence,
 actual skills read, confidence, assumptions and blocking findings.
 ```
@@ -123,7 +123,7 @@ All record payloads are JSON files, passed with `record TYPE --file record.json`
 | `notice` | `type:limit` or `third-wave`, plus the sent `chatRef` |
 | `finish` | empty object after all jobs are terminal |
 
-Before whole tests use `check-suite --sha SHA`; before real-platform rehearsal use `check-rehearsal --sha SHA`; before the single independent review use `check-review --sha SHA`. Order: integration, full suite once, golden journeys and rollback on the real platform, one read-only review per release ID. The hook recognizes common full-suite commands; project `suitePatterns` register aliases. Briefs requesting a full suite use KIND check/CHECK suite. Workers keep fast checks only. Repairs require new exact-SHA rehearsal evidence, never another review.
+Before whole tests use `check-suite --sha SHA`; before real-platform rehearsal use `check-rehearsal --sha SHA`; before the single independent review use `check-review --sha SHA`. Order: integration, full suite once, golden journeys and rollback on the real platform, one read-only review per release ID. The hook recognizes common full-suite commands; project `suitePatterns` register aliases. Briefs requesting a full suite use KIND check/CHECK suite. Workers run fast checks on owned files plus slice effect read-back. Repairs require new exact-SHA rehearsal evidence, never another review.
 
 Open one whole-review fix wave **before** dispatching its complete parallel batch. At most two waves are available across resumes and nested commands. This cap applies to repairs from the lead's independent whole-candidate review, not workers' test-driven quality work while building. Advance original workers to the failed combined candidate, preserving dirty work and prior commits; never restart from stale wave zero. Integrate all repairs, record a new SHA, and rerun real-platform golden journeys and rollback; never another review. The third review repair wave needs explicit human chat authority.
 

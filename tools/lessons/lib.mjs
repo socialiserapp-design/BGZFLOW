@@ -40,6 +40,13 @@ function date(value) {
   }
   return value;
 }
+function isoDay(value, name) {
+  const s = text(value, name, 32);
+  if (!/^\d{4}-\d\d-\d\d$/.test(s) || !Number.isFinite(Date.parse(s + 'T00:00:00.000Z'))) {
+    throw new Error(`${name} must be a valid YYYY-MM-DD date`);
+  }
+  return s;
+}
 function lesson(input) {
   const row = { id: id(input.id), date: date(input.date), project: text(input.project, 'project', 100),
     stage: text(input.stage, 'stage', 64), what: text(input.what, 'what'), key: key(input.key) };
@@ -47,6 +54,27 @@ function lesson(input) {
   if (input.severity !== undefined) {
     if (!['normal', 'high'].includes(input.severity)) throw new Error('severity must be normal or high');
     row.severity = input.severity;
+  }
+  if (input.kind !== undefined) {
+    if (!['defect', 'preference', 'pattern'].includes(input.kind)) throw new Error('kind must be defect, preference or pattern');
+    row.kind = input.kind;
+  }
+  if (row.kind === 'preference' && row.severity === 'high') {
+    throw new Error('preference lessons cannot have high severity or become blocking rules');
+  }
+  if (input.scope !== undefined) {
+    if (!['project', 'global'].includes(input.scope)) throw new Error('scope must be project or global');
+    row.scope = input.scope;
+  }
+  const reviewBy = input['review-by'] ?? input.reviewBy;
+  const verifiedBy = input['verified-by'] ?? input.verifiedBy;
+  if (reviewBy !== undefined) row.reviewBy = isoDay(reviewBy, 'reviewBy');
+  if (verifiedBy !== undefined) row.verifiedBy = text(verifiedBy, 'verifiedBy', 100);
+  if (row.scope === 'global') {
+    if (row.kind === 'preference') throw new Error('preferences must stay project/founder-scoped and never become global blocking rules');
+    if (!row.evidence || !row.reviewBy || !row.verifiedBy) {
+      throw new Error('global scope requires --evidence, --review-by YYYY-MM-DD and --verified-by VERIFIER');
+    }
   }
   // Incident fields (optional): the failing system, the underlying cause and the release it shipped in.
   if (input.system !== undefined) row.system = slug(input.system, 'system');
@@ -64,7 +92,18 @@ function reviewRecord(input) {
   if (!['promoted', 'dismissed'].includes(row.outcome)) throw new Error('outcome must be promoted or dismissed');
   if (input.to !== undefined) row.to = text(input.to, 'to', 1000);
   if (input.reason !== undefined) row.reason = text(input.reason, 'reason');
+  if (input.scope !== undefined) {
+    if (!['project', 'global'].includes(input.scope)) throw new Error('scope must be project or global');
+    row.scope = input.scope;
+  }
+  const reviewBy = input['review-by'] ?? input.reviewBy;
+  const verifiedBy = input['verified-by'] ?? input.verifiedBy;
+  if (reviewBy !== undefined) row.reviewBy = isoDay(reviewBy, 'reviewBy');
+  if (verifiedBy !== undefined) row.verifiedBy = text(verifiedBy, 'verifiedBy', 100);
   if (row.outcome === 'promoted' && !row.to) throw new Error('promoted requires --to');
+  if (row.outcome === 'promoted' && row.scope === 'global' && (!row.reviewBy || !row.verifiedBy)) {
+    throw new Error('promoting to global scope requires --review-by YYYY-MM-DD and --verified-by VERIFIER');
+  }
   if (row.outcome === 'dismissed' && !row.reason) throw new Error('dismissed requires --reason');
   if (!Array.isArray(input.lessons) || !input.lessons.length) throw new Error('review requires lesson IDs');
   row.lessons = input.lessons.map(id);

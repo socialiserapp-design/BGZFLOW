@@ -37,6 +37,74 @@ const LEDGER_KEEP_BYTES = 512 * 1024;
 export const noul = (instructions, criteria) => ({ type: 'noul', instructions, ...(criteria ? { criteria } : {}) });
 export const choice = (instructions, options) => ({ type: 'choice', instructions, criteria: options });
 export const score = (instructions, levels) => ({ type: 'score', instructions, criteria: levels });
+export const box = (instructions) => ({ type: 'box', instructions });
+
+// Load a PNG or JPEG image as a TypeSafe System One asset ({ ok, ref, asset, width, height }).
+export function loadImageAsset(filePath, refPrefix = 'img') {
+  try {
+    const resolved = path.resolve(filePath);
+    if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) {
+      return { ok: false, reason: `Image file not found: ${filePath}` };
+    }
+    const buf = fs.readFileSync(resolved);
+    if (buf.length > 16 * 1024 * 1024) {
+      return { ok: false, reason: `Image exceeds 16 MiB limit (${buf.length} bytes).` };
+    }
+    let format = null;
+    let width = 0;
+    let height = 0;
+    // PNG header: 89 50 4E 47 0D 0A 1A 0A
+    if (buf.length >= 24 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+      format = 'png';
+      width = buf.readUInt32BE(16);
+      height = buf.readUInt32BE(20);
+    } else if (buf.length >= 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+      format = 'jpg';
+      // Scan JPEG SOF0/SOF2 markers for dimensions
+      let offset = 2;
+      while (offset + 9 < buf.length) {
+        if (buf[offset] !== 0xff) break;
+        const marker = buf[offset + 1];
+        const len = buf.readUInt16BE(offset + 2);
+        if (marker === 0xc0 || marker === 0xc2) {
+          height = buf.readUInt16BE(offset + 5);
+          width = buf.readUInt16BE(offset + 7);
+          break;
+        }
+        offset += 2 + len;
+      }
+    }
+    if (!format) {
+      return { ok: false, reason: 'Unsupported image format (must be PNG or JPEG).' };
+    }
+    if (width > 0 && height > 0) {
+      if (width < 280 || height < 280 || width > 1568 || height > 1568) {
+        return {
+          ok: false,
+          reason: `Image dimensions ${width}x${height} outside Jev 280..1568 px bounds.`,
+          width,
+          height,
+        };
+      }
+    }
+    const rand = Math.random().toString(16).slice(2, 10);
+    const ref = `${refPrefix}-${rand}-${path.basename(resolved).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 20)}`;
+    return {
+      ok: true,
+      ref,
+      width,
+      height,
+      format,
+      asset: {
+        type: 'image',
+        format,
+        data_base64: buf.toString('base64'),
+      },
+    };
+  } catch (err) {
+    return { ok: false, reason: err.message || 'Could not load image asset.' };
+  }
+}
 
 // ---------- evidence helpers ----------
 // sanitize and sanitizeRecord live in hooks/lib/secrets.mjs (the one masker); they are re-exported here for tools.
@@ -134,6 +202,12 @@ export function summarizeAnswers(answers = {}) {
     if (a.type === 'noul') out[id] = round(a.noul);
     else if (a.type === 'choice') out[id] = { c: String(a.choice).slice(0, 60), conf: round(a.confidence) };
     else if (a.type === 'score') out[id] = { s: round(a.score), conf: round(a.confidence) };
+    else if (a.type === 'box' && a.box) {
+      out[id] = {
+        b: [round(a.box.top), round(a.box.bottom), round(a.box.left), round(a.box.right)],
+        conf: round(a.confidence),
+      };
+    }
   }
   return out;
 }
@@ -186,6 +260,17 @@ function validAnswer(q, a) {
   if (q.type === 'noul') return Number.isFinite(a.noul) && a.noul >= 0 && a.noul <= 1;
   if (q.type === 'choice') return typeof a.choice === 'string' && Number.isFinite(a.confidence) && Object.hasOwn(q.criteria || {}, a.choice);
   if (q.type === 'score') return Number.isFinite(a.score) && a.score >= 0 && a.score <= (Array.isArray(q.criteria) ? q.criteria.length - 1 : 1e9) && Number.isFinite(a.confidence);
+  if (q.type === 'box') {
+    return (
+      a.box &&
+      typeof a.box === 'object' &&
+      Number.isFinite(a.box.top) &&
+      Number.isFinite(a.box.bottom) &&
+      Number.isFinite(a.box.left) &&
+      Number.isFinite(a.box.right) &&
+      Number.isFinite(a.confidence)
+    );
+  }
   return false;
 }
 
@@ -210,19 +295,29 @@ function postJson(urlString, headers, body, signal) {
 // err codes: noquestions, nokey, badstate, toolarge, jevdown (breaker holds, no network use), timeout, network,
 // http_<status>, badanswer. Every one of them means "fail open". timeoutMs is per call (minimum 50 ms) and is a hard
 // ceiling on the whole call, including a server that sends headers and then stalls.
-export async function askDetailed({ caller = 'unknown', state, questions, timeoutMs = DEFAULT_TIMEOUT_MS, env = process.env, signal } = {}) {
+export async function askDetailed({ caller = 'unknown', state, questions, assets, model, timeoutMs = DEFAULT_TIMEOUT_MS, env = process.env, signal } = {}) {
   const ids = Object.keys(questions || {});
   if (!ids.length) return { ok: false, err: 'noquestions' };
   const key = resolveKey(env);
   if (!key) return { ok: false, err: 'nokey' };
+  const hasBox = ids.some((id) => questions[id]?.type === 'box');
+  const hasAssets = assets && typeof assets === 'object' && Object.keys(assets).length > 0;
+  const effectiveModel = model || (hasBox ? 'jev-preview' : MODEL);
   let body;
   try {
     JSON.stringify({ state, questions }); // a state that cannot be serialised is the caller's bug: say so
-    body = JSON.stringify({ model: MODEL, state: sanitizeRecord(state), questions: sanitizeRecord(questions) });
+    const reqObj = {
+      model: effectiveModel,
+      state: sanitizeRecord(state),
+      questions: sanitizeRecord(questions),
+      ...(hasAssets ? { assets } : {}),
+    };
+    body = JSON.stringify(reqObj);
   } catch {
     return { ok: false, err: 'badstate' };
   }
-  if (body.length > MAX_STATE_CHARS + 20000) return { ok: false, err: 'toolarge' };
+  const maxBodyBytes = hasAssets ? 30 * 1024 * 1024 : MAX_STATE_CHARS + 20000;
+  if (body.length > maxBodyBytes) return { ok: false, err: 'toolarge' };
   const useBreaker = !breakerOff(env);
   if (useBreaker && jevDownUntil(env)) return { ok: false, err: 'jevdown' };
   const started = Date.now();
@@ -234,7 +329,7 @@ export async function askDetailed({ caller = 'unknown', state, questions, timeou
       const e = new Error('timeout');
       e.name = 'AbortError';
       reject(e);
-    }, Math.max(50, Number(timeoutMs) || DEFAULT_TIMEOUT_MS));
+    }, Math.max(50, Number(timeoutMs) || (hasAssets ? 8000 : DEFAULT_TIMEOUT_MS)));
   });
   let callerAborted = false;
   const onCallerAbort = () => {
@@ -246,8 +341,13 @@ export async function askDetailed({ caller = 'unknown', state, questions, timeou
     else signal.addEventListener('abort', onCallerAbort, { once: true });
   }
   const ledger = (extra) => appendJsonl(ledgerPath(env), { t: new Date().toISOString(), caller, ids, ms: Date.now() - started, ...extra });
+  const reqHeaders = {
+    Authorization: `Bearer ${key}`,
+    'Content-Type': 'application/json',
+    ...(hasAssets || hasBox ? { 'TypeSafe-Danger-Zone-Images': 'true' } : {}),
+  };
   try {
-    const r = await Promise.race([postJson(endpoint(env), { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body, controller.signal), deadline]);
+    const r = await Promise.race([postJson(endpoint(env), reqHeaders, body, controller.signal), deadline]);
     if (r.status < 200 || r.status >= 300) {
       ledger({ ok: false, err: `http_${r.status}` });
       return { ok: false, err: `http_${r.status}` };
@@ -292,6 +392,7 @@ export async function ask(opts) {
 // ---------- reading answers (normalised) ----------
 export const pYes = (res, id) => res.answers[id].noul;
 export const pick = (res, id) => ({ choice: res.answers[id].choice, confidence: res.answers[id].confidence, probabilities: res.answers[id].probabilities || {} });
+export const boxOf = (res, id) => ({ box: res.answers[id].box, confidence: res.answers[id].confidence });
 // Score is 0-based over the described levels (levels.length levels => 0..levels.length-1). norm is 0..1.
 export function scoreOf(res, id, levels) {
   const a = res.answers[id];
@@ -341,12 +442,13 @@ export function readTextArg(value, maxChars = 20000) {
   return value.slice(0, maxChars);
 }
 
-// A question from CLI flags: --q text --type noul|choice|score [--options a,b,c] [--levels "l1|l2|l3"]
+// A question from CLI flags: --q text --type noul|choice|score|box [--options a,b,c] [--levels "l1|l2|l3"]
 export function questionFromFlags(flags, defaultType = 'noul') {
   const instructions = String(flags.q || '').trim();
   if (!instructions) throw new Error('--q "<question>" is required');
   const type = String(flags.type || defaultType);
   if (type === 'noul') return noul(instructions);
+  if (type === 'box') return box(instructions);
   if (type === 'choice') {
     const opts = csv(flags.options);
     if (opts.length < 2) throw new Error('--type choice needs --options a,b,c (at least two; add "other" when the list may not cover everything)');
@@ -358,13 +460,14 @@ export function questionFromFlags(flags, defaultType = 'noul') {
     if (levels.length < 2 || levels.length > 10) throw new Error('--type score needs --levels "level 0|level 1|..." (2 to 10 situations, lowest first)');
     return score(instructions, levels);
   }
-  throw new Error(`unknown --type ${type} (noul, choice or score)`);
+  throw new Error(`unknown --type ${type} (noul, choice, score or box)`);
 }
 
 // Compact, human-readable form of one answer for the CLI.
 export function shape(q, a, id) {
   if (q.type === 'noul') return { id, type: 'noul', p_yes: round(a.noul) };
   if (q.type === 'choice') return { id, type: 'choice', choice: a.choice, confidence: round(a.confidence), probabilities: a.probabilities };
+  if (q.type === 'box') return { id, type: 'box', box: a.box, confidence: round(a.confidence) };
   return { id, type: 'score', score: round(a.score), of: q.criteria.length - 1, legend: a.legend, confidence: round(a.confidence) };
 }
 

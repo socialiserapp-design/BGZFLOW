@@ -16,6 +16,10 @@ const SCRIPTS = {
   'start-now': 'start-now/start-now.mjs',
   facts: 'facts/facts.mjs',
   map: 'map/map.mjs',
+  verify: 'verify/verify.mjs',
+  scan: 'scan/scan.mjs',
+  'review-pack': 'review-pack/review-pack.mjs',
+  goal: 'goal/goal.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -29,6 +33,10 @@ const USAGE = [
   '  start-now [<project-dir>] [--json] list work-graph tasks that are ready to start (dependencies done)',
   '  facts <for|add|accept|list>       per-project facts for the files a brief touches',
   '  map [<dir>] [--brief] [--json]    one system map: repos, services, deployments, and each change by stage (map record|live ... --as <role>)',
+  '  verify --file <spec.json>         verify served identity, verifier != builder, and effect read-back (BUILT vs USED)',
+  '  scan [--base <ref>] [--file <p>]  deterministic security, SQL/IDOR, fake-effect and preview two-customer isolation scan',
+  '  review-pack [--handback <f.json>] generate blind verifier pack (strips builder prose, keeps raw diff & comments)',
+  '  goal <lock|status|set-wait|withdraw-item>  lock and inspect tamper-proof universal QA/QC checklist contracts',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);

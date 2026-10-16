@@ -44,8 +44,8 @@ const tools = [
   },
   {
     name: "bg-mail",
-    hint: "<post|reply|wait|list|watch|collect> --project ID ...",
-    about: "Exchange durable questions and replies between leads and workers without ending a job",
+    hint: "<post|ack|act|reply|wait|list|watch|collect> --project ID ...",
+    about: "Exchange durable questions, acknowledgments, actions and replies between leads and workers without ending a job",
   },
   {
     name: "bg-governor",
@@ -130,6 +130,26 @@ const tools = [
     name: "map",
     hint: "[<dir>] [--brief] [--json] | record <task-id> ... --as <role> | live <deployment> --evidence <text> --as <role>",
     about: "Show the one system map: repos, worktrees, services, deployments and each task's change by stage; the owner records changes and confirms live deployments",
+  },
+  {
+    name: "verify",
+    hint: "<outcome.json | --json-text JSON | --visual --screenshot FILE> [--project <dir>] [--record]",
+    about: "Verify an outcome contract on a real surface (including Multimodal Jev 1.14 screenshot/box QA) with served buildSha, backendVersion, verifier !== builder and effect read-back",
+  },
+  {
+    name: "scan",
+    hint: "[<dir>] [--two-customer <probe.json>] [--json]",
+    about: "Deterministic fake-effect, secret, SQL RLS and trust-baseline scanner (plus non-production two-customer probe check)",
+  },
+  {
+    name: "review-pack",
+    hint: "[<dir>] [--base <ref>] [--head <ref>] [--handback <file.json>] [--out <file.json>]",
+    about: "Prepare a neutral verifier review packet from raw git diff, DECISIONS.md, BRIEF.md and machine receipts with builder prose stripped",
+  },
+  {
+    name: "goal",
+    hint: "<lock|compile|check-ste|status|set-wait|withdraw-item> [options]",
+    about: "Compile plain-English prompts into signed goal checklists, check STE plain English, and inspect or update .bgzflow/active-goal.json",
   },
 ];
 

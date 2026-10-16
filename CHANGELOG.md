@@ -2,6 +2,30 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.5 (2026-10-16)
+
+**Plain-English Intent Compiler (STE), Multimodal Jev 1.14 Visual QA, and HMAC-Signed Universal Stop Enforcement.**
+
+- **Adaptive Short-Prompt Expansion & Spec Compiler (`bgz goal compile`)**: compiles short plain-English prompts and user answers into a signed `.bgzflow/active-goal.json` contract, tagging each item with `origin: "user_explicit"` or `origin: "standard_quality_check"` across domains (`ui`, `software`, `research`, `legal`, `marketing`, `personal`) and supporting `--display plain_only | plain_plus_spec` (`BGZFLOW_SPEC_DISPLAY`).
+- **STE Plain-English Gate (`bgz goal check-ste` & `bgz jev score --preset ste-plain-english`)**: deterministic ASD-STE100 sentence-length and jargon checks paired with Jev `ste-plain-english` scoring (`pass_at: 0.85`).
+- **Multimodal Jev 1.14 Visual & Box Verification (`bgz verify --visual`)**: `tools/jev/jev.mjs` adds `loadImageAsset` (PNG/JPEG `280..1568` px, `<= 16 MiB`), `box(instructions)` (`jev-preview`), and `boxOf`; `bgz verify --visual --screenshot <path> [--mockup <path>] [--find-box <target>]` verifies rendered screens and writes signed receipts.
+- **Security & Inbox Hardening**: `hooks/lib/universal-stop.mjs` signs goal contracts, receipts, and escalation records with a machine-local HMAC-SHA256 secret (`~/.bgzflow/signing.key` or `BGZFLOW_SIGNING_KEY`); `PostToolUse` mid-turn inbox checks notify once per message without marking messages delivered before `ack`/`reply`.
+
+## 0.9.4 (2026-10-16)
+
+**Universal QA/QC & Inbox Stop Enforcement, Decision-Escalation Gate, and Mid-Turn Priority Inbox.**
+
+- **Universal Stop Hook (`hooks/h9-universal-qa-and-inbox-stop.mjs`)**: blocks an agent from going idle while `.bgzflow/active-goal.json` has unverified checklist items, unacknowledged high-priority product/scope decisions (`bgz jev score --preset decision-escalation`), or unread `bg-mail` messages.
+- **Anti-Gaming Verification & Neutral Review Packets**: `bgz verify`, `bgz scan` (deterministic fake-effect and secret scanner), `bgz review-pack` (neutral verifier packet with builder prose stripped), and `bgz goal` (`lock`, `status`, `set-wait`, `withdraw-item`).
+
+## 0.9.3 (2026-10-15)
+
+**3-Model Consensus Verification, Two-Tier Test Governance, Scoped Lessons, and Operations Ledger.**
+
+- **Verifier-Only `passed` & Executed Runtime Proof (`bgz verify`)**: `verifyOutcome` caps synchronous file checks at `BUILT` and requires live HTTP / runtime probe execution (`executeOutcomeVerification`, `verifier !== builder`, served `buildSha` and `backendVersion`) to reach `USED`.
+- **Deterministic Scanner (`bgz scan`) & Neutral Review Packet (`bgz review-pack`)**: scans JS/TS for fake-effect stubs, SQL RLS hazards, and live 3-step two-customer isolation probes; strips builder prose from verifier packets.
+- **Two-Tier Test Governance, Operations Ledger & Scoped Lessons**: Tier-1 safety tests require `verifierSignOff` before retirement; paid or external writes require an operations ledger entry; `bgz lessons` supports `--scope global` and `bg-mail` adds `ack` and `act` states.
+
 ## 0.9.2 (2026-10-15)
 
 **BGZFLOW Next: outcome contracts, pre-decision ground truth, Jev goal-clarity interrogation, 3-model vertical slices, and rebuild-vs-evolve triage.**

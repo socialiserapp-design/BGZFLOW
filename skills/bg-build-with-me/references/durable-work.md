@@ -15,13 +15,13 @@ Use when a customer outcome takes several steps, providers or waits (quote, char
 
 Each provider's quirks live in one tested adapter that turns its replies into a plain outcome the rest of the system understands: done, not done, unknown, or needs attention. "Accepted" is not "published": the adapter reports "accepted" until the result is confirmed in the provider's own published state, and nothing downstream treats accepted as delivered. Tests for the adapter use the provider's documented or recorded responses in test mode (see the [testing ladder](../../../docs/testing-ladder.md#tests-prove-customer-outcomes)). Other code never reads raw provider fields.
 
-## Rebuild beside the old
+## Rebuild beside the old (only for `TRIAGE: evolve` on live shared backend paths)
 
-Replace a risky path by growing the new one next to it, not by rewriting in place (a "strangler fig": the new vine grows around the old tree until the tree is no longer needed).
+When `TRIAGE: rebuild` is chosen to replace a rejected UI or broken user flow, replace the broken components cleanly from the approved spec instead of keeping or wrapping the rejected path. Use the "strangler fig" pattern below **only** when `TRIAGE: evolve` replaces a live, revenue-bearing backend path that active customers still depend on:
 
 1. **Build beside.** The new path lives next to the old one and starts doing nothing customers can see.
 2. **Compare without side effects.** Run the new path on the same real inputs in a read-only way (no charge, no message, no write to live data) and compare its answers with the old path's. Differences are findings to explain.
 3. **Switch one capability at a time** at the existing entry point (the route, screen or handler customers already reach), so a switch is small and can be switched back.
 4. **Retire the old path only after usage evidence.** Remove it when logs or counts show nothing still uses it for a full normal cycle (including the oldest supported app version), then record the retirement as a decision. Until then it stays as the rollback.
 
-New things go on by default as usual; this describes how a replacement gets there safely, not a reason to hold it off.
+New things go on by default as usual; this describes how a live backend replacement gets there safely, never an excuse to preserve a rejected UI shell.

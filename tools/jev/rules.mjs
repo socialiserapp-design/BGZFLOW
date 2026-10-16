@@ -98,6 +98,110 @@ export const GOAL_CLARITY = {
   },
 };
 
+export const DECISION_ESCALATION_ASK_AT = 0.65;
+export const DECISION_ESCALATION = {
+  weights: {
+    user_product_impact: 0.35,
+    money_data_irreversibility: 0.3,
+    spec_ambiguity: 0.2,
+    not_routine_engineering: 0.15,
+  },
+  questions: {
+    user_product_impact: score(
+      'How much does this mid-build decision change user-visible product behaviour, UX flow, or domain outcome in a way the owner would care about?',
+      [
+        'purely internal implementation detail invisible to the user',
+        'minor styling or internal helper choice with no behaviour change',
+        'small UX or workflow detail with an obvious standard default',
+        'noticeable change to user flow, feature behaviour, or domain rules where two reasonable owners might disagree',
+        'major product direction, core user journey, keep-vs-remove feature, or business rule change',
+      ],
+    ),
+    money_data_irreversibility: score(
+      'How much does this decision affect pricing, credits, real money, external publishing, legal/compliance commitments, or hard-to-reverse data changes?',
+      [
+        'no impact on money, credits, external systems, or persistent data',
+        'local reversible state only',
+        'touches configuration or schema in an easily reversible way',
+        'affects quotas, limits, external API behaviour, or customer data model',
+        'directly affects billing, pricing, credit caps, live publishing, legal terms, or irreversible data',
+      ],
+    ),
+    spec_ambiguity: score(
+      'How silent, ambiguous, or contradictory is the existing specification (DECISIONS.md, active-goal.json, BRIEF.md) on this exact choice?',
+      [
+        'already explicitly answered in the spec or DECISIONS.md',
+        'clearly implied by the existing spec and keep/forbid lists',
+        'partially covered, with a safe obvious default',
+        'genuinely unspecified with two plausible interpretations',
+        'directly conflicting requirements or a high-stakes gap the spec never addressed',
+      ],
+    ),
+    not_routine_engineering: score(
+      'Is this a true owner/product decision rather than a routine technical/engineering choice the AI should make itself?',
+      [
+        '100% routine engineering (library, file path, component plumbing, test wiring)',
+        'mostly technical with a clear best practice',
+        'mixed technical and UX trade-off with a safe default',
+        'primarily a product, policy, or user-experience trade-off',
+        'pure founder/owner preference or business policy decision that an AI must never silently invent',
+      ],
+    ),
+  },
+};
+
+export const STE_PLAIN_ENGLISH_PASS_AT = 0.85;
+export const STE_PLAIN_ENGLISH = {
+  weights: {
+    no_internal_jargon: 0.4,
+    short_direct_sentences: 0.25,
+    active_voice_one_meaning: 0.2,
+    actionable_clarity: 0.15,
+  },
+  questions: {
+    no_internal_jargon: score(
+      'How free is this user-facing text of internal technical, CLI, hook, or code jargon (such as hook names, CLI flags, schema/RPC/AST terms, or internal file paths)?',
+      [
+        'heavy internal code, CLI, or hook jargon that a non-technical owner should never have to read',
+        'several technical or internal tool terms mixed into the explanation',
+        'mostly plain English, but with one or two unexplained technical terms',
+        'clear everyday English with only familiar product words',
+        '100% plain everyday English with zero internal code, hook, or CLI jargon',
+      ],
+    ),
+    short_direct_sentences: score(
+      'Does this text follow ASD-STE100 sentence length rules (questions/instructions <= 20 words, explanations <= 25 words, one question at a time)?',
+      [
+        'long, tangled multi-clause sentences over 35 words or multiple questions bundled together',
+        'several long sentences that require re-reading',
+        'moderately concise, with a few sentences slightly over 25 words',
+        'short, direct sentences where every question is under 20 words',
+        'crisp ASD-STE100 sentences (questions <= 20 words, explanations <= 25 words, one clear point per sentence)',
+      ],
+    ),
+    active_voice_one_meaning: score(
+      'Does this text use active voice and consistent everyday words (one word per meaning) rather than passive or abstract phrasing?',
+      [
+        'passive, abstract, or bureaucratic phrasing throughout',
+        'mostly passive or vague wording',
+        'mixed active and passive voice',
+        'active voice with concrete everyday words',
+        'strictly active voice and concrete real-world words throughout',
+      ],
+    ),
+    actionable_clarity: score(
+      'Can the user immediately understand what happened or pick an option without guessing?',
+      [
+        'confusing or ambiguous; user has to ask what it means',
+        'partially clear, but the trade-off or action is fuzzy',
+        'understandable with some effort',
+        'clear and easy to answer or confirm',
+        'crystal clear on first read, with a recommended option when asking a question',
+      ],
+    ),
+  },
+};
+
 export async function compositeScore({ preset, text, env, timeoutMs, caller }) {
   const questions = preset.questions;
   const r = await askDetailed({ caller, state: { text: safeText(text, 24000) }, questions, timeoutMs, env });
@@ -126,17 +230,31 @@ export async function runScore({ flags, timeoutMs, env }) {
     ({ text, dropped: droppedSecret } = dropSecretDiffs(g.stdout));
   }
   if (flags.preset) {
-    if (flags.preset !== 'diff-risk' && flags.preset !== 'goal-clarity') {
-      throw new Error('unknown --preset (diff-risk|goal-clarity)');
+    if (
+      flags.preset !== 'diff-risk' &&
+      flags.preset !== 'goal-clarity' &&
+      flags.preset !== 'decision-escalation' &&
+      flags.preset !== 'ste-plain-english'
+    ) {
+      throw new Error('unknown --preset (diff-risk|goal-clarity|decision-escalation|ste-plain-english)');
     }
     if (!text.trim()) throw new Error(`${flags.preset} needs --state <text|@file>${flags.preset === 'diff-risk' ? ' or --diff <ref>' : ''}`);
     const isGoal = flags.preset === 'goal-clarity';
+    const isDecision = flags.preset === 'decision-escalation';
+    const isSte = flags.preset === 'ste-plain-english';
+    const presetObj = isGoal
+      ? GOAL_CLARITY
+      : isDecision
+        ? DECISION_ESCALATION
+        : isSte
+          ? STE_PLAIN_ENGLISH
+          : DIFF_RISK;
     const res = await compositeScore({
-      preset: isGoal ? GOAL_CLARITY : DIFF_RISK,
+      preset: presetObj,
       text,
       env,
       timeoutMs: timeoutMs < 8000 ? 8000 : timeoutMs,
-      caller: isGoal ? 'jev-score-goal-clarity' : 'jev-score-diff-risk',
+      caller: `jev-score-${flags.preset}`,
     });
     const skippedNote = droppedSecret.length ? { skipped_secret_files: droppedSecret } : {};
     if (!res.ok) return res;
@@ -155,6 +273,37 @@ export async function runScore({ flags, timeoutMs, env }) {
         note: ready_to_execute
           ? 'goal clarity >= 0.88: stop interrogating the user and start executing'
           : `goal clarity < 0.88: ask only about unresolved dimensions (${missing_dimensions.join(', ') || 'confidence'})`,
+        ...skippedNote,
+      };
+    }
+    if (isDecision) {
+      const should_ask_user = res.value >= DECISION_ESCALATION_ASK_AT;
+      return {
+        ...res,
+        preset: 'decision-escalation',
+        ask_at: DECISION_ESCALATION_ASK_AT,
+        should_ask_user,
+        action: should_ask_user ? 'ASK_USER_FOR_CLARIFICATION' : 'DECIDE_AUTONOMOUSLY_AND_CONTINUE',
+        note: should_ask_user
+          ? `decision-escalation ${res.value} >= ${DECISION_ESCALATION_ASK_AT}: material product/money/UX fork — pause and ask the user with options and a recommendation`
+          : `decision-escalation ${res.value} < ${DECISION_ESCALATION_ASK_AT}: routine engineering choice — decide autonomously, record in DECISIONS.md, and keep building`,
+        ...skippedNote,
+      };
+    }
+    if (isSte) {
+      const passes_ste = res.value >= STE_PLAIN_ENGLISH_PASS_AT;
+      const weak_dimensions = Object.entries(res.parts)
+        .filter(([, p]) => p.norm < STE_PLAIN_ENGLISH_PASS_AT)
+        .map(([k]) => k);
+      return {
+        ...res,
+        preset: 'ste-plain-english',
+        pass_at: STE_PLAIN_ENGLISH_PASS_AT,
+        passes_ste,
+        weak_dimensions,
+        note: passes_ste
+          ? `ste-plain-english ${res.value} >= ${STE_PLAIN_ENGLISH_PASS_AT}: clear ASD-STE100 plain English ready for the user`
+          : `ste-plain-english ${res.value} < ${STE_PLAIN_ENGLISH_PASS_AT}: rewrite in simpler everyday words (<= 20 words per question, zero internal jargon; weak: ${weak_dimensions.join(', ')})`,
         ...skippedNote,
       };
     }

@@ -16,6 +16,7 @@ import {judgeEvent,stopPrefilter,reportedUsage} from './judgment.mjs';
 import {qualifiedSetting,tierSetting,selectTierRoute,refreshModelMaps,refreshMapping,launchQualification,collectQualification} from '../swarm-resources/model-map.mjs';
 import {resolveSwarmDir} from '../bg-swarm/lib.mjs';
 import { resolveHeavyDir } from '../bg-heavy/dir.mjs';
+import { checkInboxAndPeerWait, evaluateUniversalStop } from '../../hooks/lib/universal-stop.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const ACTIVE = new Set(['starting', 'queued', 'running', 'uncertain', 'stalled']);
@@ -197,7 +198,7 @@ export function startSwarm(project, swarm, config, env = process.env) {
       approvedResources: [...new Set(config.resources)], limit, reserve, policy, wave0Sha: config.wave0Sha,
       pieces, dispatches: [], failures: {}, candidateSha: null, results: {}, findings: {}, fixWaves: 0,
       overrides: [], blocked: {}, notices: {}, waveOpen: false, releasePatterns: config.releasePatterns || [], suitePatterns: config.suitePatterns || [],
-      acceptanceScript:config.acceptanceScript||[],outcomeContract:config.outcomeContract?structuredClone(config.outcomeContract):null,groundTruth:Array.isArray(config.groundTruth)?structuredClone(config.groundTruth):[],slices:{},judgments:[],warnings:[],modelMap:structuredClone(config.modelMap||{providers:policy.providers||{}}) };
+      acceptanceScript:config.acceptanceScript||[],outcomeContract:config.outcomeContract?structuredClone(config.outcomeContract):null,groundTruth:Array.isArray(config.groundTruth)?structuredClone(config.groundTruth):[],slices:{},operations:{},verifications:{},judgments:[],warnings:[],modelMap:structuredClone(config.modelMap||{providers:policy.providers||{}}) };
     writeAtomic(file, state);
     writeAtomic(path.join(project, '.bgzflow', 'swarm-defaults.json'), { resources: state.approvedResources, limit, reserve });
     return state;
@@ -246,7 +247,7 @@ function readBrief(file, cwd) {
   if (!validId(header.SWARM) || !validId(header.PIECE) || !KINDS.has(header.KIND) || header.OWNS === undefined) return { error: 'Brief needs SWARM, PIECE, KIND and OWNS.' };
   let owns; try { owns = JSON.parse(header.OWNS); } catch { return { error: 'OWNS must be a JSON array of owned files.' }; }
   const missing = ['bg-efficiency', 'test-driven-development', 'systematic-debugging', 'verification-before-completion'].filter(s => !new RegExp('\\b'+s+'\\b', 'i').test(body));
-  if (missing.length || !/\bfast checks only\b/i.test(body) || !/\bproof handback\b/i.test(body)) return { error: 'Brief needs the quality skills, fast checks only and proof handback.' };
+  if (missing.length || !/\bfast checks\b/i.test(body) || !/\bproof handback\b/i.test(body)) return { error: 'Brief needs the quality skills, fast checks only and proof handback.' };
   return { swarm: header.SWARM, piece: header.PIECE, kind: header.KIND, owns, body,
     readOnly: header.READ_ONLY === 'true', unsplit: header.UNSPLIT === 'true', targetKind: header.TARGET_KIND,crossFamily:header.CROSS_FAMILY==='true',qualification:header.QUALIFICATION==='true',
     role: header.ROLE ? safe(header.ROLE) : null, triage: header.TRIAGE ? safe(header.TRIAGE) : null,
@@ -604,8 +605,8 @@ export function recordState(project, type, value, swarm,options={}) {
         if(object(s.policy.providers)&&['quota-or-rate','network','provider-outage'].includes(j.failureClass)){s.routeUnavailable||={};s.routeUnavailable[j.resource]={available:false,reason:safe(value.error),at:clock()};}
         if (j.failureClass === 'counted') {
           const key = j.logicalKey||j.piece+':'+j.kind, f = s.failures[key] ||= { count: 0, rootCause: null };
-          f.count++;f.error=safe(value.error);f.cause=failureCause(str(value.error));f.family=s.policy.providers?.[j.resource]?.family||j.resource;f.remediated=false;if (f.rootCause?.used) f.needsHuman = true;if(f.count>=2)f.rebuildRecommended=true;
-          if(f.count===2&&f.cause==='unknown'){const r=judgment(s,{event:'failure',eventId:key+':2',failed:[{step:key,goal:s.pieces[j.piece]?.goal,error:f.error}],evidence:{}},options.judgeRunner);if(r.failureClass)f.cause=r.failureClass;}
+          f.count++;f.error=safe(value.error);f.cause=failureCause(str(value.error));f.family=s.policy.providers?.[j.resource]?.family||j.resource;f.remediated=false;if (f.rootCause?.used) f.needsHuman = true;if(f.count>=2&&!['environment','flaky','quota-or-rate','network','provider-outage'].includes(f.cause))f.rebuildRecommended=true;
+          if(f.count===2&&f.cause==='unknown'){const r=judgment(s,{event:'failure',eventId:key+':2',failed:[{step:key,goal:s.pieces[j.piece]?.goal,error:f.error}],evidence:{}},options.judgeRunner);if(r.failureClass)f.cause=r.failureClass;if(['environment','flaky'].includes(f.cause))delete f.rebuildRecommended;}
           if(/model[- ]not[- ]found|unknown model|deprecated/i.test(str(value.error))){s.modelRefreshNeeded||={};s.modelRefreshNeeded[j.resource]={model:j.model,error:safe(value.error),at:clock()};}
         }
       }
@@ -653,10 +654,11 @@ export function recordState(project, type, value, swarm,options={}) {
       if (!validId(value.id) || !['open','closed'].includes(value.status)) throw new Error('finding needs stable ID and disposition');
       if (value.status === 'closed' && (!str(value.evidence) || value.sha !== s.candidateSha)) throw new Error('close a finding with exact-candidate repair evidence');
       const prior=s.findings[value.id],waves=[...new Set([...(prior?.waves||[]),...(value.status==='open'&&s.fixWaves?[s.fixWaves]:[])])],piece=value.piece||prior?.piece;
-      const category=value.category||prior?.category||'unknown',reproduction=safe(value.reproduction||prior?.reproduction),blocking=['wrong-money','data-loss','security','privacy','security/privacy','missing-rollback','unapproved-stop-path'].includes(category)&&!!reproduction.trim();
+      const BLOCKING_CATS=['wrong-money','data-loss','security','privacy','security/privacy','missing-rollback','unapproved-stop-path','ui-spec-mismatch','fake-effect','outcome-contract'];
+      const category=value.category||prior?.category||'unknown',reproduction=safe(value.reproduction||prior?.reproduction),blocking=BLOCKING_CATS.includes(category)&&!!reproduction.trim();
       s.findings[value.id] = { id: value.id, status: value.status, category,reproduction,blocking,disposition:blocking?'blocker':'after-launch', detail: safe(value.detail || prior?.detail), evidence: safe(value.evidence), sha: value.sha || null,piece:piece||null,waves };
-      if(value.status==='open'&&!blocking&&['wrong-money','data-loss','security','privacy','missing-rollback','unapproved-stop-path'].includes(category)){s.warnings||=[];s.warnings.push({at:clock(),message:'Finding '+value.id+' needs reproduction; lead must investigate the claim.'});}
-      if(piece&&s.pieces[piece]&&s.findings[value.id].blocking&&value.status==='open'&&waves.length>=2){const f=s.failures[piece+':fix']||={count:0,rootCause:null};f.count=Math.max(f.count,2);f.cause=failureCause(s.findings[value.id].detail);f.error=s.findings[value.id].detail;f.finding=value.id;f.rebuildRecommended=true;}
+      if(value.status==='open'&&!blocking&&BLOCKING_CATS.includes(category)){s.warnings||=[];s.warnings.push({at:clock(),message:'Finding '+value.id+' needs reproduction; lead must investigate the claim.'});}
+      if(piece&&s.pieces[piece]&&s.findings[value.id].blocking&&value.status==='open'&&waves.length>=2){const f=s.failures[piece+':fix']||={count:0,rootCause:null};f.count=Math.max(f.count,2);f.cause=failureCause(s.findings[value.id].detail);f.error=s.findings[value.id].detail;f.finding=value.id;if(!['environment','flaky','quota-or-rate','network','provider-outage'].includes(f.cause))f.rebuildRecommended=true;}
     } else if (type === 'fix-wave') {
       if (s.fixWaves >= 2 && !human(value)) {
         const denied = block('fix-wave', 'Two fix waves are already recorded.', 'Send the human the open finding list and a recommendation for a third wave.', { humanAction: 'third-wave' });
@@ -694,14 +696,35 @@ export function recordState(project, type, value, swarm,options={}) {
       if (actual !== value.hash) throw new Error('release artifact hash mismatch');
       s.releaseIntent = { sha: value.sha, commandHash: digest(value.command), artifact: value.artifact, hash: actual };
     } else if (type === 'ground-truth') {
-      if (!str(value.claim).trim() || !str(value.source).trim() || !['verified','refuted'].includes(value.status) || !str(value.evidence).trim()) throw new Error('ground-truth probe needs claim, source, verified/refuted status, and evidence');
       s.groundTruth ||= [];
-      s.groundTruth.push({ claim: safe(value.claim), source: safe(value.source), status: value.status, evidence: safe(value.evidence), at: clock() });
+      if (value.noExternalUnknowns === true) {
+        if (!str(value.reason).trim()) throw new Error('noExternalUnknowns declaration needs a brief reason');
+        s.groundTruth.push({ noExternalUnknowns: true, reason: safe(value.reason), at: clock() });
+      } else {
+        if (!str(value.claim).trim() || !str(value.source).trim() || !['verified','refuted'].includes(value.status) || !str(value.evidence).trim()) throw new Error('ground-truth probe needs claim, source, verified/refuted status, and evidence');
+        s.groundTruth.push({ claim: safe(value.claim), source: safe(value.source), status: value.status, evidence: safe(value.evidence), at: clock() });
+      }
     } else if (type === 'slice') {
-      if (!validId(value.slice) || !['passed','failed'].includes(value.status) || !str(value.surface).trim() || !str(value.usedOutcome).trim() || !str(value.evidence).trim()) throw new Error('vertical slice verification needs slice ID, passed/failed status, surface, usedOutcome, and evidence');
+      if (!validId(value.slice) || !['passed','failed','unavailable'].includes(value.status) || !str(value.surface).trim() || !str(value.usedOutcome).trim() || !str(value.evidence).trim()) throw new Error('vertical slice verification needs slice ID, passed/failed/unavailable status, surface, usedOutcome, and evidence');
       if (value.piece && !s.pieces[value.piece]) throw new Error('unknown slice piece');
       s.slices ||= {};
-      s.slices[value.slice] = { slice: value.slice, piece: value.piece || null, sha: SHA.test(value.sha || '') ? value.sha : null, status: value.status, surface: safe(value.surface), usedOutcome: safe(value.usedOutcome), evidence: safe(value.evidence), at: clock() };
+      const verificationLevel = value.status === 'unavailable' ? 'BUILT' : value.status === 'passed' ? 'BUILT_READY_FOR_VERIFIER' : 'FAILED';
+      s.slices[value.slice] = { slice: value.slice, piece: value.piece || null, sha: SHA.test(value.sha || '') ? value.sha : null, status: value.status, verificationLevel, surface: safe(value.surface), usedOutcome: safe(value.usedOutcome), evidence: safe(value.evidence), at: clock() };
+    } else if (type === 'operation') {
+      if (!validId(value.id) || !str(value.owner).trim() || !str(value.intent).trim() || !str(value.reconciliationMethod).trim()) throw new Error('operation record needs valid id, owner, intent, and reconciliationMethod');
+      s.operations ||= {};
+      s.operations[value.id] = { id: value.id, owner: safe(value.owner), intent: safe(value.intent), target: safe(value.target || ''), idempotencyScope: safe(value.idempotencyScope || value.id), status: safe(value.status || 'pending'), safeToRetry: value.safeToRetry === true, reconciliationMethod: safe(value.reconciliationMethod), at: clock() };
+    } else if (type === 'verification') {
+      const condId = value.conditionId || value.slice;
+      if (!validId(condId) || !['not_run','unavailable','failed','passed','unknown'].includes(value.status) || !str(value.verifier).trim()) throw new Error('verification record needs conditionId, verifier, and status (not_run|unavailable|failed|passed|unknown)');
+      if (value.status === 'passed') {
+        if ((value.builder && value.verifier === value.builder) || value.role === 'executor' || value.role === 'builder') throw new Error('builder cannot self-certify verification status passed; verifier must be an independent checker');
+        if (!str(value.effectObserved).trim() || !str(value.readBackEvidence).trim()) throw new Error('passed verification requires effectObserved and readBackEvidence proving real state/provider effect');
+      }
+      s.verifications ||= {};
+      const verificationLevel = value.status === 'passed' ? 'USED' : value.status === 'unavailable' ? 'BUILT' : value.status.toUpperCase();
+      s.verifications[condId] = { conditionId: condId, verifier: safe(value.verifier), builder: safe(value.builder || ''), role: safe(value.role || 'verifier'), status: value.status, verificationLevel, surface: safe(value.surface || ''), buildSha: SHA.test(value.buildSha || '') ? value.buildSha : null, backendVersion: safe(value.backendVersion || ''), effectObserved: safe(value.effectObserved || ''), readBackEvidence: safe(value.readBackEvidence || ''), at: clock() };
+      if (s.slices?.[condId] && value.status === 'passed') s.slices[condId].verificationLevel = 'USED';
     } else if (type === 'notice') {
       if (!['limit','third-wave'].includes(value.type) || !str(value.chatRef)) throw new Error('notice needs type and sent-chat reference');
       s.notices[value.type] = { chatRef: safe(value.chatRef), at: clock() };
@@ -818,6 +841,37 @@ export function hook(input, env = process.env,options={}) {
     } catch { /* A guard that cannot measure fails open; the swarm checks below still run. */ }
   }
   try {
+    if (input.hook_event_name === 'PreToolUse' && !/\bbg-mail\b/i.test(command)) {
+      const preMail = checkInboxAndPeerWait({ projectDir: project, onlyUnnotifiedMidTurn: true, env });
+      if (preMail.urgent && preMail.urgent.length > 0) {
+        const u = preMail.urgent[0];
+        checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, env });
+        return denyHook(
+          block(
+            'urgent-bg-mail',
+            `URGENT bg-mail (${u.kind || u.priority} from ${u.from}, id=${u.id}): ${str(u.body).slice(0, 320)}`,
+            `Acknowledge or reply to bg-mail id=${u.id} before running further commands.`,
+          ),
+        );
+      }
+    }
+    if (input.hook_event_name === 'Stop') {
+      const uStop = evaluateUniversalStop(input, { env, projectDir: project });
+      if (uStop.decision === 'block') return { decision: 'block', reason: safe(uStop.reason) };
+      if (uStop.warning && !ledgers(project).length) return { warning: safe(uStop.warning) };
+    }
+    let midTurnMailContext = null;
+    if (input.hook_event_name === 'PostToolUse') {
+      const mail = checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, env });
+      if (mail.unread.length > 0) {
+        const coalescedNote = mail.coalescedDroppedCount > 0 ? ` (${mail.coalescedDroppedCount} older status updates coalesced)` : '';
+        const msgText = mail.unread.map(m => `[bg-mail id=${m.id} from=${m.from}${m.topic ? ' topic=' + m.topic : ''}]: ${str(m.body).slice(0, 300)}`).join(' | ');
+        midTurnMailContext = safe(`Incoming bg-mail (${mail.unread.length}${coalescedNote}): ${msgText}. Read, act on, and ack/reply (or bg-mail ack-all) before finishing.`);
+        if (!ledgers(project).length) {
+          return { hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: midTurnMailContext } };
+        }
+      }
+    }
     active = ledgers(project); if (!active.length) return {};
     if(input.hook_event_name==='Stop'){
       if(input.stop_hook_active)return {};
@@ -832,14 +886,36 @@ export function hook(input, env = process.env,options={}) {
     release = isRelease(command, patterns);
     const worker = workerLaunch(command, name);
     if (input.hook_event_name === 'PostToolUse' || input.hook_event_name === 'PostToolUseFailure') {
-      if (!input.tool_use_id) return {};
-      const entry = active.find(e => e.state.dispatches.some(j => j.requestId === input.tool_use_id)); if (!entry) return {};
       let response = input.tool_response;
       if (Array.isArray(response?.content)) { const body = response.content.find(c => c.type === 'text')?.text; try { response = JSON.parse(body); } catch { response = {}; } }
       const failed = input.hook_event_name === 'PostToolUseFailure' || response?.isError === true;
+      let loopWarning = null;
+      if (failed && command) {
+        const sig = digest(command.trim() + '\n' + str(input.error || response?.error || '').trim().slice(0, 200));
+        const targetEntry = active[0];
+        if (targetEntry) {
+          transaction(project, () => {
+            const e = choose(project, targetEntry.state.swarm);
+            if (!e) return;
+            const prev = e.state.recentCommandError;
+            const count = prev?.sig === sig ? (prev.count || 1) + 1 : 1;
+            e.state.recentCommandError = { sig, count, at: clock() };
+            persist(e);
+            if (count >= 3) loopWarning = 'BGZFLOW loop breaker: the same command failed ' + count + ' times with the same error. Stop repeating it and change approach (or escalate a legacy patch to TRIAGE: rebuild).';
+          });
+        }
+      }
+      const postOut = {
+        ...(loopWarning ? { warning: loopWarning } : {}),
+        ...(midTurnMailContext ? { hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: midTurnMailContext } } : {}),
+      };
+      if (!input.tool_use_id) return postOut;
+      const entry = active.find(e => e.state.dispatches.some(j => j.requestId === input.tool_use_id));
+      if (!entry) return postOut;
       const value = { id: input.tool_use_id, status: failed ? 'failed' : 'running', nativeId: response?.id || response?.job_id || response?.task_id };
       if (failed) Object.assign(value, { evidence: 'tool-call:'+input.tool_use_id, error: str(input.error || response?.error), workerHours: 0 });
-      recordState(project, 'job', value, entry.state.swarm); return {};
+      recordState(project, 'job', value, entry.state.swarm);
+      return postOut;
     }
     if (input.hook_event_name !== 'PreToolUse') return {};
     if (gateOnly(command)) return {};

@@ -6,13 +6,22 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 
 **New here? Start with the [getting started guide](docs/getting-started.md): your first ten minutes.**
 
-**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)**
+**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.2-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.5-informational.svg)](CHANGELOG.md)
+[![X: @socloapp](https://img.shields.io/badge/X-%40socloapp-000.svg)](https://x.com/socloapp)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.5: Plain-English Intent Compiler (STE), Multimodal Jev Visual QA & Universal Stop Enforcement
+
+BGZFLOW 0.9.5 closes the gap between a short everyday prompt and a verified finished outcome:
+- **Adaptive Short-Prompt Expansion & Spec Compiler (`bgz goal compile`)**: turns a short everyday prompt and plain-English answers into a verified goal checklist (`origin: "user_explicit"` vs `origin: "standard_quality_check"`), starting right away on small obvious tasks and confirming in plain English on larger or ambiguous ones (`--display plain_only | plain_plus_spec`).
+- **STE Plain-English Gate (`bgz goal check-ste` & `bgz jev score --preset ste-plain-english`)**: enforces ASD-STE100 plain-English rules (short sentences, one idea per sentence, zero internal code/hook jargon) on user-facing questions and summaries.
+- **Multimodal Jev 1.14 Visual & Bounding-Box QA (`bgz verify --visual`)**: inspects real device/browser screenshots against approved mockups and requirements using Jev 1.14 image assets and `box(...)` grounding (`jev-preview`), blocking completion if the screen is clipped, overlapping or missing key controls.
+- **Universal QA/QC & Inbox Stop Hook (`hooks/h9-universal-qa-and-inbox-stop.mjs`)**: HMAC-signed goal contracts and verification receipts (`~/.bgzflow/signing.key`), mid-turn non-destructive inbox notifications, and decision-escalation checks (`bgz jev score --preset decision-escalation`).
 
 ## New in 0.9.2: BGZFLOW Next (Outcome Contracts, Ground-Truth Research, Jev Goal Clarity & Rebuild Mode)
 
@@ -56,7 +65,7 @@ See the [changelog](CHANGELOG.md) for the full list.
 
 AI agents are fast at writing code and bad at finishing products. Left alone they review each other in circles, test pieces that never get assembled, lose track after a restart, and quietly leave finished work switched off. BGZFLOW is a small set of working rules, skills and local guard tools that fix those failure modes:
 
-- **Build the whole thing, then test the whole thing.** Workers build every piece in parallel with fast checks only, and build only what was asked. Nothing is reviewed or released piece by piece.
+- **Build the whole thing, then test the whole thing.** Workers build every vertical slice with fast checks on owned files plus slice effect read-back, and build only what was asked. Nothing is reviewed or released piece by piece.
 - **Prove it on the real platform.** The finished candidate runs its key customer journeys and one rollback on a real preview, staging slot, TestFlight or internal track, with real accounts and money in test mode.
 - **One review, five reasons to stop.** A single independent read-only review per release can block only on wrong money, data loss, security or privacy, a missing rollback, or a customer-facing stop path (a wait, refusal, hold, gate, cap, block or expiry) the founder never approved in writing, each with a reproduction. The review lists every new stop path with the founder's quoted approval. Everything else goes on the after-launch list. Repairs are proven by re-running the rehearsal, never by another review.
 - **Finished means switched on.** Accepted work goes live for its customers the moment it passes, with an hour of live error-watching. Finished work left off is flagged within a day.
@@ -179,6 +188,8 @@ BGZFLOW is used every day to build and run several real products across Claude C
 BGZFLOW is designed and built by **Simeon Kontogeorges**. It grew out of running a whole product company with AI agents: every rule in it comes from a real failure in a real product, turned into a test, a hook or a skill so it never happens twice.
 
 - GitHub: [socialiserapp-design](https://github.com/socialiserapp-design)
+- LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/)
+- X: [@socloapp](https://x.com/socloapp)
 
 If BGZFLOW helps you ship, a star on this repository is the best thanks.
 
