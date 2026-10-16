@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Continue My Project"
+  short_description: "Resume the exact task without losing work"
+  default_prompt: "Use $bg-continue-my-project to reconcile owners, jobs, effects and evidence, then continue the exact authorised task through a supported account or host continuation."
+policy:
+  allow_implicit_invocation: true

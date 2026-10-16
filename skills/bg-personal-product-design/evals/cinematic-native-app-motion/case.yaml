@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: cinematic-native-app-motion
+description: 'An app screen gets polished, platform-true native motion with guardrails and fallbacks.'
+tags: [quality, cinematic]
+expected_outcome: 'Platform-true motion on the UI thread with a frequency gate, a shared-element carrier, springs, interruptible gestures, one confirmed haptic, reduced-motion and weak-device fallbacks, and release-build device evidence.'
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Our Expo app (iOS and Android) has a recipe list that opens a recipe detail with a Save button. The approved look is already locked. Make the motion on these screens feel polished and premium, like a top native app. What exactly should the builder do?
+graders:
+  - name: native-craft
+    type: llm
+    criteria: |
+      PASS if the plan gives concrete native motion craft, including most of: platform components first (native stack or sheet transitions); a shared-element or measured carrier from the list item into the detail header; press feedback using the product's press-scale token (or a highlight for list rows); springs or ease-out curves with named duration or damping values; a collapsing header by translate and fade with clamped interpolation rather than animating height; motion running on the UI thread (for example Reanimated shared values or worklets) with no per-frame React state; a frequency gate so frequent actions stay instant; one haptic paired with the visual only after the save is confirmed.
+      It must keep the locked look and must not add web-only effects such as cursor followers, smooth-scroll libraries or perpetual ambient loops on core screens.
+      FAIL if it is generic, web-centric, or delays the Save action for an animation.
+  - name: guardrails-and-fallbacks
+    type: llm
+    criteria: |
+      PASS if it includes at least three of: a reduced-motion variant that keeps state changes but drops travel, scale and loops (screen changes become fades); a reduced-transparency or opaque fallback for any blur or glass; interruptible gestures that continue from the current position, with velocity-or-distance commit; decorative effects paused off-screen or in the background; a weaker-device tier or static fallback for any shader or blur effect, avoiding animated blur on Android; proof on a release build on the slowest supported Android device and an iPhone, with emulator or Expo Go results labelled as not proof.
+      FAIL if it gives no fallbacks or claims performance without device evidence.
+  - name: read-platform-reference
+    type: tool_used
+    tool: 'Read'
+    input_match: 'motion-by-platform'
+    arm: 'with-only'
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

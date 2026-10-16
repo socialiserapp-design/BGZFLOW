@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: cont-no-duplicate-paid-step
+description: 'An interrupted external step is checked by its identity before any retry.'
+tags: [quality]
+expected_outcome: 'Checks whether the upload/build already exists before re-running it.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The app store build upload was halfway through when our account limit hit and we moved to another machine. Just run the upload again.
+graders:
+  - name: check-before-retry
+    type: llm
+    criteria: |
+      PASS if the reply first checks whether the earlier upload went through (by its build number, upload or operation id, or the store's build list) and only uploads again if it did not, reusing the same build identity.
+      FAIL if it re-runs the upload straight away without that check.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-continue-my-project"'
+    arm: 'with-only'

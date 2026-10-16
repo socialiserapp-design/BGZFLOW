@@ -1,0 +1,45 @@
+{
+  "schema": 2,
+  "creator": {
+    "name": "Simeon Kontogeorges",
+    "github": "https://github.com/socialiserapp-design"
+  },
+  "scope": "BG Efficiency internal capability manifest.",
+  "capabilities": [
+    {
+      "name": "concise-communication",
+      "kind": "skill",
+      "used_for": "Concise, complete communication"
+    },
+    {
+      "name": "root-cause-repair",
+      "kind": "skill",
+      "used_for": "Smallest complete root-cause change"
+    },
+    {
+      "name": "output-filtering",
+      "kind": "cli",
+      "used_for": "Command-output filtering with original-output recovery"
+    },
+    {
+      "name": "selective-compression",
+      "kind": "tool",
+      "used_for": "Targeted reads and selective compression"
+    },
+    {
+      "name": "compaction-handoff",
+      "kind": "hook",
+      "used_for": "Session handoff and compaction continuity"
+    },
+    {
+      "name": "context-hierarchy",
+      "kind": "skill",
+      "used_for": "Source hierarchy, project maps, restartable checkpoints"
+    },
+    {
+      "name": "outcome-contracts",
+      "kind": "skill",
+      "used_for": "Checkable complete outcomes (BUILT -> REACHED -> USED)"
+    }
+  ]
+}

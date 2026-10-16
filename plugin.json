@@ -1,0 +1,17 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "bgzflow",
+  "version": "0.9.6",
+  "description": "A free plugin that lets one founder run AI worker swarms from idea to launch.",
+  "author": {
+    "name": "Simeon Kontogeorges",
+    "url": "https://github.com/socialiserapp-design"
+  },
+  "homepage": "https://github.com/socialiserapp-design/BGZFLOW",
+  "repository": "https://github.com/socialiserapp-design/BGZFLOW",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "skills"
+  ]
+}

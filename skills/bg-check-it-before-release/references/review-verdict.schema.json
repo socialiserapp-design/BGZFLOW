@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BGZFLOW independent inspection result v2",
+  "description": "Structural result schema. The evidence gate additionally verifies the controller capture, identity separation, exact coverage, hashes and retained lineage. Validation never grants acceptance or authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "contract_sha256",
+    "reviewer",
+    "status",
+    "verdict",
+    "coverage",
+    "findings",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "task_id": {"$ref": "#/$defs/text"},
+    "contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reviewer": {"$ref": "#/$defs/reviewer"},
+    "status": {"const": "completed"},
+    "verdict": {
+      "enum": ["ready", "changes-required", "blocked"],
+      "description": "The one review verdict vocabulary used by every BGZFLOW skill. Worker or task states and readiness statuses are separate fields and never verdicts."
+    },
+    "coverage": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/check"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "limitations": {"type": "array", "items": {"$ref": "#/$defs/text"}, "uniqueItems": true}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "file": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {"$ref": "#/$defs/text"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": ["id", "status", "evidence"],
+      "properties": {
+        "id": {"$ref": "#/$defs/text"},
+        "status": {"enum": ["pass", "fail", "blocked", "unknown"]},
+        "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/file"}},
+        "finding": {
+          "type": "object",
+          "required": ["id", "owner", "next_action"],
+          "properties": {
+            "id": {"$ref": "#/$defs/text"},
+            "owner": {"$ref": "#/$defs/text"},
+            "next_action": {"$ref": "#/$defs/text"}
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"enum": ["fail", "blocked", "unknown"]}}},
+          "then": {"required": ["finding"]}
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "owner",
+        "next_action",
+        "requirement_ids",
+        "closure_requirement",
+        "severity",
+        "status"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/text"},
+        "owner": {"$ref": "#/$defs/text"},
+        "next_action": {"$ref": "#/$defs/text"},
+        "requirement_ids": {"type": "array", "items": {"$ref": "#/$defs/text"}, "uniqueItems": true, "minItems": 1},
+        "closure_requirement": {"$ref": "#/$defs/text"},
+        "severity": {"enum": ["critical", "high", "medium", "low"]},
+        "status": {"enum": ["open", "closed"]},
+        "closure_check_ids": {"type": "array", "items": {"$ref": "#/$defs/text"}, "uniqueItems": true, "minItems": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "closed"}}},
+          "then": {"required": ["closure_check_ids"]}
+        }
+      ]
+    },
+    "reviewer": {
+      "type": "object",
+      "required": ["provider", "job_id", "thread_id", "fresh", "read_only", "resumed"],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "description": "Observed provider of the checker (any qualified provider); the evidence gate verifies independence."
+        },
+        "job_id": {"$ref": "#/$defs/text"},
+        "thread_id": {"$ref": "#/$defs/text"},
+        "fresh": {"const": true},
+        "read_only": {
+          "type": "boolean",
+          "description": "False requires a controller-pinned, verified disposable-checkout execution record; the gate rejects unprotected writes."
+        },
+        "resumed": {"const": false}
+      }
+    }
+  }
+}

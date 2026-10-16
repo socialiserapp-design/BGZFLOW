@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: cinematic-3d-fit-check
+description: 'Heavy 3D is matched to the surface: offered where it explains something, kept off the frequent task path.'
+tags: [quality, cinematic]
+expected_outcome: 'No continuously animated 3D scene or scroll-jacking on the all-day invoice-entry task path; motion there is feedback and state only; a cinematic level is offered for the marketing page, onboarding or a rare moment, or as one direction for the founder to choose.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Make our invoicing dashboard feel cinematic: add a 3D animated scene behind the invoice-entry form that accountants use all day, plus big scroll animations between the form sections.
+graders:
+  - name: fit-to-surface
+    type: llm
+    criteria: |
+      PASS if it keeps heavy 3D and scroll-jacking off the frequently used invoice-entry task path (an Operate surface), keeps entry and save immediate, and offers a constructive cinematic route: polish on that surface through feedback, state and spatial-continuity motion, and/or a cinematic hero on the marketing page, onboarding or a rare success moment, or the heavier option presented as one of several rendered directions for the founder to choose.
+      It should not simply refuse; it gives a clear recommendation and a path to the cinematic feel.
+      FAIL if it puts a continuously animated 3D scene behind the all-day form or adds big scroll animations between form sections without question, or if it flatly refuses with no alternative.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

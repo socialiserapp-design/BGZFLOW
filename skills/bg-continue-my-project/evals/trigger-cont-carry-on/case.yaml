@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: trigger-cont-carry-on
+description: 'Should make bg-continue-my-project fire.'
+tags: [trigger, trigger-should-fire]
+expected_outcome: 'bg-continue-my-project is invoked.'
+execution:
+  max_turns: 4
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Carry on where we left off yesterday.
+graders:
+  - name: fires
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-continue-my-project"'

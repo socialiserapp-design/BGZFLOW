@@ -1,0 +1,18 @@
+{
+  "name": "bgzflow",
+  "description": "A free plugin that lets one founder run AI worker swarms from idea to launch.",
+  "owner": {
+    "name": "socialiserapp-design"
+  },
+  "plugins": [
+    {
+      "name": "bgzflow",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/socialiserapp-design/BGZFLOW"
+      },
+      "description": "A free plugin that lets one founder run AI worker swarms from idea to launch.",
+      "license": "MIT"
+    }
+  ]
+}

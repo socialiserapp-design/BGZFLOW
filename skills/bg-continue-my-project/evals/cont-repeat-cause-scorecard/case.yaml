@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: cont-repeat-cause-scorecard
+description: 'When the same incident cause returns, score the system instead of patching it a fourth time.'
+tags: [quality]
+expected_outcome: 'Reads the checkpoint, sees the same cause has been fixed three times, and scores the system with the architecture scorecard (12 practices, 0 to 4, evidence) to decide keep, simplify or rebuild.'
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Posts stopped again this morning. Carry on from where we left off.
+graders:
+  - name: read-checkpoint
+    type: tool_used
+    tool: 'Read'
+    input_match: 'CHECKPOINT'
+    min: 1
+  - name: scorecard-on-repeat
+    type: llm
+    criteria: |
+      PASS if the reply notices the same cause (token refresh failure) has now been fixed several times, treats that as a signal about the system and not just the latest symptom, and scores the system against the architecture practices (scores out of 4 with evidence, such as one authoritative state, recovery and honest status, durable work, customer-outcome monitoring) to reach a keep, simplify or rebuild verdict with a next action and an owner.
+      FAIL if it only applies another patch to the token refresh with no look at the system, or asks the founder to accept or grade anything.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-continue-my-project"'
+    arm: 'with-only'

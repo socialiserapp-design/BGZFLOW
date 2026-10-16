@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: chk-blocker-classes
+description: 'Only reproduced money, data-loss, security/privacy, rollback or unapproved stop-path findings block the release.'
+tags: [quality]
+expected_outcome: 'F2 and F4 block; F1 and F3 go after launch.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    The independent review of release candidate 9d02b1 returned:
+    F1 Settings toggle is 2px out of line on small phones.
+    F2 Retrying POST /refunds after a timeout refunds the customer twice (repro: scripts/repro-f2.sh).
+    F3 Typo "recieve" on the receipt email.
+    F4 The session token is written to the server log in plain text (repro: login, then grep the log).
+    Which of these block the release?
+graders:
+  - name: names-f2-f4
+    type: regex
+    target: 'last_message'
+    pattern: 'F2[\s\S]*F4|F4[\s\S]*F2'
+  - name: blocks-right-ones
+    type: llm
+    criteria: |
+      PASS if F2 (double refund, money) and F4 (token in logs, security/privacy) are the only blockers, AND F1 and F3 are deferred to after launch.
+      FAIL if F1 or F3 is called a blocker, or F2 or F4 is not.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-check-it-before-release"'
+    arm: 'with-only'

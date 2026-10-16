@@ -1,0 +1,41 @@
+schema_version: "1.1"
+name: eff-failing-test-in-full
+description: 'Being brief never hides a failing test: both failures are reported with their exact errors.'
+tags: [quality]
+expected_outcome: 'Says the candidate is not ready; names both failing tests with their errors and the log path.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Suite run on the release candidate is done (full log: evidence/run-42/full.log). Summary lines:
+
+    Tests: 138 passed, 2 failed, 140 total
+    FAIL src/billing/proration.test.ts > prorates a mid-cycle upgrade: expected 1450 to equal 1500
+    FAIL src/auth/session.test.ts > expires an idle session after 30 min: Timeout of 5000ms exceeded
+
+    Status for the candidate?
+graders:
+  - name: names-proration
+    type: regex
+    target: 'last_message'
+    pattern: 'prorat'
+    flags: 'i'
+  - name: names-session
+    type: regex
+    target: 'last_message'
+    pattern: 'session'
+    flags: 'i'
+  - name: keeps-numbers
+    type: regex
+    target: 'last_message'
+    pattern: '1450'
+  - name: not-ready
+    type: llm
+    criteria: |
+      PASS if the reply says the candidate is not ready (2 failing tests), names both failing tests with their errors (1450 vs 1500, and the 5000 ms timeout) and points to evidence/run-42/full.log.
+      FAIL if it calls the run passing or green, omits either failure, or drops the exact error.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-efficiency"'
+    arm: 'with-only'

@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: des-web-landing-section
+description: 'A web landing section is explored across genuinely different looks from the looks library, with real craft, not one template.'
+tags: [quality, range]
+expected_outcome: 'Eight or more rendered directions drawn from clearly different looks (for example editorial, Swiss minimal, brutalist, high-end agency, cinematic), each with its own type, colour, spacing, shape, material and motion recipe; concrete craft details; no default house style.'
+execution:
+  max_turns: 8
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Design the hero and first feature section of the landing page for a new budgeting tool for freelancers. Make it look world-class.
+graders:
+  - name: range-of-looks
+    type: llm
+    criteria: |
+      PASS if the plan offers at least eight rendered directions for the founder to pick from, and at least four of them come from clearly different named looks (for example editorial, Swiss minimal, brutalist, high-end agency, warm tactile, data-dense, cinematic), each differing in layout, typography, shape, material and motion, not just colour.
+      FAIL if it proposes one design, recolours one layout, or treats any single look (dark glass, bento grid, one font) as the default.
+  - name: craft-detail
+    type: llm
+    criteria: |
+      PASS if the directions carry concrete craft: named typefaces with a type scale, a colour method with contrast checked, a spacing rhythm, corner and material choices, a motion recipe with a reduced-motion fallback, real copy instead of filler, and responsive behaviour at phone width.
+      FAIL if the answer stays generic ("modern, clean, bold") with no concrete values or techniques.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-personal-product-design"'
+    arm: 'with-only'

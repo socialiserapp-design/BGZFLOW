@@ -1,0 +1,2 @@
+{"type":"assistant","uuid":"b1","requestId":"req_6","timestamp":"2026-10-05T11:00:00.000Z","message":{"id":"msg_6","model":"m-a","role":"assistant","content":[{"type":"text","text":"done"}],"usage":{"input_tokens":0,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":10}}}
+{"type":"assistant","uuid":"b2","torn

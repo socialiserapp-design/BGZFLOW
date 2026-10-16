@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: bwm-lanes-by-system
+description: 'Work is split into lanes that follow bounded systems, not platform or layer.'
+tags: [quality]
+expected_outcome: 'Lists the bounded systems first, gives each one owning lane, joins lanes only at a written versioned contract with the lead integrating, and does not split the one customer outcome into app, server and database lanes.'
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Build the new photo-to-paid-video feature: the app screen, the server charge and delivery, and the database changes. Split it into worker lanes and tell me how you will dispatch them.
+graders:
+  - name: lanes-follow-systems
+    type: llm
+    criteria: |
+      PASS if the reply lists the bounded systems first (for example billing and credits, video making, the customer app), gives each system one owning lane, has lanes meet only at a written, versioned contract, and says the lead integrates.
+      FAIL if it carves the one customer outcome into lanes by layer or platform (an app worker, a server worker, a database worker) or by model, with several lanes editing the same system.
+  - name: no-new-gate
+    type: llm
+    criteria: |
+      PASS if no new approval, hold or extra review is added to the plan.
+      FAIL if it adds a founder approval step, a review gate or a customer-facing restriction that was not asked for.
+  - name: skill-fired
+    type: tool_used
+    tool: 'Skill'
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?bg-build-with-me"'
+    arm: 'with-only'

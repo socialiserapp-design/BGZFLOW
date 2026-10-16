@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Build With Me"
+  short_description: "Take a goal from idea to a finished, checked result"
+  default_prompt: "Use $bg-build-with-me to manage my goal from the real project state: resolve required coverage before optional selection, verify actual body reads, and follow the lead, worker and checker route."
+policy:
+  allow_implicit_invocation: true

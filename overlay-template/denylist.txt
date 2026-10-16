@@ -1,0 +1,10 @@
+Jane Example
+jexample
+<your email address>
+example-startup.com
+Example Startup Ltd
+ExampleProduct
+/home/jexample
+<drive>:/Users/<you>
+<drive>:\Users\<you>
+acct-jane-personal
