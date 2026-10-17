@@ -235,10 +235,74 @@ export function addFacts(projectDir, items) {
 
 export const addFact = (projectDir, item) => addFacts(projectDir, [item]);
 
+// ---- hybrid FTS5 BM25 + path-glob + 90-day recency decay search ------------------------------------------------
+
+const HALF_LIFE_DAYS = 90;
+const DAY_MS = 86_400_000;
+
+export function recencyMultiplier(addedAt, nowMs = Date.now()) {
+  const t = Date.parse(String(addedAt || ''));
+  if (!Number.isFinite(t) || t > nowMs) return 1;
+  const ageDays = Math.max(0, (nowMs - t) / DAY_MS);
+  return Math.pow(0.5, ageDays / HALF_LIFE_DAYS);
+}
+
+export async function searchFacts(facts, { query = '', files = [], limit = 10, nowMs = Date.now() } = {}) {
+  const q = clean(query);
+  if (!q) return [];
+  const fileList = (files || []).map(normalizePath).filter(Boolean);
+  const tokens = q.toLowerCase().split(/[^a-z0-9_/-]+/).filter((w) => w.length >= 2);
+  if (!tokens.length || !facts.length) return [];
+
+  const ftsScores = new Map();
+  try {
+    const sqlite = await import('node:sqlite');
+    if (sqlite && sqlite.DatabaseSync) {
+      const db = new sqlite.DatabaseSync(':memory:');
+      db.exec('CREATE VIRTUAL TABLE facts_fts USING fts5(id UNINDEXED, text, paths);');
+      const ins = db.prepare('INSERT INTO facts_fts (id, text, paths) VALUES (?, ?, ?)');
+      for (const f of facts) {
+        ins.run(f.id, f.text, (f.paths || []).join(' '));
+      }
+      const ftsQuery = tokens.map((t) => `"${t.replace(/"/g, '""')}"*`).join(' OR ');
+      const rows = db.prepare('SELECT id, bm25(facts_fts, 0.0, 2.0, 1.0) AS rank FROM facts_fts WHERE facts_fts MATCH ?').all(ftsQuery);
+      for (const r of rows) {
+        ftsScores.set(r.id, Math.max(0.1, -Number(r.rank || 0)));
+      }
+      db.close();
+    }
+  } catch {
+    // Fallback to pure-JS lexical overlap below if node:sqlite or FTS5 is unavailable
+  }
+
+  const scored = [];
+  for (const f of facts) {
+    const hay = `${f.text} ${(f.paths || []).join(' ')}`.toLowerCase();
+    let lex = ftsScores.get(f.id) || 0;
+    if (!lex) {
+      let hits = 0;
+      for (const tok of tokens) {
+        if (hay.includes(tok)) hits += 1;
+      }
+      if (hits > 0) lex = hits / tokens.length;
+    }
+    const pathMatch = fileList.length > 0 && f.paths.length > 0 && f.paths.some((g) => fileList.some((fl) => matchesGlob(g, fl)));
+    const globalFact = f.paths.length === 0;
+    if (lex <= 0 && !pathMatch) continue;
+    const pathBoost = pathMatch ? 1.5 : globalFact ? 1.05 : 1.0;
+    const decay = recencyMultiplier(f.added_at, nowMs);
+    const score = Math.round((lex + (pathMatch ? 0.5 : 0)) * pathBoost * (0.5 + 0.5 * decay) * 1000) / 1000;
+    scored.push({ ...f, score });
+  }
+  scored.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  return scored.slice(0, Math.max(1, Number(limit) || 10));
+}
+
 // ---- command line ----------------------------------------------------------------------------------------------
 
 const USAGE = `usage:
   bgz facts for (--files <a,b,...> | --brief <file>) [--dir <project>] [--json]
+  bgz facts search --query "<text>" [--files <a,b,...>] [--limit <n>] [--dir <project>] [--json]
   bgz facts add --text "<fact>" [--paths <glob,...>] [--source <ref>] [--dir <project>] [--json]
   bgz facts accept --handback <file> [--source <ref>] [--dir <project>] [--json]
   bgz facts list [--dir <project>] [--json]
@@ -248,7 +312,7 @@ A handback proposes facts under "Proposed facts" with lines like: - <glob,...> :
 A --brief file that looks like a secret (.env, .env.*, *.pem, *.key, id_rsa*, anything under .ssh) is refused, never read.
 exit codes: 0 ok (including no matches), 2 bad usage, a refused secret file or an unreadable file`;
 
-const VALUE_FLAGS = new Set(['files', 'brief', 'dir', 'text', 'paths', 'source', 'handback']);
+const VALUE_FLAGS = new Set(['files', 'brief', 'dir', 'text', 'paths', 'source', 'handback', 'query', 'limit']);
 const BOOL_FLAGS = new Set(['json', 'help']);
 
 function parseArgs(argv) {
@@ -328,6 +392,17 @@ function forFiles(flags, dir, out) {
   return 0;
 }
 
+async function search(flags, dir, out) {
+  const query = last(flags.query);
+  if (query === undefined || !clean(query)) throw new FactsError('search needs --query "<text>"');
+  const files = (flags.files || []).flatMap((v) => v.split(',')).map((s) => inProject(s.trim(), dir)).filter(Boolean);
+  const limit = last(flags.limit) !== undefined ? Number(last(flags.limit)) : 10;
+  const matches = await searchFacts(readFacts(dir).facts, { query, files, limit });
+  if (flags.json) out(JSON.stringify({ query: clean(query), files, facts: matches }, null, 2));
+  else if (matches.length) out(['Matched facts (FTS5 + recency ranked):', ...matches.map((f) => `${formatFact(f)} (score: ${f.score})`)].join('\n'));
+  return 0;
+}
+
 function report(result, flags, out) {
   if (flags.json) return out(JSON.stringify(result, null, 2));
   for (const f of result.added) out(`Added ${f.id}: ${formatFact(f).slice(2)}`);
@@ -378,6 +453,9 @@ export function main(argv, { cwd = process.cwd(), env = process.env, out = (s) =
       return 2;
     }
     if (rest.length) throw new FactsError(`unexpected argument "${rest[0]}"`);
+    if (command === 'search') {
+      return search(flags, resolveDir(flags, cwd, env), out);
+    }
     const run = { for: forFiles, add, accept, list }[command];
     if (!run) throw new FactsError(`unknown command "${command}" (bgz facts --help)`);
     return run(flags, resolveDir(flags, cwd, env), out);
@@ -388,5 +466,7 @@ export function main(argv, { cwd = process.cwd(), env = process.env, out = (s) =
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.exitCode = main(process.argv.slice(2));
+  Promise.resolve(main(process.argv.slice(2))).then((code) => {
+    process.exitCode = code;
+  });
 }

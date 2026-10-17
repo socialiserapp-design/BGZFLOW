@@ -13,7 +13,7 @@ Named skills are optional suggestions. Check each third-party skill's and librar
 | Web motion | GSAP, e.g. with the `gsap-core` and `gsap-performance` skills |
 | Rendered video and promos | A video composition route, e.g. HyperFrames, `motion-doctrine` or `motion-graphics`; these are not mobile UI engines |
 | Apple materials | e.g. `expo-liquid-glass` for Expo wrappers or `liquid-glass-design` for SwiftUI/UIKit; preserve platform availability and product exclusions |
-| Critique across media | A design-critique method (e.g. `impeccable`) alongside the implementation route |
+| Critique across media | The BGZFLOW design-critique method (`bg-personal-product-design`) alongside the implementation route |
 
 Use available reviewed guidance. A named route never installs a skill or grants spending authority. Host-only tools are optional, where the host has them; the shared rules and the worker handoff stay usable on every host.
 

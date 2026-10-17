@@ -1,6 +1,6 @@
 ---
-description: "Keep per-project facts and print the ones relevant to a brief's files"
-argument-hint: "<for|add|accept|list> [options]"
+description: "Keep per-project facts and search them with SQLite FTS5 BM25 ranking and 90-day recency decay"
+argument-hint: "<for|search|add|accept|list> [options]"
 disable-model-invocation: true
 ---
 

@@ -9,11 +9,31 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.6-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.7-informational.svg)](CHANGELOG.md)
 [![X: @socloapp](https://img.shields.io/badge/X-%40socloapp-000.svg)](https://x.com/socloapp)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.7: Mechanical Identity Lock, SQLite FTS5 Fact Search, League Routing & Skill Harmony
+
+BGZFLOW 0.9.7 hardens design protection, project memory, and model routing while keeping every skill harmonious:
+- **Mechanical Brand & Identity Lock (`bgz taste status | lock | unlock | anti-slop`)**: existing projects with a `DECISIONS.md`, `FOUNDER.md`, or `.bgzflow/taste-lock.json` automatically default to **`LOCKED_IDENTITY`**, blocking unrequested redesigns while allowing micro-craft polish within your locked palette, typography, and layout anatomy. `bgz taste anti-slop` catches generic AI copy clichés, `transition: all`, clipped money fields, and unapproved hex drift before review.
+- **Hybrid SQLite FTS5 BM25 + 90-Day Recency Decay (`bgz facts search`)**: `.bgzflow/facts.json` remains your single source of truth, now paired with an in-memory Node `node:sqlite` FTS5 BM25 ranking index, file-glob boost, and 90-day half-life recency decay (`bgz facts search --query "<text>" [--files <a,b>]`).
+- **League-Driven Worker Selection & Tier 0 Deterministic Bypass (`bgz jev route`)**: mechanical tasks (formatting, checksums, schema validation, git status) return `tier: "deterministic"` at `$0` token cost without calling a model, while model tasks include outcome-weighted worker standings from `~/.bgzflow/performance.jsonl` (first-time pass $+2$, rework $-2$, regression $-3$).
+- **Cross-Skill Harmony Linter (`bgz preflight --harmony` & `bgz skill-forge --check-harmony`)**: mechanically blocks foreign slash-command routers, competing task boards, and blanket style bans so every skill works under one router and one contract.
+
+## Beyond the Plugin: What Lives in Lucian (Coming Soon)
+
+Open-source BGZFLOW gives your CLI agents the discipline, verification gates, and coordination loop to finish real products. However, a standalone CLI plugin running across separate terminal windows has natural limits — and the capabilities that go beyond those limits live natively inside **Lucian** (coming soon):
+
+- **Autonomous Deep-Source Skill Forging & Clean-Room Reverse Engineering (`REA`)**: Ready-to-download skills online are used by everyone, which is why most AI-built products converge on the same generic layouts, animations, and copy. Lucian includes the private **Deep-Source Skill Forge** and **Clean-Room Reverse Engineering (`REA`)** engine (`bgz skill-forge --from-rea | --from-book | --from-video | --from-paper | --from-teardown | --from-source`). Instead of relying on public presets, Lucian researches and distills proprietary, harmony-checked skills directly from books, eBooks, lecture videos, academic papers, live app and binary teardowns, shader/token trees, and high-performing ad/content structures — tagging every finding as `observed`, `inferred`, or `unknown` and rebuilding from first principles.
+- **Living Cross-Project Taste & Anti-Repetition Memory**: While the open-source plugin locks and protects an existing project's identity, Lucian maintains a persistent multi-project aesthetic and structural ledger (`bgz taste verify-round`) across everything you build — ensuring every new product or campaign explores genuinely distinct layout anatomies, typography, density, and motion physics rather than repeating your last build or defaulting to AI templates.
+- **Why Lucian Is the Best Home for All Your AI — and What It Means for Your Current Subscriptions**: Running Claude, Codex, Grok, and specialist models across separate terminals means paying for overlapping monthly subscriptions, fighting context compaction loops, manually bridging chats when turns end, and burning premium model allowance on routine checks. **Lucian** brings all of your AI models and your existing subscriptions under one roof:
+  1. **Your existing subscriptions work together as one team**: connect the AI accounts and plans you already pay for into a single workspace with one point of contact, one shared live memory, and zero manual copy-pasting between terminals.
+  2. **Stretch every subscription further**: Lucian's Tier 0 deterministic bypass handles mechanical steps at zero token cost, Jev handles fast micro-judgements for fractions of a cent, and its live League router assigns each heavy reasoning, design, or coding slice to whichever of your connected models has the highest proven first-time pass rate for that exact role — so you stop paying twice for rework or hitting usage caps mid-launch.
+
+Follow [@socloapp](https://x.com/socloapp) on X for early access to **Lucian**.
 
 ## New in 0.9.6: Bounded Inbox, Lightweight Lead Delegation Yield & Computer Use Wake-Up
 

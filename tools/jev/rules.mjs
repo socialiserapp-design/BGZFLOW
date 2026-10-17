@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { askDetailed, choice, questionFromFlags, safeText, score, scoreOf, shape } from './jev.mjs';
+import { league, readGrades } from './grade.mjs';
 import { dropSecretDiffs, readEvidenceArg } from './secret-paths.mjs';
 
 // ---------- Level 3: confidence axes (Simeon Kontogeorges rule: below 0.5 a human, 0.9 or above may act, between confirm) ----------
@@ -355,27 +356,111 @@ export const EFFORT_LEVELS = [
 ];
 const EFFORT_NAMES = ['low', 'medium', 'high'];
 
-export async function route({ job, roles, env, timeoutMs }) {
+// Tier 0 Deterministic Bypass: pure mechanical/CLI tasks that need no LLM reasoning
+const DETERMINISTIC_PATTERNS = [
+  { tool: 'bgz receipt', re: /^(?:run\s+)?bgz\s+receipt\b/i },
+  { tool: 'bgz scan', re: /^(?:run\s+)?bgz\s+scan\b/i },
+  { tool: 'bgz preflight', re: /^(?:run\s+)?bgz\s+preflight\b/i },
+  { tool: 'bgz taste', re: /^(?:run\s+)?bgz\s+taste\b/i },
+  { tool: 'formatter/linter', re: /^(?:run\s+)?(?:npx\s+)?(?:prettier|eslint\s+--fix|biome\s+format)\b/i },
+  { tool: 'hash/checksum', re: /^(?:(?:compute|verify|check)\s+)?(?:sha256|checksum|file\s+hash)\b/i },
+];
+
+export function isDeterministicJob(jobText) {
+  const clean = String(jobText || '').trim();
+  if (!clean || clean.length > 240) return null;
+  for (const p of DETERMINISTIC_PATTERNS) {
+    if (p.re.test(clean)) return p.tool;
+  }
+  return null;
+}
+
+export function leagueStandingsForRole(roleName, env = process.env) {
+  const rows = league(readGrades(env));
+  const r = String(roleName || '').toLowerCase().trim();
+  return rows.filter((x) => x.role === r);
+}
+
+export async function route(jobOrOpts, maybeOpts = {}) {
+  const opts = typeof jobOrOpts === 'string' ? { ...maybeOpts, job: jobOrOpts } : (jobOrOpts || {});
+  const {
+    job,
+    roles = DEFAULT_ROLES,
+    role: explicitRole,
+    env = process.env,
+    timeoutMs,
+    allowDeterministic = true,
+  } = opts;
+
+  if (allowDeterministic) {
+    const detTool = isDeterministicJob(job);
+    if (detTool) {
+      return {
+        ok: true,
+        role: 'deterministic-tool',
+        role_confidence: 1,
+        tier: 'deterministic',
+        deterministic_tool: detTool,
+        effort: 'low',
+        effort_score: 0,
+        confidence: 1,
+        band: 'act',
+        next: `run deterministic tool (${detTool}) directly; zero model tokens needed`,
+        ms: 0,
+        cost_usd: 0,
+      };
+    }
+  }
   const questions = {
     role: choice('Which role should do this job?', roles),
     tier: choice('Which model tier does this job need?', TIERS),
     effort: score('How much thinking effort does this job need?', EFFORT_LEVELS),
   };
   const r = await askDetailed({ caller: 'jev-route', state: { job: safeText(job, 8000) }, questions, timeoutMs, env });
-  if (!r.ok) return { ok: false, err: r.err };
+  if (!r.ok) {
+    if (explicitRole) {
+      const standings = leagueStandingsForRole(explicitRole, env);
+      if (standings.length) {
+        return {
+          ok: true,
+          role: explicitRole,
+          role_confidence: 1,
+          tier: 'standard',
+          effort: 'medium',
+          effort_score: 1,
+          confidence: 0.9,
+          band: 'act',
+          recommended_worker: standings[0].worker,
+          role_standings: standings.slice(0, 5),
+          next: 'code applies the allowance and job limits from STATUS section 2 before dispatch',
+          ms: 0,
+          cost_usd: 0,
+        };
+      }
+    }
+    return { ok: false, err: r.err };
+  }
   const effortScore = scoreOf(r, 'effort', EFFORT_LEVELS);
-  const role = r.answers.role;
+  const chosenRole = explicitRole || r.answers.role.choice;
   const tier = r.answers.tier;
-  const confidence = Math.min(role.confidence, tier.confidence, effortScore.confidence);
+  const confidence = Math.min(r.answers.role.confidence, tier.confidence, effortScore.confidence);
+  const standings = leagueStandingsForRole(chosenRole, env);
+  const leagueExtras = standings.length
+    ? {
+        recommended_worker: standings[0].worker,
+        role_standings: standings.slice(0, 5),
+      }
+    : {};
   return {
     ok: true,
-    role: role.choice,
-    role_confidence: r2(role.confidence),
+    role: chosenRole,
+    role_confidence: r2(r.answers.role.confidence),
     tier: tier.choice,
     effort: EFFORT_NAMES[Math.min(2, Math.max(0, Math.round(effortScore.score)))],
     effort_score: r2(effortScore.score),
     confidence: r2(confidence),
     band: band(confidence),
+    ...leagueExtras,
     next: 'code applies the allowance and job limits from STATUS section 2 before dispatch',
     ms: r.ms,
     cost_usd: r.cost,
@@ -384,12 +469,18 @@ export async function route({ job, roles, env, timeoutMs }) {
 
 export async function runRoute({ flags, timeoutMs, env }) {
   const job = readEvidenceArg(flags.job, 12000);
-  if (!job.trim()) throw new Error('usage: bgz jev route --job "<text|@file>" [--status <STATUS.md>]');
+  if (!job.trim()) throw new Error('usage: bgz jev route --job "<text|@file>" [--status <STATUS.md>] [--deterministic]');
   let text = '';
   try {
     text = fs.readFileSync(typeof flags.status === 'string' ? flags.status : statusPath(env), 'utf8');
   } catch {
     // no STATUS here: the default roles apply
   }
-  return route({ job, roles: rolesFromStatus(text), env, timeoutMs: timeoutMs < 5000 ? 5000 : timeoutMs });
+  return route({
+    job,
+    roles: rolesFromStatus(text),
+    env,
+    timeoutMs: timeoutMs < 5000 ? 5000 : timeoutMs,
+    allowDeterministic: Boolean(flags.deterministic) || Boolean(isDeterministicJob(job)),
+  });
 }

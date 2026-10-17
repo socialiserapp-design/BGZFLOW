@@ -2,6 +2,22 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.7 (2026-10-17)
+
+**Mechanical Brand Identity Lock (`bgz taste`), SQLite FTS5 Fact Search (`bgz facts search`), League-Weighted Routing (`bgz jev route`), Skill Harmony Linter (`bgz preflight --harmony`), and Lucian Engine Bridge (`bgz skill-forge`).**
+
+- **Mechanical Identity Lock & Anti-Slop Guard (`tools/taste/taste.mjs`)**: existing projects with `DECISIONS.md`, `FOUNDER.md`, or `.bgzflow/taste-lock.json` automatically default to `LOCKED_IDENTITY`, blocking unrequested full redesigns while allowing micro-craft polish within locked tokens; `bgz taste anti-slop` flags AI copy clichés, `transition: all`, clipped money fields, and unapproved hex drift; bridges `verify-round` to the Lucian cross-project taste engine where installed.
+- **Hybrid SQLite FTS5 BM25 + 90-Day Recency Decay (`tools/facts/facts.mjs`)**: adds `bgz facts search --query "<text>" [--files <a,b>]` using Node's built-in `node:sqlite` FTS5 BM25 ranking, path-glob boost, and 90-day half-life recency decay on top of `.bgzflow/facts.json`.
+- **League-Driven Router & Tier 0 Deterministic Bypass (`tools/jev/rules.mjs`)**: `bgz jev route` bypasses model calls (`tier: "deterministic"`, `cost_usd: 0`) for mechanical tasks and attaches outcome-weighted worker standings (`recommended_worker`, `role_standings`) from `~/.bgzflow/performance.jsonl`.
+- **Skill Harmony Guard & Lucian Engine Bridge (`tools/forge/forge.mjs` & `tools/jev/preflight.mjs --harmony`)**: mechanically enforces single-router skill harmony, strips foreign command routers and blanket aesthetic bans, and bridges `bgz skill-forge` to the private Lucian Deep-Source Skill Forge and Clean-Room REA engine where installed.
+
+## 0.9.6 (2026-10-16)
+
+**Bounded Inbox (`bg-mail list` & `bg-mail get`), Lightweight Lead Delegation Yield (`lead_delegated_to_workers`), and Computer Use Wake-Up Rule.**
+
+- **Bounded Inbox**: `bg-mail list --project <slug>` defaults to the latest 10 messages truncated to 240 characters (`< 2 KB`) and adds `bg-mail get --project <slug> --id <id>` for full single-message retrieval.
+- **Lightweight Lead Yield**: Lead/coordinator sessions yield cleanly on Stop when work is delegated to workers (`waitingOutbound` or `delegatedToWorkers: true`).
+
 ## 0.9.5 (2026-10-16)
 
 **Plain-English Intent Compiler (STE), Multimodal Jev 1.14 Visual QA, and HMAC-Signed Universal Stop Enforcement.**

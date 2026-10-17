@@ -123,8 +123,8 @@ const tools = [
   },
   {
     name: "facts",
-    hint: "<for|add|accept|list> [options]",
-    about: "Keep per-project facts and print the ones relevant to a brief's files",
+    hint: "<for|search|add|accept|list> [options]",
+    about: "Keep per-project facts and search them with SQLite FTS5 BM25 ranking and 90-day recency decay",
   },
   {
     name: "map",
@@ -150,6 +150,16 @@ const tools = [
     name: "goal",
     hint: "<lock|compile|check-ste|status|set-wait|withdraw-item> [options]",
     about: "Compile plain-English prompts into signed goal checklists, check STE plain English, and inspect or update .bgzflow/active-goal.json",
+  },
+  {
+    name: "taste",
+    hint: "<status|lock|unlock|verify-round|anti-slop> [options]",
+    about: "Enforce LOCKED_IDENTITY protection on existing projects, run deterministic anti-slop UI checks, and bridge to the Lucian cross-project taste engine",
+  },
+  {
+    name: "forge",
+    hint: "[--name <slug>] [--from-rea|--from-book|--from-video|--from-paper|--from-teardown|--from-source <target>] [--check-harmony <file>]",
+    about: "Validate skill harmony and bridge to the Lucian Deep-Source Skill Forge and Clean-Room REA pipeline",
   },
 ];
 

@@ -1,64 +1,50 @@
-# Sources
+# Design Harmonization & Craft Provenance
 
-Where each part of the [looks library](looks-library.md), [craft toolbox](craft-toolbox.md), [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md) came from, and what was kept, dropped and why. Sources are public community or vendor skills and design catalogues; nothing here is a runtime dependency, and naming a source grants no install or spending authority.
+How each part of the [looks library](looks-library.md), [craft toolbox](craft-toolbox.md), [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md) is harmonized inside BGZFLOW, and what is kept, dropped and why. Created and curated by **Simeon Kontogeorges**. Nothing here is a runtime dependency, and naming a technique grants no install or spending authority.
 
-## Rules used when merging
+## Rules used when harmonizing design craft
 
-- **Kept** concrete, repeatable recipes and actions that work across products: values, techniques, checks.
-- **Kept both sides** of a conflict, with when-to-use guidance, instead of picking one taste ([when sources disagree](craft-toolbox.md#when-sources-disagree)).
-- **Dropped** anything that set one look as the default for every product, banned a whole family outright, tied the skill to one vendor's paid service, or duplicated what the design skill already said.
-- **Dropped** private product names, local paths and any claim that could not be checked.
+- **Kept** concrete, repeatable recipes and actions that work across products: values, techniques, optical formulas and verification checks.
+- **Kept both sides** of an aesthetic trade-off, with when-to-use guidance, instead of picking one universal house taste ([when sources disagree](craft-toolbox.md#when-sources-disagree)).
+- **Dropped** anything that sets one look as the default for every product, bans a whole typography or layout family outright, ties the workflow to a foreign command router, or duplicates the core BGZFLOW stage contract.
+- **Dropped** private product names, local paths and any claim that cannot be verified on a real device or browser surface.
 
-## Web style skills
+## Web and interface craft layers
 
-| Source | Kept | Dropped and why |
+| Craft domain | Kept in BGZFLOW | Dropped and why |
 |---|---|---|
-| impeccable (and its reference set: typeset, colorize, layout, animate, delight, onboard, adapt, visualize, polish, critique, audit, bolder, quieter, distill, overdrive, ios, android) | Role-based typography, OKLCH ramps, colour dosage, dark mode by tonal elevation, container queries, empty-state kinds, onboarding to value, delight thesis, peak-end polish, data-visual choices, platform craft pointers, critique and audit lenses | Its command-routing wrapper, its own install and context-file steps, and its single preferred stack (the design skill stays stack-neutral) |
-| design-taste-frontend | Anti-generic checks, hero architecture variety, motion and layout recipes, fluid type, `100dvh`, dense bento fill, palette rotation, the list of common AI defaults (used as a warning list) | Its fixed numeric "dials" as defaults, blanket bans on Inter, serif display and centred heroes (kept as options with guidance), and long code templates |
-| high-end-visual-design | Double-bezel shell, soft structuralism, editorial luxury, button-in-button and magnetic hover, grain overlay rule, haptic-style press scale | Treating one premium look as the answer for every brief |
-| minimalist-ui | Warm utilitarian document look (Q1): palette, pastel tags, keycap `kbd`, faux window chrome, FAQ dividers, line-art illustration | Its ban list as global rules (kept inside the look) |
-| industrial-brutalist-ui | Swiss industrial print (Q5) and tactical telemetry (T2): grids, hairline gap trick, ASCII framing, halftone and scanline treatment | Its claim that one mode suits all technical products |
-| redesign-existing-projects | Audit-before-redesign order, generic-pattern checklist, upgrade techniques, content and copy fixes | Its framework-specific code |
-| gpt-taste | Editorial and gapless bento ideas, hero variation, cliché-word list | Its single-taste pass as a default (stays optional, as already in [techniques](techniques.md#final-polish)) |
-| stitch-design-taste | Design-system-document structure and atmosphere words, used for naming directions | Tool-specific export steps |
-| frontend-design | Bold aesthetic commitment per direction, distinct fonts per product, avoid template sameness | Nothing material; it overlaps the existing skill |
-| better-ui (animations, enter-exit, icon transitions, icons, performance, surfaces) | Press and hover micro-interactions, exits subtler than entries, icon swap cross-change, `will-change` hygiene, concentric radius, image outlines, structure-focus-elevation split | Its exact press value as a universal number (the product token wins) |
-| web-design-guidelines | Checklist ideas folded into screenshot QA | Its remote fetch step |
+| Typography, colour and layout systems | Role-based typography, OKLCH ramps, colour dosage, dark mode by tonal elevation, container queries, empty-state kinds, onboarding to value, delight thesis, peak-end polish, data-visual choices, platform craft pointers, critique and audit lenses | Foreign command-routing wrappers, separate context-file installers, and single-stack mandates (the design skill stays stack-neutral) |
+| Anti-generic variation and hero anatomy | Anti-generic silhouette checks, hero architecture variety, motion and layout recipes, fluid type, `100dvh`, dense bento fill, palette rotation, and the warning list of overused AI defaults | Fixed numeric "dials" as global defaults, blanket bans on Inter, serif display and centred heroes (kept as options with guidance), and long framework templates |
+| High-craft tactile surfaces | Double-bezel shell, soft structuralism, editorial luxury, button-in-button and magnetic hover, grain overlay rule, haptic-style press scale | Treating one luxury or dark look as the answer for every brief |
+| Warm utilitarian & document surfaces | Warm utilitarian document look (Q1): palette, pastel tags, keycap `kbd`, faux window chrome, FAQ dividers, line-art illustration | Turning document-look constraints into global rules (kept scoped inside look Q1) |
+| Swiss industrial & technical telemetry | Swiss industrial print (Q5) and tactical telemetry (T2): grids, hairline gap trick, ASCII framing, halftone and scanline treatment | Any claim that one mode suits all technical products |
+| Existing-project evolution & polish | Audit-before-redesign order, `LOCKED_IDENTITY` protection for established products, generic-pattern checklist, upgrade techniques, content and copy fixes | Unrequested full reskins on projects with a locked identity |
+| Editorial rhythm & final screen pass | Editorial and gapless bento options, hero variation, cliché-word warning list, and per-screen final polish checks | Making one editorial preset mandatory across all directions (stays one optional family in [techniques](techniques.md#final-polish)) |
+| Micro-interactions & optical geometry | Press and hover micro-interactions, exits subtler than entries, icon swap cross-change, `will-change` hygiene, concentric radius (`inner = max(0, outer - inset)`), image outlines, structure-focus-elevation split | Hardcoding one press scale across every product (the product token wins) |
 
-## Catalogues and data indexes
+## Style taxonomy and data visualisations
 
-| Source | Kept | Dropped and why |
+| Catalogue domain | Kept in BGZFLOW | Dropped and why |
 |---|---|---|
-| ui-ux-pro-max (style, colour, font, chart, icon, landing, motion, product and stack data files) | Style families used to round out the library (Swiss Modernism 2.0, Exaggerated Minimalism, Claymorphism, Neumorphism, Aurora, Memphis, Y2K, Retro-Futurism, Pixel Art, E-Ink, Vintage Film, Spatial, Kinetic Typography and others), product-type to look shortlists, chart choice by question, icon set matching | Its search script, its claim to cover everything, and palette and font picks that were generic or contradicted the product's own look |
-| theme-factory | Named theme packaging idea (palette plus type pairing) used for the recipe shape | Its fixed preset themes as defaults |
+| Visual direction families | Style families across the looks library (Swiss Modernism 2.0, Exaggerated Minimalism, Claymorphism, Neumorphism, Aurora, Memphis, Y2K, Retro-Futurism, Pixel Art, E-Ink, Vintage Film, Spatial, Kinetic Typography and others), product-type to look shortlists, chart choice by question, icon set matching | Separate search scripts, claims of exhaustive coverage, and generic palette/font picks that contradict a product's locked look |
+| Theme packaging | Named theme packaging (palette plus type pairing and surface rules) used for the recipe shape | Fixed preset themes as defaults |
 
-## Mobile and native skills
+## Mobile and native platform craft
 
-| Source | Kept | Dropped and why |
+| Platform domain | Kept in BGZFLOW | Dropped and why |
 |---|---|---|
-| mobile-app-ui-design (and its theme paradigms) | Paradigm recipes adapted into Kinetic Brutalism, Scholarly Academia, Bold Typography Poster, Organic Biophilic, Nature Distilled, Tactile Deformable, AI-Native Conversational and others; variation by paradigm instead of one skin | Duplicate paradigms that matched an existing look |
-| liquid-glass-design, expo-liquid-glass | Platform Liquid Glass (G3): version guard, designed fallback, reduced-transparency handling | API detail already covered in [motion by platform](motion-by-platform.md) |
-| swiftui-design | iOS Native Premium (P1), Dynamic Type, SF Symbols rendering modes, sensory feedback | Code samples |
-| expo-ui, expo-design-system, react-native-patterns | Cross-platform neutral look (P3), native tabs and sheets, one styling system, list virtualisation, haptics package | Package-version specifics that age quickly |
+| Native paradigm diversity | Paradigm recipes for Kinetic Brutalism, Scholarly Academia, Bold Typography Poster, Organic Biophilic, Nature Distilled, Tactile Deformable, AI-Native Conversational and others; variation by paradigm instead of one skin | Duplicate paradigms that matched an existing look |
+| Platform Liquid Glass (G3) | Version guard, designed opaque fallback, reduced-transparency handling | Duplicate API detail already covered in [motion by platform](motion-by-platform.md) |
+| iOS & Android native ergonomics | iOS Native Premium (P1), Dynamic Type, SF Symbols rendering modes, sensory feedback, cross-platform neutral look (P3), native tabs and sheets, one styling system, list virtualisation, haptics | Package-version specifics that age quickly |
 
-## UX, image and prototyping skills
+## UX, prototyping and accessibility verification
 
-| Source | Kept | Dropped and why |
+| Verification domain | Kept in BGZFLOW | Dropped and why |
 |---|---|---|
-| ux-designer, onboarding-ux | Onboarding actions, permissions in context, empty and loading choices, peak-end polish | Research-programme steps outside a design pass |
-| imagegen-frontend-web, imagegen-frontend-mobile, image-to-code | Comp-first workflow, whole-section comps, three options then one approval, art-direction prompt parts, design bible, comp as spec | Tool-specific prompts and model names |
-| prototype | Quick throwaway prototypes to test motion and flow | Nothing material |
+| Onboarding & state completeness | Onboarding actions to first value, permissions in context, empty and loading choices, peak-end polish | Standalone research programmes outside a design pass |
+| Comp-first & prototype-first flow | Whole-section comps, rendered direction rounds then one locked approval, art-direction tokens, comp as spec, quick interactive prototypes to test motion and flow | Tool-specific prompts and hardcoded model names |
+| Critique, copy & accessibility | Critique and audit lenses, token roles, button verbs and error copy, contrast and touch-target checks, focus and reduced-motion checks | Duplicate report templates already covered by [design contract](design-contract.md) |
 
-## Design plugin and accessibility
+## Cinematic motion and deep-source skill forging
 
-| Source | Kept | Dropped and why |
-|---|---|---|
-| design-critique, design-system, ux-copy, accessibility-review, accessibility | Critique and audit lenses, token roles, button verbs and error copy, contrast and target checks, focus and reduced-motion checks | Report templates the design skill already has ([design contract](design-contract.md)) |
-
-## Cinematic and platform motion
-
-The cinematic recipes, 3D asset pipeline, library choices, guardrails and native motion equivalents are recorded in [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md). The looks library links to them instead of repeating them.
-
-## Gaps filled from general practice
-
-Sound, haptics, font licensing, reference galleries, screenshot QA and data-visual palettes were thin in the sources. The toolbox adds plain, widely documented practice (platform haptics APIs, Web Audio, OFL and free-licence font sources, public screen galleries, colour-blind-safe data palettes) and marks anything paid as needing the founder's OK.
+The cinematic recipes, 3D asset pipeline, library choices, guardrails and native motion equivalents are recorded in [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md). New design, engineering and domain techniques distilled from books, videos, papers, live teardowns and clean-room reverse engineering (`bgz skill-forge`) pass through the same harmonization filter before entering the skill overlay.

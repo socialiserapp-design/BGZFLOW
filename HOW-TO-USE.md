@@ -81,6 +81,8 @@ Run commands via `node "<plugin-root>/tools/bgz.mjs" <command>` (or ask your age
 | `bgz goal lock` | Lock `.bgzflow/active-goal.json` with an HMAC signature |
 | `bgz goal check-decision` | Score whether a question is material enough (`>= 0.65`) to ask the user |
 | `bgz verify` | Run independent deterministic, semantic, and visual (`--visual`) verification and write signed `USED` receipts |
+| `bgz taste` | Check or lock project visual identity (`LOCKED_IDENTITY` default on existing projects) and run `anti-slop` UI checks |
+| `bgz facts search` | Search project facts using SQLite FTS5 BM25 ranking, file-glob boost, and 90-day recency decay |
 | `bgz scan` | Scan for stubs, dead handlers, or unapproved customer-facing blocks |
 | `bgz map` | Show repositories, worktrees, deployments, and in-flight changes |
 | `bgz lessons status` | View recorded failure patterns and promote repeated lessons into rules |
@@ -88,6 +90,16 @@ Run commands via `node "<plugin-root>/tools/bgz.mjs" <command>` (or ask your age
 | `bg-mail get --project <id> --id <msgId>` | Fetch the full body of a single message |
 | `bg-mail post --project <id> --from <role> --to <role> --body "..."` | Send a durable message to another agent role |
 | `bg-mail reply --project <id> --id <msgId> --from <role> --body "..."` | Reply to a message and mark it answered |
+
+---
+
+## 5. Going Further: What Lives in Lucian (Coming Soon)
+
+Open-source BGZFLOW gives your CLI agents the full coordination, identity-locking, and real-surface verification loop. Capabilities that go beyond standalone CLI plugins are built natively into **Lucian** (coming soon):
+
+- **Deep-Source Skill Forge & Clean-Room Reverse Engineering (`REA`)**: Instead of relying on generic public skills that every other user downloads, Lucian distills proprietary, harmonized skills directly from books, eBooks, lecture videos, research papers, live app/binary teardowns, and viral content/ad hooks (`bgz skill-forge`).
+- **Cross-Project Taste & Anti-Repetition Memory**: Remembers the visual directions, layout anatomies, and motion physics you have shipped across projects (`bgz taste verify-round`) so new products never repeat generic AI templates, while keeping established brand identities mechanically locked.
+- **One Workspace for All Your AI & Current Subscriptions**: Connects the AI models and monthly subscriptions you already pay for (Claude, Codex, Grok, and specialist models) into one unified system — routing each task to the model with the highest proven first-time pass rate, running mechanical tasks at zero token cost, and eliminating terminal switching, compaction stalls, and wasted subscription allowance.
 
 ---
 

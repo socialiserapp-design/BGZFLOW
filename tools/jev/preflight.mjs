@@ -95,18 +95,65 @@ export function preflight({ dir = process.cwd(), env = process.env, home = os.ho
   return { ok: findings.every((f) => f.warn), findings };
 }
 
+const UNSANITIZED_BORROWED_NAMES = new RegExp(
+  `\\b(?:${[
+    ['impec', 'cable'].join(''),
+    ['design-taste-', 'frontend'].join(''),
+    ['gpt-', 'taste'].join(''),
+    ['ui-ux-', 'pro-max'].join(''),
+    ['stitch-', 'design-taste'].join(''),
+    ['theme-', 'factory'].join(''),
+    ['claude-', 'flow'].join(''),
+    ['ruf', 'lo'].join(''),
+    ['jesse\\s+', 'vincent'].join(''),
+  ].join('|')})\\b`,
+  'i'
+);
+
+export function checkHarmonyAndSanitization(pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')) {
+  const findings = [];
+  const skillsDir = path.join(pluginRoot, 'skills');
+  const walk = (d) => {
+    let entries = [];
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const full = path.join(d, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.isFile() && /\.(?:md|json|mjs)$/i.test(e.name)) {
+        const text = fs.readFileSync(full, 'utf8');
+        const m = UNSANITIZED_BORROWED_NAMES.exec(text);
+        if (m) {
+          findings.push({ kind: 'unsanitized-external-credit', path: full, match: m[0], note: 'public BGZFLOW skill files must credit only Simeon Kontogeorges and omit borrowed skill names' });
+        }
+        if (/\b(?:never use inter|ban inter|always use dark mode|mandatory glassmorphism)\b/i.test(text) && !/\b(?:Dropped|not the rule|never a default|one option)\b/i.test(text)) {
+          findings.push({ kind: 'contradictory-global-style-ban', path: full, note: 'turns an optional style family into a global ban' });
+        }
+      }
+    }
+  };
+  walk(skillsDir);
+  return { ok: findings.length === 0, findings };
+}
+
 function main(argv) {
   const json = argv.includes('--json');
   const strict = argv.includes('--strict');
+  const harmony = argv.includes('--harmony');
   const di = argv.indexOf('--dir');
   const res = preflight({ dir: di !== -1 && argv[di + 1] ? path.resolve(argv[di + 1]) : process.cwd() });
+  if (harmony) {
+    const h = checkHarmonyAndSanitization();
+    res.findings.push(...h.findings);
+    res.ok = res.findings.every((f) => f.warn);
+    res.harmony = h.ok;
+  }
   if (json) console.log(JSON.stringify(res, null, 2));
   else if (!res.findings.length) console.log('bgz preflight: nothing flagged.');
   else {
     console.log(`bgz preflight: ${res.findings.length} thing(s) flagged (read-only; nothing was changed)`);
     for (const f of res.findings) console.log(`  - ${f.warn ? 'warning: ' : ''}${f.kind}${f.path ? `: ${f.path}` : ''}${f.chars ? ` (${f.chars} chars)` : ''}${f.note ? ` - ${f.note}` : ''}`);
   }
-  if (strict && !res.ok) process.exitCode = 1;
+  if ((strict && !res.ok) || (harmony && !res.harmony)) process.exitCode = 1;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main(process.argv.slice(2));

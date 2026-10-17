@@ -121,7 +121,8 @@ export function readGrades(env = process.env, since) {
   for (const l of text.split('\n')) {
     try {
       const o = JSON.parse(l);
-      if (o && typeof o.value === 'number' && o.role && o.worker && (!since || o.t >= since)) rows.push(o);
+      if (o && typeof o.value !== 'number' && typeof o.total === 'number') o.value = o.total;
+      if (o && typeof o.value === 'number' && o.role && o.worker && (!since || !o.t || o.t >= since)) rows.push(o);
     } catch {
       // skip a bad line
     }
@@ -140,7 +141,8 @@ export function league(rows) {
     const [role, worker] = key.split('\u0000');
     const avg = (f) => r2(g.reduce((n, x) => n + f(x), 0) / g.length);
     const costed = g.filter((x) => Number.isFinite(x.cost_usd));
-    return { role, worker, jobs: g.length, average: avg(effective), ...(costed.length ? { avg_cost_usd: r2(costed.reduce((n, x) => n + x.cost_usd, 0) / costed.length) } : {}) };
+    const average = avg(effective);
+    return { role, worker, jobs: g.length, average, leagueScore: average, ...(costed.length ? { avg_cost_usd: r2(costed.reduce((n, x) => n + x.cost_usd, 0) / costed.length) } : {}) };
   });
   out.sort((a, b) => a.role.localeCompare(b.role) || b.average - a.average);
   return out;

@@ -20,6 +20,8 @@ const SCRIPTS = {
   scan: 'scan/scan.mjs',
   'review-pack': 'review-pack/review-pack.mjs',
   goal: 'goal/goal.mjs',
+  'skill-forge': 'forge/forge.mjs',
+  taste: 'taste/taste.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -28,15 +30,17 @@ const USAGE = [
   '  usage [--since ISO] [--json]      where the tokens went, from local transcripts',
   '  skill-gate --run --previous <ref>  check each skill\'s evals match or beat the previous version',
   '  jev <ask|file|files|score|route|skills|arch|unasked|plan|grade|league|outcomes|improve|bench|regress>  cheap Jev judgements (bgz jev --help)',
-  '  preflight                         read-only worker-start check: stray skills, long plugin overviews, ANTHROPIC_API_KEY',
+  '  preflight [--harmony]             read-only worker-start & cross-skill harmony/sanitization check',
   '  setup [<project-dir>] [--dry]     detect build, test and lint commands into .bgzflow/project.json',
   '  start-now [<project-dir>] [--json] list work-graph tasks that are ready to start (dependencies done)',
-  '  facts <for|add|accept|list>       per-project facts for the files a brief touches',
+  '  facts <for|search|add|accept|list> per-project facts (with FTS5 BM25 + recency decay search)',
   '  map [<dir>] [--brief] [--json]    one system map: repos, services, deployments, and each change by stage (map record|live ... --as <role>)',
   '  verify --file <spec.json>         verify served identity, verifier != builder, and effect read-back (BUILT vs USED)',
   '  scan [--base <ref>] [--file <p>]  deterministic security, SQL/IDOR, fake-effect and preview two-customer isolation scan',
   '  review-pack [--handback <f.json>] generate blind verifier pack (strips builder prose, keeps raw diff & comments)',
   '  goal <lock|status|set-wait|withdraw-item>  lock and inspect tamper-proof universal QA/QC checklist contracts',
+  '  skill-forge <--from-rea|--from-book|--from-video|--from-paper|--from-teardown|--from-source> ...  forge & harmonize skills from deep sources & REA',
+  '  taste <status|lock|unlock|verify-round|anti-slop>  mechanical LOCKED_IDENTITY protection & 10-project anti-repetition engine',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);
