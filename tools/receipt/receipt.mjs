@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Prints the evidence receipt for a handback (path, bytes, lines, sha256, modified time, totals) so no model types it.
 //   node tools/receipt/receipt.mjs <file-or-dir> [more paths...] [--json]   (folders are walked; .git and links are skipped)
 import { createHash } from 'node:crypto';
@@ -92,7 +93,7 @@ async function main(argv) {
   return r.missing.length ? 1 : 0;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   main(process.argv.slice(2)).then((code) => { process.exitCode = code; }, (err) => {
     console.error(`receipt: ${err.message}`);
     process.exitCode = 2;

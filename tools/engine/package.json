@@ -1,0 +1,39 @@
+{
+  "name": "@bgzflow/engine",
+  "version": "0.0.0-dev",
+  "private": true,
+  "type": "module",
+  "description": "Portable goal execution and scoped context for BGZFLOW hosts",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.mjs",
+    "./runtime": "./runtime.mjs",
+    "./local-host": "./local-host.mjs",
+    "./context": "./scoped-context.mjs",
+    "./methods": "./method-policy.mjs",
+    "./vocabulary": "./vocabulary.mjs",
+    "./truth": "./current-truth.mjs"
+  },
+  "bin": {
+    "bgz-engine": "./cli.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "runtime.mjs",
+    "local-host.mjs",
+    "scoped-context.mjs",
+    "method-policy.mjs",
+    "vocabulary.mjs",
+    "method-assets/",
+    "harness2-example.mjs",
+    "improvement/harness2-example/",
+    "cli.mjs",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "current-truth.mjs"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

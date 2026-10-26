@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // bgz review-pack — Blind Verifier Pack Generator (Priority 3, BGZFLOW 0.9.3).
 // Strips the builder's handback prose, self-assessments and "done/passed" claims while keeping:
 // 1. Raw git diff (including all code comments intact).
@@ -125,7 +126,7 @@ function parseArgs(argv) {
 
 const USAGE = `Usage: bgz review-pack [--base <ref>] [--head <ref>] [--handback <file.json>] [--brief <BRIEF.md>] [--decisions <DECISIONS.md>] [--out <pack.json>]`;
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     console.log(USAGE);

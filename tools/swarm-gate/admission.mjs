@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {validateExecutionGraph,loadExecutionGraph,ASSESS_CLASSIFICATIONS} from '../engine/execution-graph.mjs';
 
 const SHA=/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/i;
 const failed=reason=>({allowed:false,reason});
@@ -74,10 +75,23 @@ export function admitEvidence(root,handback,{baseSha,sha}={}) {
       if(/(?:^|[/\\])(?:auth\.json|\.env(?:\..*)?|credentials)(?:$|[/\\])/i.test(oc.surfaceEvidence))return failed('Outcome contract surfaceEvidence cannot reference credential files.');
       if(oc.surfaceStatus==='unavailable'&&oc.claimedLevel==='USED')return failed('An unavailable verification surface stays BUILT and cannot be claimed as USED.');
     }
+    if(handback.executionGraph!==undefined){
+      const gv=validateExecutionGraph(handback.executionGraph);
+      if(!gv.valid)return failed(`Execution graph in handback violated invariants: ${gv.violations.join('; ')}`);
+    }
+    const activeGraph=loadExecutionGraph(root);
+    const breakerTripped=activeGraph?.nodes?.some(n=>n.kind==='advisor_circuit_breaker'&&n.status==='running');
+    if(breakerTripped||(typeof handback.failedAttempts==='number'&&handback.failedAttempts>=2)){
+      const as=handback.assess;
+      if(!as||typeof as!=='object'||!ASSESS_CLASSIFICATIONS.includes(as.classification)||typeof as.rootCause!=='string'||!as.rootCause.trim()||typeof as.research!=='string'||!as.research.trim()||typeof as.newMethod!=='string'||!as.newMethod.trim()){
+        return failed('After 2 failed attempts on a slice, an ASSESS record (classification, rootCause, research, newMethod) via bgz graph assess is required before admission.');
+      }
+    }
     const extra={};
     if(handback.triageMode!==undefined)extra.triageMode=handback.triageMode;
     if(handback.retiredGuards!==undefined)extra.retiredGuards=handback.retiredGuards;
     if(handback.operations!==undefined)extra.operations=handback.operations;
+    if(handback.assess!==undefined)extra.assess=handback.assess;
     if(handback.outcomeContract!==undefined){
       extra.outcomeContract={
         ...handback.outcomeContract,

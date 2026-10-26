@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // `bgz preflight` - worker-start check. Read-only: it reports, it never changes or deletes anything.
 // Flags: (1) stray skill folders (no SKILL.md, or the same skill name in two places), (2) instruction overviews that load
 // at start and run over 4,000 characters (AGENTS.md / CLAUDE.md in the project and in installed plugin folders, and
@@ -156,4 +157,4 @@ function main(argv) {
   if ((strict && !res.ok) || (harmony && !res.harmony)) process.exitCode = 1;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main(process.argv.slice(2));
+if (isCommandEntry(import.meta.url)) main(process.argv.slice(2));

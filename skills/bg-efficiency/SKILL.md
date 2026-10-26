@@ -3,7 +3,10 @@ name: bg-efficiency
 description: Use in every chat and role to cut usage without cutting scope, tests or holds: effort by role, scripts run from files, fresh chats from short handoffs, concise replies, maps before reads and receipts printed by tools.
 ---
 
-# BG Efficiency 2.0
+# BGZFLOW Efficiency
+
+<!-- bgzflow-engine-defaults -->
+Apply the shared default task policy at `${CLAUDE_PLUGIN_ROOT}/tools/engine/method-assets/default-policy.md`. Research material unknowns and check actual results without waiting for the user to request it. Keep simple work direct; use bgz engine prepare/method for relevant detailed methods, without another routing model call.
 
 Apply on every turn, in every role and stage. Efficiency never cuts requirements, meaningful tests, safety, evidence, recovery or holds; it removes repetition. Measured usage: hidden thinking and tool input (commands, file writes, SQL) are most of the output, replies about 5%, and re-reading a long context every turn is the largest load. The checklist follows that order. Terms are in the [glossary](../bg-build-with-me/references/glossary.md); sources in [sources](references/sources.md).
 

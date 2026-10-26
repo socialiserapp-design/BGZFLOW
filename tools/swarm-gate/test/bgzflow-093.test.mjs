@@ -655,7 +655,8 @@ test('093-8: bgz lessons enforces --scope global requirements and blocks prefere
 test('093-9: bg-mail supports ack (acknowledged) and act (acted_upon) states', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz093-mail-'));
   roots.push(root);
-  const env = { ...process.env, BGZFLOW_MAIL_ROOT: path.join(root, 'inbox') };
+  // bg-mail reads BG_MAIL_DIR (BGZFLOW_MAIL_ROOT alone left this test writing to the real inbox); sessions stay temp too.
+  const env = { ...process.env, BGZFLOW_MAIL_ROOT: path.join(root, 'inbox'), BG_MAIL_DIR: path.join(root, 'inbox'), BGZFLOW_SESSIONS_DIR: path.join(root, 'sessions') };
 
   const post = spawnSync(
     process.execPath,

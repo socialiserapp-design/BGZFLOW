@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Finds a project's build, test and lint commands from the files in its folder and saves them in
 // <project>/.bgzflow/project.json. It asks nothing, never runs a project command and never touches CLAUDE.md or AGENTS.md.
 //   node tools/project-setup/project-setup.mjs [<project-dir>] [--json] [--dry]
@@ -373,7 +374,7 @@ export function main(argv) {
   return 0;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   try {
     process.exitCode = main(process.argv.slice(2));
   } catch (err) {

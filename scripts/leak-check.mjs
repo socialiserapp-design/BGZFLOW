@@ -242,17 +242,18 @@ function main() {
     findings.push({ path, line, rule, masked: "***" });
   }
   const creditTag = ["so", "clo"].join("");
+  const creditMail = ["sim", "eon@", "socialiser.app"].join("");
   const readmeCreditRe = new RegExp(
-    `(?:https://www\\.linkedin\\.com/in/simeon-konto-${creditTag}/?|https://x\\.com/${creditTag}app|@${creditTag}app|%40${creditTag}app)`,
+    `(?:https://www\\.linkedin\\.com/in/simeon-konto-${creditTag}/?|https://x\\.com/${creditTag}app|@${creditTag}app|%40${creditTag}app|mailto:${creditMail}|${creditMail})`,
     "gi",
   );
   function consider(text, path, line) {
     if (!path) return;
-    for (const rule of RULES) {
-      if (rule.re.test(text)) add(path, line, rule.name);
-    }
-    if (badEmail(text)) add(path, line, "email");
     const cleaned = (path === "README.md" || path === "HOW-TO-USE.md") ? text.replace(readmeCreditRe, "") : text;
+    for (const rule of RULES) {
+      if (rule.re.test(cleaned)) add(path, line, rule.name);
+    }
+    if (badEmail(cleaned)) add(path, line, "email");
     const folded = cleaned.toLowerCase();
     if (terms.some((term) => folded.includes(term))) add(path, line, "denylist");
   }

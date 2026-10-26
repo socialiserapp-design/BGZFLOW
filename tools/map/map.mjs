@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // One system map, kept by one owner: repos, worktrees, services, what depends on what, declared deployments, and each task's change by stage.
 //   node tools/map/map.mjs [<dir>] [--json] [--brief]
 //   node tools/map/map.mjs record <task-id> [--handback <file>] [--what <text> --where <a,b> --effect <text>] [--stage <s>] [--commit <sha>] [--evidence <text>] --as <role>
@@ -607,6 +608,6 @@ export function main(argv, { cwd = process.cwd(), env = process.env, out = (s) =
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   process.exitCode = main(process.argv.slice(2));
 }

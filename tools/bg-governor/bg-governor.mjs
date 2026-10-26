@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -213,7 +214,7 @@ export function run(argv = process.argv.slice(2)) {
   throw new Error('usage: bg-governor disk|build-slots|archive-check|queued|reap');
 }
 
-const invoked = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const invoked = isCommandEntry(import.meta.url);
 if (invoked) {
   try {
     process.exitCode = run();

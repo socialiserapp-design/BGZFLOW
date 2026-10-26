@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // bgz scan — Deterministic Security, Fake-Effect & Two-Customer Isolation Scanner (Priority 6, BGZFLOW 0.9.3).
 // Catches:
 // 1. Fake-effect anti-patterns (timers posing as work, canned AI text, fake selfie/verification state, swallowed catch on ads/money toggles, no-op handlers).
@@ -555,7 +556,7 @@ function parseArgs(argv) {
 
 const USAGE = `Usage: bgz scan [--base <git-ref>] [--file <path> ...] [--probe <two-customer-probe.json>] [--update-baseline] [--external] [--dir <project>]`;
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
     console.log(USAGE);

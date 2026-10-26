@@ -275,7 +275,7 @@ export async function improve({ env = process.env, repo, asks = '', dry = false,
     const m = await (deps.match || matchSkill)({ cand, skills, env });
     if (!m.ok) { out.deferred.push({ ...head, why: `Jev match unavailable (${m.err})` }); continue; }
     const isNew = m.skill === 'new';
-    const name = isNew ? `bg-${cand.jobType.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-workflow`.slice(0, 60) : m.skill;
+    const name = isNew ? `bgz-${cand.jobType.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-workflow`.slice(0, 60) : m.skill;
     // One promotion per skill per pass: a second workflow for the same skill waits for the next pass, after this one is watched.
     if (promotedThisPass.has(name)) { out.deferred.push({ ...head, skill: name, why: 'this skill was already promoted in this pass' }); continue; }
     const source = isNew ? null : m.file;

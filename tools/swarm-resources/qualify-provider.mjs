@@ -1,3 +1,4 @@
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -17,7 +18,7 @@ export function qualifyProvider(root,input,{runner=spawnSync}={}) {
   fs.writeFileSync(path.join(dir,id+'.err'),redactSecrets(result.stderr||''));
   const final={...started,status:result.error?'uncertain':result.status===0?'completed':'failed',exitCode:result.status??null,endedAt:new Date().toISOString(),returnRef:path.relative(root,record).replace(/\\/g,'/')};writeAtomic(record,final);return final;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+if(isCommandEntry(import.meta.url)){
   const input={};for(let i=2;i<process.argv.length;i++){const key=process.argv[i].slice(2);if(key==='thinking')input.thinking=true;else input[key.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=process.argv[++i];}
   try{const r=qualifyProvider(process.cwd(),input);console.log(JSON.stringify(r));process.exitCode=r.status==='completed'?0:r.status==='uncertain'?3:1;}catch{console.error('Qualification unavailable; reconcile this operation before retrying.');process.exitCode=2;}
 }

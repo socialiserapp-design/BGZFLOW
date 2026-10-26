@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Reports where model tokens went (by project and model: output split, top tool spenders, cache share, what woke each turn).
 //   node tools/usage/usage.mjs [--since <ISO>] [--until <ISO>] [--root <claude projects dir>] [--codex <codex sessions dir>] [--json]
 import fs from 'node:fs';
@@ -359,7 +360,7 @@ async function main(argv) {
   return 0;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   main(process.argv.slice(2)).then((code) => { process.exitCode = code; }, (err) => {
     console.error(`usage: ${err.message}`);
     process.exitCode = 2;

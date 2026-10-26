@@ -20,6 +20,24 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h10-method-guidance.mjs\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h11-current-truth.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -36,12 +54,36 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h10-method-guidance.mjs\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h11-current-truth.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
         "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
-        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook",
+            "timeout": 7
+          }
+        ]
       },
       {
         "matcher": "Read",
@@ -55,13 +97,35 @@
       },
       {
         "matcher": "Bash|Shell|exec_command|Write|Edit|MultiEdit",
-        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"", "timeout": 5 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Shell|exec_command|Write|Edit|MultiEdit|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h11-current-truth.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
-        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook",
+            "timeout": 7
+          }
+        ]
       },
       {
         "matcher": "Write|Edit|MultiEdit",
@@ -75,18 +139,56 @@
       },
       {
         "matcher": "Bash|Shell|exec_command|WebFetch|Read|mcp__.*(?:browser|fetch|search|scrap|crawl|brave|chrome|playwright|puppeteer|navigate|page|web).*|Write|Edit|MultiEdit",
-        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"", "timeout": 5 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h7-jev-gates.mjs\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Shell|exec_command|Write|Edit|MultiEdit|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h11-current-truth.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUseFailure": [
       {
         "matcher": "Bash|Shell|exec_command|Agent|Task|mcp__.*(?:codex|claudex).*(?:task|exec)",
-        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook", "timeout": 7 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook",
+            "timeout": 7
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Shell|exec_command|Write|Edit|MultiEdit|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/h11-current-truth.mjs\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "hooks": [{"type":"command","command":"node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook","timeout":7}]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/tools/swarm-gate/swarm-gate.mjs\" hook",
+            "timeout": 7
+          }
+        ]
       },
       {
         "hooks": [

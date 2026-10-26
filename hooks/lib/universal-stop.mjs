@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { findProjectDir } from './project.mjs';
+import { readSessionState, sessionIdFromInput, sessionIdentity, sessionKey, updateSessionState } from './session-identity.mjs';
 
 export const GOAL_REL_PATH = path.join('.bgzflow', 'active-goal.json');
 export const LOOP_STATE_REL_PATH = path.join('.bgzflow', 'qa-loop-state.json');
@@ -50,6 +51,8 @@ export function computeContractSignature(goalObj, secretSalt = 'bgzflow-0.9.5-co
     domain: goalObj.domain || 'universal',
     candidateSha: goalObj.candidateSha || null,
     authorRole: goalObj.authorRole || 'verifier',
+    ...(goalObj.originalRequest !== undefined ? { originalRequest: goalObj.originalRequest } : {}),
+    ...(goalObj.vocabulary ? { vocabulary: goalObj.vocabulary } : {}),
     keepList: (goalObj.keepList || []).map((k) => ({
       id: k.id,
       behaviour: k.behaviour,
@@ -83,6 +86,9 @@ export function computeReceiptSignature(receipt, secretSalt = 'bgzflow-0.9.5-rec
     layer1DeterministicPass: receipt.layer1DeterministicPass === true,
     layer2AtomicJevPass: receipt.layer2AtomicJevPass === true,
     evidenceSha256: receipt.evidenceSha256 || '',
+    ...(receipt.contractSignature !== undefined ? { contractSignature: receipt.contractSignature } : {}),
+    ...(receipt.intentCoveragePassed !== undefined ? { intentCoveragePassed: receipt.intentCoveragePassed === true } : {}),
+    ...(receipt.outcomePassed !== undefined ? { outcomePassed: receipt.outcomePassed === true } : {}),
   });
   return hmac256(secretSalt, canonical);
 }
@@ -110,6 +116,9 @@ export function resolveAgentRole(projectDir, input = {}, env = process.env) {
   if (env.BGZFLOW_AGENT_ROLE && env.BGZFLOW_AGENT_ROLE.trim()) {
     return env.BGZFLOW_AGENT_ROLE.trim();
   }
+  // A shared folder cannot tell its chats apart; the session map (learned from bg-mail post) can.
+  const learnedRole = sessionIdentity(input, env).role;
+  if (learnedRole) return learnedRole;
   if (input.agent_role && String(input.agent_role).trim()) {
     return String(input.agent_role).trim();
   }
@@ -136,9 +145,11 @@ export function resolveAgentRole(projectDir, input = {}, env = process.env) {
   return '';
 }
 
-export function resolveProjectName(projectDir, env = process.env) {
+export function resolveProjectName(projectDir, env = process.env, input = {}) {
   if (env.BGZFLOW_MAIL_PROJECT && env.BGZFLOW_MAIL_PROJECT.trim()) return env.BGZFLOW_MAIL_PROJECT.trim();
   if (env.BG_PROJECT && env.BG_PROJECT.trim()) return env.BG_PROJECT.trim();
+  const learnedProject = sessionIdentity(input, env).project;
+  if (learnedProject) return learnedProject;
   if (projectDir) {
     try {
       const goalFile = path.join(projectDir, GOAL_REL_PATH);
@@ -155,44 +166,102 @@ export function resolveProjectName(projectDir, env = process.env) {
   return '';
 }
 
-function readMailState(projectDir) {
-  if (!projectDir) return { notifiedMidTurnIds: new Set(), stopBlockedIds: new Set() };
+// Delivered/notified ids live in the session file when the hook knows its session id,
+// so chats sharing one folder never mark each other's mail as seen. Otherwise per projectDir, as before.
+// Fix round 1 (B2): if the session file cannot be written, the same ids go into the project-local
+// ack file under sessions[<session key>]; reads union both. A caller that asked to mark ids and could
+// not save them anywhere gets no new mail back, so a failed write never turns into a repeated block.
+const emptyObject = (value) => (value && typeof value === 'object' && !Array.isArray(value) ? value : {});
+const MAX_FALLBACK_SESSIONS = 200;
+
+function readJsonFile(file) {
   try {
-    const p = path.join(projectDir, MAIL_ACK_REL_PATH);
-    if (!fs.existsSync(p)) return { notifiedMidTurnIds: new Set(), stopBlockedIds: new Set() };
-    const data = JSON.parse(fs.readFileSync(p, 'utf8'));
-    return {
-      notifiedMidTurnIds: new Set(Array.isArray(data.notifiedMidTurnIds) ? data.notifiedMidTurnIds : []),
-      stopBlockedIds: new Set(Array.isArray(data.deliveredIds) ? data.deliveredIds : []),
-    };
+    if (!fs.existsSync(file)) return {};
+    return emptyObject(JSON.parse(fs.readFileSync(file, 'utf8')));
   } catch {
-    return { notifiedMidTurnIds: new Set(), stopBlockedIds: new Set() };
+    return {};
   }
 }
 
-function recordMailState(projectDir, { midTurnIds = [], stopIds = [] } = {}) {
-  if (!projectDir || (!midTurnIds.length && !stopIds.length)) return;
+function writeJsonFileAtomic(file, data) {
   try {
-    const p = path.join(projectDir, MAIL_ACK_REL_PATH);
-    const state = readMailState(projectDir);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n', 'utf8');
+    fs.renameSync(tmp, file);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Project-local fallback bucket for one session; used only when it names that exact session id.
+function readFallbackBucket(projectDir, relPath, sessionId) {
+  if (!projectDir || !sessionId) return {};
+  const data = readJsonFile(path.join(projectDir, relPath));
+  const bucket = emptyObject(emptyObject(data.sessions)[sessionKey(sessionId)]);
+  return bucket.sessionId === sessionId ? bucket : {};
+}
+
+function writeFallbackBucket(projectDir, relPath, sessionId, patch) {
+  if (!projectDir || !sessionId) return false;
+  try {
+    const file = path.join(projectDir, relPath);
+    const data = readJsonFile(file);
+    const now = new Date().toISOString();
+    const sessions = { ...emptyObject(data.sessions) };
+    const key = sessionKey(sessionId);
+    sessions[key] = { ...emptyObject(sessions[key]), ...patch, sessionId, updatedAt: now };
+    const keys = Object.keys(sessions);
+    if (keys.length > MAX_FALLBACK_SESSIONS) {
+      keys
+        .sort((a, b) => String(sessions[a]?.updatedAt || '').localeCompare(String(sessions[b]?.updatedAt || '')))
+        .slice(0, keys.length - MAX_FALLBACK_SESSIONS)
+        .forEach((k) => delete sessions[k]);
+    }
+    return writeJsonFileAtomic(file, { ...data, updatedAt: now, sessions });
+  } catch {
+    return false;
+  }
+}
+
+function readMailState(projectDir, sessionId = '', env = process.env) {
+  const notifiedMidTurnIds = new Set();
+  const stopBlockedIds = new Set();
+  const add = (src) => {
+    if (Array.isArray(src?.notifiedMidTurnIds)) src.notifiedMidTurnIds.forEach((id) => notifiedMidTurnIds.add(id));
+    if (Array.isArray(src?.deliveredIds)) src.deliveredIds.forEach((id) => stopBlockedIds.add(id));
+  };
+  if (sessionId) {
+    add(readSessionState(sessionId, env));
+    add(readFallbackBucket(projectDir, MAIL_ACK_REL_PATH, sessionId));
+    return { notifiedMidTurnIds, stopBlockedIds };
+  }
+  if (projectDir) add(readJsonFile(path.join(projectDir, MAIL_ACK_REL_PATH)));
+  return { notifiedMidTurnIds, stopBlockedIds };
+}
+
+// Returns true only when the ids were saved somewhere a later read will see them.
+function recordMailState(projectDir, { midTurnIds = [], stopIds = [] } = {}, sessionId = '', env = process.env) {
+  if (!midTurnIds.length && !stopIds.length) return true;
+  try {
+    const state = readMailState(projectDir, sessionId, env);
     for (const id of midTurnIds) state.notifiedMidTurnIds.add(id);
     for (const id of stopIds) state.stopBlockedIds.add(id);
-    fs.mkdirSync(path.dirname(p), { recursive: true });
-    fs.writeFileSync(
-      p,
-      JSON.stringify(
-        {
-          updatedAt: new Date().toISOString(),
-          notifiedMidTurnIds: [...state.notifiedMidTurnIds].slice(-500),
-          deliveredIds: [...state.stopBlockedIds].slice(-500),
-        },
-        null,
-        2,
-      ) + '\n',
-      'utf8',
-    );
+    const patch = {
+      notifiedMidTurnIds: [...state.notifiedMidTurnIds].slice(-500),
+      deliveredIds: [...state.stopBlockedIds].slice(-500),
+    };
+    if (sessionId) {
+      if (updateSessionState(sessionId, patch, env)) return true;
+      return writeFallbackBucket(projectDir, MAIL_ACK_REL_PATH, sessionId, patch);
+    }
+    if (!projectDir) return false;
+    const file = path.join(projectDir, MAIL_ACK_REL_PATH);
+    // Keep any per-session fallback buckets that share this file.
+    return writeJsonFileAtomic(file, { ...readJsonFile(file), updatedAt: new Date().toISOString(), ...patch });
   } catch {
-    // non-fatal
+    return false;
   }
 }
 
@@ -203,11 +272,15 @@ export function checkInboxAndPeerWait({
   markDelivered = false,
   markMidTurnNotified = false,
   onlyUnnotifiedMidTurn = false,
+  input = {},
+  sessionId: explicitSessionId,
   env = process.env,
 } = {}) {
+  const hookInput = input && typeof input === 'object' ? input : {};
+  const sessionId = sessionIdFromInput({ session_id: explicitSessionId ?? hookInput.session_id });
   const mailRoot = resolveMailDir(env);
-  const proj = projectName || resolveProjectName(projectDir, env);
-  const role = agentRole || resolveAgentRole(projectDir, {}, env);
+  const proj = projectName || resolveProjectName(projectDir, env, hookInput);
+  const role = agentRole || resolveAgentRole(projectDir, hookInput, env);
   if (!proj || !role) return { unread: [], urgent: [], waitingOutbound: [], coalescedDroppedCount: 0 };
 
   const boxDir = path.join(mailRoot, proj);
@@ -220,7 +293,7 @@ export function checkInboxAndPeerWait({
     return { unread: [], urgent: [], waitingOutbound: [], coalescedDroppedCount: 0 };
   }
 
-  const mailState = readMailState(projectDir);
+  const mailState = readMailState(projectDir, sessionId, env);
   const rawUnread = [];
   const waitingOutbound = [];
   const now = Date.now();
@@ -280,14 +353,142 @@ export function checkInboxAndPeerWait({
       m.kind === 'stop',
   );
 
-  if (projectDir && rawUnread.length) {
-    recordMailState(projectDir, {
-      midTurnIds: markMidTurnNotified ? rawUnread.map((m) => m.id) : [],
-      stopIds: markDelivered ? rawUnread.map((m) => m.id) : [],
-    });
+  if (rawUnread.length && (markDelivered || markMidTurnNotified)) {
+    const saved = recordMailState(
+      projectDir,
+      {
+        midTurnIds: markMidTurnNotified ? rawUnread.map((m) => m.id) : [],
+        stopIds: markDelivered ? rawUnread.map((m) => m.id) : [],
+      },
+      sessionId,
+      env,
+    );
+    // B2: ids we were asked to mark but could not save anywhere would block again next time. Fail open.
+    if (!saved) return { unread: [], urgent: [], waitingOutbound, coalescedDroppedCount: 0, recordFailed: true };
   }
 
   return { unread, urgent, waitingOutbound, coalescedDroppedCount };
+}
+
+export const PEER_WAKE_REL_PATH = path.join('.bgzflow', 'peer-wake-state.json');
+const PEER_WAKE_MIN_AGE_MINUTES = 20;
+const PEER_WAKE_MAX_AGE_MINUTES = 180;
+const PEER_WAKE_REPEAT_MINUTES = 30;
+const PEER_WAKE_SCAN_WINDOW = 200;
+const PEER_WAKE_QUIET_KINDS = new Set(['info', 'status', 'progress']);
+
+function readPeerWakeState(projectDir, sessionId, env) {
+  const asMap = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+  if (sessionId) {
+    // Union of the session file and the project-local fallback bucket, latest time per target.
+    const merged = { ...asMap(readSessionState(sessionId, env).peerWake) };
+    const fallback = asMap(readFallbackBucket(projectDir, PEER_WAKE_REL_PATH, sessionId).peerWake);
+    for (const [target, at] of Object.entries(fallback)) {
+      const prev = Date.parse(merged[target] || '');
+      const next = Date.parse(at || '');
+      if (!Number.isFinite(prev) || (Number.isFinite(next) && next > prev)) merged[target] = at;
+    }
+    return merged;
+  }
+  if (!projectDir) return {};
+  return { ...asMap(readJsonFile(path.join(projectDir, PEER_WAKE_REL_PATH)).peerWake) };
+}
+
+// Returns true only when the wake time was saved somewhere a later read will see it.
+function recordPeerWake(projectDir, sessionId, env, target, at) {
+  try {
+    const peerWake = readPeerWakeState(projectDir, sessionId, env);
+    peerWake[target] = at;
+    if (sessionId) {
+      if (updateSessionState(sessionId, { peerWake }, env)) return true;
+      return writeFallbackBucket(projectDir, PEER_WAKE_REL_PATH, sessionId, { peerWake });
+    }
+    if (!projectDir) return false;
+    const file = path.join(projectDir, PEER_WAKE_REL_PATH);
+    return writeJsonFileAtomic(file, { ...readJsonFile(file), updatedAt: at, peerWake });
+  } catch {
+    return false;
+  }
+}
+
+// Finds the oldest question/handback this role sent to one other role that nobody has picked up
+// for 20-180 minutes, so the Stop hook can ask this chat to wake that peer with Computer Use.
+// At most once per target per 30 minutes. Off switch: BGZFLOW_PEER_WAKE=off.
+export function findPeerWake({
+  projectDir,
+  agentRole,
+  projectName,
+  input = {},
+  sessionId: explicitSessionId,
+  env = process.env,
+  now = Date.now(),
+  record = true,
+} = {}) {
+  try {
+    if (/^(off|0|false|no)$/i.test(String(env.BGZFLOW_PEER_WAKE || '').trim())) return null;
+    const hookInput = input && typeof input === 'object' ? input : {};
+    const sessionId = sessionIdFromInput({ session_id: explicitSessionId ?? hookInput.session_id });
+    const proj = projectName || resolveProjectName(projectDir, env, hookInput);
+    const role = String(agentRole || resolveAgentRole(projectDir, hookInput, env)).toLowerCase();
+    if (!proj || !role) return null;
+
+    const boxDir = path.join(resolveMailDir(env), proj);
+    let files = [];
+    try {
+      files = fs.readdirSync(boxDir).filter((f) => f.endsWith('.json')).sort().slice(-PEER_WAKE_SCAN_WINDOW);
+    } catch {
+      return null;
+    }
+
+    const messages = [];
+    for (const f of files) {
+      try {
+        const msg = JSON.parse(fs.readFileSync(path.join(boxDir, f), 'utf8'));
+        const createdMs = Date.parse(msg?.createdAt || '');
+        if (msg && Number.isFinite(createdMs)) messages.push({ msg, createdMs });
+      } catch {
+        // ignore malformed message file
+      }
+    }
+
+    const wokenAt = readPeerWakeState(projectDir, sessionId, env);
+    for (const { msg, createdMs } of messages) {
+      const from = String(msg.from || '').toLowerCase();
+      const to = String(msg.to || '').toLowerCase();
+      if (from !== role || !to || to === role || to === 'all' || to === 'broadcast') continue;
+      if (PEER_WAKE_QUIET_KINDS.has(String(msg.kind || '').toLowerCase())) continue;
+      if (msg.state !== 'open' || msg.ack || msg.reply || msg.acted) continue;
+      const ageMinutes = (now - createdMs) / 60000;
+      if (ageMinutes < PEER_WAKE_MIN_AGE_MINUTES || ageMinutes > PEER_WAKE_MAX_AGE_MINUTES) continue;
+      const answeredLater = messages.some(
+        (o) =>
+          o.createdMs > createdMs &&
+          String(o.msg.from || '').toLowerCase() === to &&
+          String(o.msg.to || '').toLowerCase() === role,
+      );
+      if (answeredLater) continue;
+      const lastWake = Date.parse(wokenAt[to] || '');
+      if (Number.isFinite(lastWake) && now - lastWake < PEER_WAKE_REPEAT_MINUTES * 60000) continue;
+
+      // B2: an unsaved cooldown would repeat this wake on every Stop, so skip it instead (fail open).
+      if (record && !recordPeerWake(projectDir, sessionId, env, to, new Date(now).toISOString())) return null;
+      return { message: msg, target: msg.to, project: proj, ageMinutes: Math.floor(ageMinutes) };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function peerWakeReason(wake) {
+  const m = wake.message;
+  const what = m.kind ? `${m.kind} ` : '';
+  const body = String(m.body || '').replace(/\s+/g, ' ').trim().slice(0, 160);
+  return (
+    `${wake.target} has not picked up your ${what}message (id=${m.id}, project ${wake.project}) for ${wake.ageMinutes} minutes` +
+    `${body ? `: "${body}"` : ''}. ` +
+    'Wake it with Computer Use per COORDINATION 8B: open its exact window, check the title matches the project and there is no unsent human draft, send one short message labelled as an agent, confirm it starts working. Then carry on.'
+  );
 }
 
 function loadLoopState(projectDir, goalId) {
@@ -355,14 +556,58 @@ export function verifySignedReceipt(projectDir, item, goal) {
   }
 }
 
-export function evaluateUniversalStop(input = {}, { env = process.env, projectDir: explicitProjectDir } = {}) {
+export function verifySignedGoalOutcome(projectDir, goal) {
+  const id = crypto.createHash('sha256').update(goal.goalId).digest('hex');
+  const file = path.join(projectDir, '.bgzflow', 'goal-outcomes', `${id}.json`);
+  try {
+    const receipt = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (receipt.receiptSignature !== computeReceiptSignature(receipt) || receipt.goalId !== goal.goalId || receipt.contractSignature !== computeContractSignature(goal) || (goal.candidateSha && receipt.candidateSha !== goal.candidateSha)) {
+      return { ok: false, reason: 'Whole-outcome receipt is changed or belongs to another goal contract/candidate.' };
+    }
+    if (!receipt.verifier || !receipt.builder || receipt.verifier.toLowerCase() === receipt.builder.toLowerCase() || receipt.role !== 'verifier') {
+      return { ok: false, reason: 'Whole-outcome receipt requires an independent verifier.' };
+    }
+    if (receipt.verificationLevel !== 'USED' || receipt.outcomePassed !== true || receipt.intentCoveragePassed !== true || receipt.layer1DeterministicPass !== true || receipt.layer2AtomicJevPass !== true) {
+      return { ok: false, reason: 'The latest verification did not establish the full original outcome.' };
+    }
+    return { ok: true, receipt };
+  } catch {
+    return { ok: false, reason: 'No readable whole-outcome verifier receipt for the original request.' };
+  }
+}
+
+export function evaluateUniversalStop(input = {}, options = {}) {
+  const hookInput = input && typeof input === 'object' ? input : {};
+  const env = options.env || process.env;
+  const result = evaluateUniversalStopCore(hookInput, options);
+  // Peer-wake only when nothing else blocks: one block per Stop, never on a stop-hook re-entry,
+  // never after the owner stopped the goal, and never when either off switch is set.
+  if (result.decision !== 'allow' || result.exitKind === 'owner_stopped') return result;
+  if (/^(off|0|false|no)$/i.test(String(env.BGZFLOW_UNIVERSAL_STOP || '').trim())) return result;
+  if (hookInput.stop_hook_active === true) return result;
+  try {
+    const projectDir = options.projectDir || findProjectDir(hookInput, env) || hookInput.cwd || process.cwd();
+    const wake = findPeerWake({ projectDir, input: hookInput, env });
+    if (!wake) return result;
+    return {
+      decision: 'block',
+      code: 'peer-wake-computer-use',
+      reason: peerWakeReason(wake),
+      peerWake: { id: wake.message.id, target: wake.target, project: wake.project, ageMinutes: wake.ageMinutes },
+    };
+  } catch {
+    return result;
+  }
+}
+
+function evaluateUniversalStopCore(input = {}, { env = process.env, projectDir: explicitProjectDir } = {}) {
   if (/^(off|0|false|no)$/i.test(String(env.BGZFLOW_UNIVERSAL_STOP || '').trim())) {
     return { decision: 'allow', reason: 'BGZFLOW_UNIVERSAL_STOP is off.' };
   }
 
   const projectDir = explicitProjectDir || findProjectDir(input, env) || input.cwd || process.cwd();
   const agentRole = resolveAgentRole(projectDir, input, env);
-  const projectName = resolveProjectName(projectDir, env);
+  const projectName = resolveProjectName(projectDir, env, input);
 
   // 1. Check unread bg-mail messages first (prevents agent going idle while another AI has already messaged it)
   const mailCheck = checkInboxAndPeerWait({
@@ -370,6 +615,7 @@ export function evaluateUniversalStop(input = {}, { env = process.env, projectDi
     agentRole,
     projectName,
     markDelivered: true,
+    input,
     env,
   });
   if (mailCheck.unread.length > 0) {
@@ -513,6 +759,11 @@ export function evaluateUniversalStop(input = {}, { env = process.env, projectDi
     }
   }
 
+  if (typeof goal.originalRequest === 'string' && goal.originalRequest.trim() && awaitingAuthority.length === 0 && unverified.length === 0) {
+    const outcome = verifySignedGoalOutcome(projectDir, goal);
+    if (!outcome.ok) unverified.push({ id: 'original-request-outcome', kind: 'coverage', reason: outcome.reason });
+  }
+
   // Allowed Exit Condition 1 & 3: All controllable items verified (remaining items, if any, are outward actions awaiting human authority)
   if (unverified.length === 0) {
     if (mailCheck.waitingOutbound.length > 0 && goal.waitOnPeerBeforeStop === true) {
@@ -531,8 +782,32 @@ export function evaluateUniversalStop(input = {}, { env = process.env, projectDi
     };
   }
 
+  // Ending this response does not complete the goal. A hook-induced continuation
+  // must not recursively demand receipts that it could not obtain.
+  if (input.stop_hook_active === true) {
+    return {
+      decision: 'allow',
+      exitKind: 'incomplete_stop_reentry',
+      goalComplete: false,
+      unverifiedIds: unverified.map((item) => item.id),
+      warning: 'BGZFLOW verification remains incomplete for [' + unverified.map((item) => item.id).join(', ') + ']. End this repeated hook continuation with an honest progress report; do not claim the goal is complete or create self-certified independent receipts.',
+    };
+  }
+
   // Track continuation attempts & 2-strike causal boundary rule (Rule 22)
   const loopState = loadLoopState(projectDir, goal.goalId);
+  const failureFingerprint = sha256(JSON.stringify({ contract: goal.contractSignature, unverified }));
+  if (loopState.stopFailureFingerprint === failureFingerprint) {
+    return {
+      decision: 'allow',
+      exitKind: 'unchanged_verification_pending',
+      goalComplete: false,
+      independentUsed: false,
+      unverifiedIds: unverified.map((item) => item.id),
+      warning: 'BGZFLOW verification remains incomplete for [' + unverified.map((item) => item.id).join(', ') + ']. The same checks are still unresolved; report actual progress without claiming completion or independent USED verification.',
+    };
+  }
+  loopState.stopFailureFingerprint = failureFingerprint;
   loopState.stopContinuations = (loopState.stopContinuations || 0) + 1;
   const twoStrikeItems = [];
   for (const u of unverified) {

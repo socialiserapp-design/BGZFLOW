@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // BGZFLOW Skill Forge & Harmony Guard
 // Public BGZFLOW provides mechanical harmony validation, draft validation, and 5-job auto-rollback staging.
 // Deep-Source Skill Forging (from books, eBooks, lecture videos, papers, live teardowns, and Clean-Room REA)
@@ -326,6 +327,6 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   return res.valid && (!staged || staged.ok) ? 0 : 1;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   main().then((code) => { process.exitCode = code; });
 }

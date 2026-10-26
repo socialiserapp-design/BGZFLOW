@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // CLI for the Jev client: bgz jev <command>. Kept apart from jev.mjs so that library users (hooks, tests) never wait on it.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,4 +106,4 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
 }
 
 // Run as a script (not when imported by a hook or a test).
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();
+if (isCommandEntry(import.meta.url)) await main();

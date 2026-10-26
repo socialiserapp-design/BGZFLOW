@@ -161,6 +161,16 @@ const tools = [
     hint: "[--name <slug>] [--from-rea|--from-book|--from-video|--from-paper|--from-teardown|--from-source <target>] [--check-harmony <file>]",
     about: "Validate skill harmony and bridge to the Lucian Deep-Source Skill Forge and Clean-Room REA pipeline",
   },
+  {
+    name: "graph",
+    hint: "<compile|validate|transition|assess|context|precedent|advisory|stages> [options]",
+    about: "Compile, validate, and run Google Graph Engineering execution graphs, 2-failure circuit breakers, and Context Graph precedents",
+  },
+  {
+    name: "eval",
+    hint: "<domains|codesign|research|architecture|claims|math|chaos|craft|learn|run|status> [options]",
+    about: "Run the Universal 8-Domain Eval Engine covering Co-Designed Task Eval Cards, 4-Channel x 4-Angle OSS/Research Recall, Build-vs-Buy Architecture, Claim/Exhibit/Precondition Lock, Math Cross-Footing, Chaos/Security, Craft, and Permanent User Standards",
+  },
 ];
 
 function json(value) {

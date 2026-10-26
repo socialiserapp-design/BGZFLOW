@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Lists the work-graph tasks that can start now: they are planned or ready, and every dependency has met its gate. Read-only: it never writes.
 //   node tools/start-now/start-now.mjs [<project-dir>] [--graph <file>] [--json]
 // With no folder it looks upward from the current folder for the project (the nearest .bgzflow, else .git folder); a folder you give wins.
@@ -109,6 +110,6 @@ export function main(argv) {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   process.exitCode = main(process.argv.slice(2));
 }

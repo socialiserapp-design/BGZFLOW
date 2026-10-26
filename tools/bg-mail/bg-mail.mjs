@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { isLinked, writablePath, writeOwnedFile, withOwnedLock } from '../../hooks/lib/owned-path.mjs';
+import { recordPendingClaim } from '../../hooks/lib/session-identity.mjs';
 
 const root = process.env.BG_MAIL_DIR || path.join(
   process.env.XDG_STATE_HOME || path.join(os.homedir(), '.local', 'state'),
@@ -87,6 +88,12 @@ function whyNotWritable(directory) {
   return null;
 }
 
+// After a successful post, note a PENDING claim for this chat's session (Claude Code: CLAUDE_CODE_SESSION_ID).
+// The PostToolUse hook promotes it only on the main thread when the output shows this message; never fails the post.
+function claimFor(message) {
+  try { recordPendingClaim({ claimId: message.id, project: message.project, role: message.from, source: 'bg-mail-post' }); } catch { /* fail open */ }
+}
+
 // A worker that cannot write the shared inbox leaves its message here for the lead to collect.
 const spoolDirectory = () => path.join(process.cwd(), '.bgzflow', 'mail-spool');
 
@@ -96,21 +103,25 @@ function spool(message) {
   } catch {
     throw new Error('the inbox is not writable and the spool folder could not be written either; run from a folder you can write to');
   }
+  claimFor(message);
   console.log(JSON.stringify(message));
   console.error(`bg-mail: inbox not writable; message spooled to .bgzflow/mail-spool/${message.id}.json (lead: bg-mail collect --from <that folder>)`);
 }
 
 // A message as `post` writes it. Spooled files come from another process, so check them before trusting them.
+const VALID_KINDS = new Set(['question', 'status', 'progress', 'info', 'blocker', 'correction', 'stop', 'handback']);
 function validMessage(message, file) {
   const named = (value) => typeof value === 'string' && NAME.test(value) && value !== '.' && value !== '..';
   const good = message && typeof message === 'object' && !Array.isArray(message)
     && message.schema === 1 && named(message.id) && file === `${message.id}.json`
     && named(message.project) && named(message.from) && named(message.to)
-    && message.kind === 'question' && typeof message.body === 'string' && message.body !== ''
+    && VALID_KINDS.has(message.kind) && typeof message.body === 'string' && message.body !== ''
     && (message.default === null || typeof message.default === 'string')
     && Number.isFinite(message.waitMinutes) && message.waitMinutes >= 0
     && typeof message.createdAt === 'string' && Number.isFinite(Date.parse(message.createdAt))
-    && message.state === 'open' && message.reply === undefined;
+    && message.state === 'open' && message.reply === undefined
+    && (message.topic === undefined || named(message.topic))
+    && (message.priority === undefined || named(message.priority));
   return good ? message : null;
 }
 
@@ -267,7 +278,20 @@ async function main() {
       spool(message);
       return;
     }
+    claimFor(message);
     console.log(JSON.stringify(message));
+    return;
+  }
+
+  if (command === 'register') {
+    // Names this chat's project and role for the stay-awake hooks without posting any mail.
+    // Use it once per session when posts go through a wrapper that hides bg-mail's output, or in Codex.
+    const project = safe(flag('project'), 'project');
+    const role = safe(flag('role'), 'role');
+    const claimId = `reg-${Date.now()}-${crypto.randomUUID()}`;
+    let pending = false;
+    try { pending = Boolean(recordPendingClaim({ claimId, project, role, source: 'bg-mail-register' })); } catch { /* fail open */ }
+    console.log(JSON.stringify({ ok: true, command: 'register', project, role, claimId, pending }));
     return;
   }
 
@@ -489,7 +513,7 @@ async function main() {
     return;
   }
 
-  throw new Error('usage: bg-mail post|ack|ack-all|act|reply|get|wait|watch|list|compact|collect ...');
+  throw new Error('usage: bg-mail post|register|ack|ack-all|act|reply|get|wait|watch|list|compact|collect ...');
 }
 
 // Name the failing check without printing the inbox, working-folder or home paths.

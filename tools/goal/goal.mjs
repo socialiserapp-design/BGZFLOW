@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // bgz goal — Universal QA/QC Goal & Checklist Contract Manager (BGZFLOW 0.9.4).
 // Manages .bgzflow/active-goal.json across any domain (software, research, personal assistant, legal, marketing):
 //   bgz goal lock --file <spec.json> [--dir <project>]
@@ -8,6 +9,9 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import { sanitize, sanitizeRecord } from '../../hooks/lib/secrets.mjs';
+import { createVocabulary } from '../engine/vocabulary.mjs';
 import { fileURLToPath } from 'node:url';
 import {
   GOAL_REL_PATH,
@@ -29,6 +33,14 @@ import {
 } from '../jev/rules.mjs';
 
 export const DOMAIN_QUALITY_STANDARDS = {
+  universal: [
+    {
+      id: 'std-full-outcome',
+      requirement: 'The requested result is checked in its intended context against the original goal, with remaining limits stated.',
+      sourceRef: 'bgzflow-domain-standard:universal#full-outcome',
+      origin: 'standard_quality_check',
+    },
+  ],
   ui: [
     {
       id: 'std-ui-visual-integrity',
@@ -99,11 +111,15 @@ export function lockGoalContract(spec, { root = process.cwd() } = {}) {
   const keepList = Array.isArray(spec.keepList) ? spec.keepList : [];
   const forbidList = Array.isArray(spec.forbidList) ? spec.forbidList : [];
   const checklist = Array.isArray(spec.checklist) ? spec.checklist : [];
+  if (spec.originalRequest !== undefined && (typeof spec.originalRequest !== 'string' || !spec.originalRequest.trim())) {
+    return { ok: false, reason: 'originalRequest must preserve non-empty user input.' };
+  }
 
   if (!checklist.length && !keepList.length && !forbidList.length) {
     return { ok: false, reason: 'Goal contract must define at least one checklist, keepList, or forbidList item.' };
   }
 
+  const itemIds = new Set();
   for (const item of [...keepList, ...forbidList, ...checklist]) {
     if (!item || typeof item.id !== 'string' || !item.id.trim()) {
       return { ok: false, reason: 'Every keepList, forbidList, and checklist item requires a unique id.' };
@@ -114,8 +130,14 @@ export function lockGoalContract(spec, { root = process.cwd() } = {}) {
         reason: `Item ${item.id} is missing sourceRef (must cite the exact user line, DECISIONS.md line, or approved spec).`,
       };
     }
+    if (itemIds.has(item.id.trim())) return { ok: false, reason: `Duplicate outcome requirement id: ${item.id.trim()}.` };
+    itemIds.add(item.id.trim());
   }
 
+  let vocabulary;
+  try { if (spec.vocabulary) vocabulary = createVocabulary(sanitizeRecord(spec.vocabulary)); }
+  catch (error) { return { ok: false, reason: error.message }; }
+  const originalRequest = spec.originalRequest !== undefined ? sanitize(spec.originalRequest) : undefined;
   const goalObj = {
     schemaVersion: 1,
     goalId,
@@ -152,7 +174,9 @@ export function lockGoalContract(spec, { root = process.cwd() } = {}) {
       jevAtomicQuestion: c.jevAtomicQuestion || null,
       visualCheck: c.visualCheck || null,
     })),
-    plainEnglishSummary: spec.plainEnglishSummary || null,
+    plainEnglishSummary: spec.plainEnglishSummary ? sanitize(spec.plainEnglishSummary) : null,
+    ...(originalRequest !== undefined ? { originalRequest, originalRequestSanitized: originalRequest !== spec.originalRequest } : {}),
+    ...(vocabulary ? { vocabulary } : {}),
     displayPreference: spec.displayPreference || 'plain_only',
     withdrawnItems: Array.isArray(spec.withdrawnItems) ? spec.withdrawnItems : [],
     lockedAt: new Date().toISOString(),
@@ -229,9 +253,9 @@ export async function compileGoalFromPlainEnglish(
   spec = {},
   { root = process.cwd(), env = process.env, scoreImpl = null } = {},
 ) {
-  const prompt = String(spec.prompt || spec.userPrompt || '').trim();
+  const prompt = String(spec.prompt || spec.userPrompt || spec.originalRequest || '').trim();
   const plainEnglishSummary = String(spec.plainEnglishSummary || spec.summary || prompt).trim();
-  const domain = String(spec.domain || 'software').trim().toLowerCase();
+  const domain = String(spec.domain || 'universal').trim().toLowerCase();
   const displayPreference =
     String(spec.displayPreference || env.BGZFLOW_SPEC_DISPLAY || 'plain_only').trim().toLowerCase() === 'plain_plus_spec'
       ? 'plain_plus_spec'
@@ -270,7 +294,7 @@ export async function compileGoalFromPlainEnglish(
       ];
 
   const attachStandards = spec.attachDomainStandards !== false;
-  const domainStandards = attachStandards ? DOMAIN_QUALITY_STANDARDS[domain] || DOMAIN_QUALITY_STANDARDS.software || [] : [];
+  const domainStandards = attachStandards ? DOMAIN_QUALITY_STANDARDS[domain] || DOMAIN_QUALITY_STANDARDS.universal : [];
   const existingIds = new Set(userChecklist.map((c) => c.id));
   const mergedChecklist = [
     ...userChecklist,
@@ -286,6 +310,8 @@ export async function compileGoalFromPlainEnglish(
       boundAgentRole: spec.boundAgentRole || null,
       candidateSha: spec.candidateSha || null,
       plainEnglishSummary,
+      ...(prompt ? { originalRequest: spec.originalRequest ?? String(spec.prompt || spec.userPrompt) } : {}),
+      ...(spec.vocabulary ? { vocabulary: spec.vocabulary } : {}),
       displayPreference,
       keepList: Array.isArray(spec.keepList) ? spec.keepList : [],
       forbidList: Array.isArray(spec.forbidList) ? spec.forbidList : [],
@@ -492,7 +518,7 @@ function parseArgs(argv) {
   return { cmd: rest[0], args };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   const { cmd, args } = parseArgs(process.argv.slice(2));
   const root = args.dir ? path.resolve(args.dir) : process.cwd();
   let res;

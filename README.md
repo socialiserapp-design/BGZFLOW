@@ -6,14 +6,28 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 
 **New here? Read [HOW-TO-USE.md](HOW-TO-USE.md) or the [getting started guide](docs/getting-started.md): your first ten minutes.**
 
-**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp)
+**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp) · Email: [simeon@socialiser.app](mailto:simeon@socialiser.app)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.7-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.9-informational.svg)](CHANGELOG.md)
 [![X: @socloapp](https://img.shields.io/badge/X-%40socloapp-000.svg)](https://x.com/socloapp)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.9: Google Graph Engineering (`bgz graph`), Universal 8-Domain Eval Engine (`bgz eval`) & 6-Stage Harness 2
+
+BGZFLOW 0.9.9 introduces structural graph orchestration and a universal 8-domain evaluation gate across coding, architecture, open-source research, and documents/reports:
+- **Google Graph Engineering (`bgz graph`)**: compiles every non-trivial goal into an explicit cyclic execution graph (`router_research -> lead_planner -> worker_slice -> deterministic_join -> independent_verifier -> complete`) with four hard structural invariants, node-scoped context projections that strip builder reasoning before independent verification (`includeBuilderReasoning: false`), a 2-failure `bgz graph assess` (`Assess, Research, Adapt`) circuit breaker, and Context Graph precedent storage (`.bgzflow/graph/context-graph.json`).
+- **Universal 8-Domain Eval Engine (`bgz eval`)**: mechanically blocks delivery and emits exact auto-correction directives whenever output fails user standards across any of 8 domains:
+  1. `bgz eval codesign`: 30-second Pre-Flight Ground-Truth Scout first, targeted branching-fact questions, and a compiled Task Eval Card (`.bgzflow/evals/eval-card.json`).
+  2. `bgz eval research`: 4-Channel (`github`, `social_dev`, `community_forums`, `registries_or_papers`) × 4-Angle (`problem_symptom`, `mechanism_architecture`, `ecosystem_alternatives`, `recent_breakout`) open-source & research recall and saturation gate (`saturationReached: true`).
+  3. `bgz eval architecture`: Build-vs-Buy check against reinventing commodity OSS primitives, modular file-size cap (`<= 800` lines), and anti-boolean-soup state check.
+  4. `bgz eval claims`: atomic exhibit/fact verification against primary source files, statutory/domain precondition lock against case facts, and cross-document pack consistency.
+  5. `bgz eval math`: deterministic row/column sum cross-footing and inline currency multiplication checks.
+  6. `bgz eval chaos`: interruption/failure-injection recovery, latency/memory budget, and per-user security isolation proof.
+  7. `bgz eval craft`: anti-slop copywriting blocker, customer-surface internal-token leak check, and mobile (`390x844`) / desktop (`1280x720`) viewport verification.
+  8. `bgz eval learn` & `bgz eval run`: closed-loop auto-correction plus permanent learning of every user correction into `.bgzflow/evals/user-standards.jsonl` and Context Graph precedents.
 
 ## New in 0.9.7: Mechanical Identity Lock, SQLite FTS5 Fact Search, League Routing & Skill Harmony
 
@@ -217,6 +231,7 @@ BGZFLOW is designed and built by **Simeon Kontogeorges**. It grew out of running
 - GitHub: [socialiserapp-design](https://github.com/socialiserapp-design)
 - LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/)
 - X: [@socloapp](https://x.com/socloapp)
+- Email: [simeon@socialiser.app](mailto:simeon@socialiser.app)
 
 If BGZFLOW helps you ship, a star on this repository is the best thanks.
 

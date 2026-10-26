@@ -1,3 +1,4 @@
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // The one Jev client for BGZFLOW (TypeSafe "System One"). Node 18+ (node:http/https), no dependencies.
 //
 // Library use:   import { ask, noul, choice, score } from '.../tools/jev/jev.mjs'
@@ -472,4 +473,4 @@ export function shape(q, a, id) {
 }
 
 // `node tools/jev/jev.mjs <command>` (the slash command) runs the CLI; importing this file as a library never does.
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) import('./cli.mjs').then((m) => m.main());
+if (isCommandEntry(import.meta.url)) import('./cli.mjs').then((m) => m.main());

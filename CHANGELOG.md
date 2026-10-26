@@ -2,6 +2,24 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.9 (2026-10-26)
+
+**Google Graph Engineering (`bgz graph`), Universal 8-Domain Eval Engine (`bgz eval`), 6-Stage Harness 2 SDLC Loop, and 2-Failure `Assess, Research, Adapt` Circuit Breaker.**
+
+- **Google Graph Engineering (`tools/engine/execution-graph.mjs`, `tools/graph/graph.mjs`, `tools/bgz-graph.mjs`)**: compiles goals into a cyclic `ExecutionGraphSpec` (`router_research -> lead_planner -> worker_slice -> deterministic_join -> independent_verifier -> complete`) enforcing four hard structural invariants, node-scoped context projections (`includeBuilderReasoning: false` on `independent_verifier`), a 2-failure `bgz graph assess` circuit breaker, and Context Graph precedent storage (`.bgzflow/graph/context-graph.json`).
+- **Universal 8-Domain Eval Engine (`tools/eval/eval.mjs`)**: adds `bgz eval` (`domains`, `codesign`, `research`, `architecture`, `claims`, `math`, `chaos`, `craft`, `learn`, `run`, `status`) to enforce upfront 30-second Ground-Truth Scout + Task Eval Cards, 4-Channel × 4-Angle open-source & research recall and saturation, Build-vs-Buy and modular file-size/state checks, atomic exhibit/citation grounding and statutory/domain precondition locks with zero hallucinations, deterministic table/math cross-footing, chaos/perf/security checks, anti-slop craft checks, and permanent User-Standard learning (`.bgzflow/evals/user-standards.jsonl`).
+
+## 0.9.8+20261020.3 (2026-10-20)
+
+**Stay-awake hooks: per-chat identity, per-chat inboxes and peer-wake with Computer Use.**
+
+- **Session identity map (`hooks/lib/session-identity.mjs`)**: `PostToolUse` learns a chat's project and role from its own `bg-mail post --project X --from Y` command and keeps them per hook `session_id` in `~/.local/state/bgzflow/sessions/` (`BGZFLOW_SESSIONS_DIR`). `resolveAgentRole` and `resolveProjectName` check this map after the environment, so several chats sharing one folder each see only their own mail. Unknown sessions behave as before.
+- **Per-session inbox state**: delivered and notified message ids are kept per session; the folder-wide ack file is used only when no session id exists.
+- **Peer-wake on Stop**: when this chat's question or handback to one other role has sat open and unanswered for 20 to 180 minutes, Stop blocks once (per target, at most every 30 minutes) and asks the chat to wake that peer with Computer Use per COORDINATION 8B. It never blocks on a stop-hook re-entry, an owner stop, or when `BGZFLOW_UNIVERSAL_STOP=off`; switch it off alone with `BGZFLOW_PEER_WAKE=off`.
+- **Wording fix**: inbox gate messages and codes now name the real tool, `bg-mail` (was `bgz-mail`).
+- **Review fix round 1**: identity is now learned only from the chat's own successful post. `bg-mail post`/`register` leave a pending claim under `CLAUDE_CODE_SESSION_ID` (10-minute expiry, at most 50), and `PostToolUse` promotes it only when that message id appears in the output, outside a subagent (`agent_id`). A strict plain-command fallback covers hosts with no session variable (Codex), and there is a new `bg-mail register --project P --role R`. Echoes, comments, chained commands, failed posts and received mail never set identity. When state cannot be saved, the hooks fall back to project-local per-session state, never block the same ids twice, and fail open when nothing can be saved. Session files are named by a hashed key, so distinct ids never collide.
+- **Review fix round 2**: a pending claim is promoted only when the same tool call's own command is that `bg-mail post`/`register` (same project and role) and printed the claim's own confirmation line. Received mail (`get`, `list`, `collect`, `wait`) never confirms a claim. On the claim path, a claim for a different role never overwrites a chat's confirmed identity, so a worker started from a chat's shell, which inherits `CLAUDE_CODE_SESSION_ID`, cannot rename that chat. A deliberate role change is one plain `bg-mail post` or `register` command.
+
 ## 0.9.7 (2026-10-17)
 
 **Mechanical Brand Identity Lock (`bgz taste`), SQLite FTS5 Fact Search (`bgz facts search`), League-Weighted Routing (`bgz jev route`), Skill Harmony Linter (`bgz preflight --harmony`), and Lucian Engine Bridge (`bgz skill-forge`).**

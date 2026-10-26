@@ -1,6 +1,6 @@
 # How to Use BGZFLOW
 
-**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp)
+**Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp) · Email: [simeon@socialiser.app](mailto:simeon@socialiser.app)
 
 BGZFLOW turns one or more AI coding agents into a coordinated product team that takes a short plain-English request all the way to a verified, working launch. It is provider-agnostic and works whether you run a single AI model or a multi-agent setup across Claude Code, Codex, Grok, or another host.
 
@@ -77,6 +77,8 @@ Run commands via `node "<plugin-root>/tools/bgz.mjs" <command>` (or ask your age
 | Command | Purpose |
 |---|---|
 | `bgz setup` | Auto-detect build, test, and lint commands into `.bgzflow/project.json` |
+| `bgz graph` | Compile, validate, and run Google Graph Engineering execution graphs, 2-failure circuit breakers (`assess`), and Context Graph precedents |
+| `bgz eval` | Run the Universal 8-Domain Eval Engine (`codesign`, `research`, `architecture`, `claims`, `math`, `chaos`, `craft`, `learn`, `run`, `status`) |
 | `bgz goal compile` | Expand a short plain-English prompt into a structured goal checklist |
 | `bgz goal lock` | Lock `.bgzflow/active-goal.json` with an HMAC signature |
 | `bgz goal check-decision` | Score whether a question is material enough (`>= 0.65`) to ask the user |
@@ -110,3 +112,4 @@ Designed and created by **Simeon Kontogeorges**.
 - **GitHub**: [socialiserapp-design](https://github.com/socialiserapp-design)
 - **LinkedIn**: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/)
 - **X**: [@socloapp](https://x.com/socloapp)
+- **Email**: [simeon@socialiser.app](mailto:simeon@socialiser.app)

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Project facts: short, durable notes a lead keeps per project and hands to workers inside briefs.
 // Advice only: nothing ever blocks on a fact. Stored in <project>/.bgzflow/facts.json.
 //   bgz facts for (--files <a,b,...> | --brief <file>) [--dir <project>] [--json]   facts whose paths match, plus project-wide facts
@@ -465,7 +466,7 @@ export function main(argv, { cwd = process.cwd(), env = process.env, out = (s) =
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   Promise.resolve(main(process.argv.slice(2))).then((code) => {
     process.exitCode = code;
   });

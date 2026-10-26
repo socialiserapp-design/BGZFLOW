@@ -7,6 +7,8 @@ import { main as lessons } from './lessons/lessons.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 // Each subcommand runs its own script in a child process, so its exit code and output pass through unchanged.
 const SCRIPTS = {
+  engine: 'engine/cli.mjs',
+  graph: 'graph/graph.mjs',
   receipt: 'receipt/receipt.mjs',
   usage: 'usage/usage.mjs',
   'skill-gate': 'skill-gate/skill-gate.mjs',
@@ -22,6 +24,7 @@ const SCRIPTS = {
   goal: 'goal/goal.mjs',
   'skill-forge': 'forge/forge.mjs',
   taste: 'taste/taste.mjs',
+  eval: 'eval/eval.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -41,6 +44,9 @@ const USAGE = [
   '  goal <lock|status|set-wait|withdraw-item>  lock and inspect tamper-proof universal QA/QC checklist contracts',
   '  skill-forge <--from-rea|--from-book|--from-video|--from-paper|--from-teardown|--from-source> ...  forge & harmonize skills from deep sources & REA',
   '  taste <status|lock|unlock|verify-round|anti-slop>  mechanical LOCKED_IDENTITY protection & 10-project anti-repetition engine',
+  '  eval <domains|codesign|research|claims|math|learn|status>  Universal 8-Domain Quality, Research, Architecture & Zero-Hallucination Eval Engine',
+  '  graph <init|compile|validate|status|transition|context|assess|precedent|advisory|stages>  Google Graph Engineering & Harness 2 SDLC controller',
+  '  engine <start|resume|recover|status|truth>  durable goal engine with execution-graph & current-truth verification',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // BGZFLOW Mechanical Identity Lock & Anti-Slop Guard
 // Public BGZFLOW provides LOCKED_IDENTITY protection for existing projects and deterministic anti-slop linting.
 // Cross-Project 10-Build Taste Memory & 8+ Direction Exploration Synthesis is powered by the Lucian Engine (~/.bgzflow/lucian-engine/taste-engine.mjs).
@@ -302,6 +303,6 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   main().then((code) => { process.exitCode = code; });
 }

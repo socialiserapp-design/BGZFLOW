@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { isCommandEntry } from '../../hooks/lib/command-entry.mjs';
 // Exact checks are local. Optional bounded judgments use a configured CLI; never read credentials.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -17,6 +18,7 @@ import {qualifiedSetting,tierSetting,selectTierRoute,refreshModelMaps,refreshMap
 import {resolveSwarmDir} from '../bg-swarm/lib.mjs';
 import { resolveHeavyDir } from '../bg-heavy/dir.mjs';
 import { checkInboxAndPeerWait, evaluateUniversalStop } from '../../hooks/lib/universal-stop.mjs';
+import { learnSessionIdentity } from '../../hooks/lib/session-identity.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const ACTIVE = new Set(['starting', 'queued', 'running', 'uncertain', 'stalled']);
@@ -246,8 +248,11 @@ function readBrief(file, cwd) {
   }
   if (!validId(header.SWARM) || !validId(header.PIECE) || !KINDS.has(header.KIND) || header.OWNS === undefined) return { error: 'Brief needs SWARM, PIECE, KIND and OWNS.' };
   let owns; try { owns = JSON.parse(header.OWNS); } catch { return { error: 'OWNS must be a JSON array of owned files.' }; }
-  const missing = ['bg-efficiency', 'test-driven-development', 'systematic-debugging', 'verification-before-completion'].filter(s => !new RegExp('\\b'+s+'\\b', 'i').test(body));
-  if (missing.length || !/\bfast checks\b/i.test(body) || !/\bproof handback\b/i.test(body)) return { error: 'Brief needs the quality skills, fast checks only and proof handback.' };
+  const codingKind = ['build', 'fix'].includes(header.KIND);
+  const hasEfficiency = /\bbgz?-efficiency\b/i.test(body);
+  const requiredSkills = codingKind ? ['test-driven-development', 'systematic-debugging', 'verification-before-completion'] : [];
+  const missing = requiredSkills.filter(s => !new RegExp('\\b'+s+'\\b', 'i').test(body));
+  if (!hasEfficiency || missing.length || (codingKind && !/\bfast checks\b/i.test(body)) || !/\bproof handback\b/i.test(body)) return { error: 'Brief needs efficiency guidance and proof handback; build/fix also need coding quality skills and fast checks.' };
   return { swarm: header.SWARM, piece: header.PIECE, kind: header.KIND, owns, body,
     readOnly: header.READ_ONLY === 'true', unsplit: header.UNSPLIT === 'true', targetKind: header.TARGET_KIND,crossFamily:header.CROSS_FAMILY==='true',qualification:header.QUALIFICATION==='true',
     role: header.ROLE ? safe(header.ROLE) : null, triage: header.TRIAGE ? safe(header.TRIAGE) : null,
@@ -842,11 +847,12 @@ export function hook(input, env = process.env,options={}) {
   }
   try {
     if (input.hook_event_name === 'PreToolUse' && !/\bbg-mail\b/i.test(command)) {
-      const preMail = checkInboxAndPeerWait({ projectDir: project, onlyUnnotifiedMidTurn: true, env });
+      const preMail = checkInboxAndPeerWait({ projectDir: project, onlyUnnotifiedMidTurn: true, input, env });
       if (preMail.urgent && preMail.urgent.length > 0) {
-        const u = preMail.urgent[0];
-        checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, env });
-        return denyHook(
+        // Deny only for urgent mail whose notice was saved; a failed save returns nothing, so it never denies twice (B2).
+        const marked = checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, input, env });
+        const u = marked.urgent && marked.urgent[0];
+        if (u) return denyHook(
           block(
             'urgent-bg-mail',
             `URGENT bg-mail (${u.kind || u.priority} from ${u.from}, id=${u.id}): ${str(u.body).slice(0, 320)}`,
@@ -862,7 +868,9 @@ export function hook(input, env = process.env,options={}) {
     }
     let midTurnMailContext = null;
     if (input.hook_event_name === 'PostToolUse') {
-      const mail = checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, env });
+      // Learn which project/role this chat is from its own bg-mail post, so shared folders get per-chat inboxes. Fail-open.
+      if (command) { try { learnSessionIdentity(input, env); } catch { /* never block a tool on identity learning */ } }
+      const mail = checkInboxAndPeerWait({ projectDir: project, markMidTurnNotified: true, onlyUnnotifiedMidTurn: true, input, env });
       if (mail.unread.length > 0) {
         const coalescedNote = mail.coalescedDroppedCount > 0 ? ` (${mail.coalescedDroppedCount} older status updates coalesced)` : '';
         const msgText = mail.unread.map(m => `[bg-mail id=${m.id} from=${m.from}${m.topic ? ' topic=' + m.topic : ''}]: ${str(m.body).slice(0, 300)}`).join(' | ');
@@ -972,7 +980,7 @@ function flags(argv) {
     else rest.push(argv[i]);
   } return { args, rest };
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (isCommandEntry(import.meta.url)) {
   let result, command;
   try {
     const parsed = flags(process.argv.slice(2)), a = parsed.args; command = parsed.rest[0];

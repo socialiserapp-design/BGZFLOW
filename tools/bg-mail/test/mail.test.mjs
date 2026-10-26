@@ -13,7 +13,10 @@ let env;
 beforeEach(() => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-mail-'));
   roots.push(directory);
-  env = { ...process.env, BG_MAIL_DIR: directory, BG_MAIL_POLL_MS: '10' };
+  // Session claims go to a temp folder, never the real sessions store of the chat running the tests.
+  const sessions = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-mail-sessions-'));
+  roots.push(sessions);
+  env = { ...process.env, BG_MAIL_DIR: directory, BG_MAIL_POLL_MS: '10', BGZFLOW_SESSIONS_DIR: sessions };
 });
 
 after(() => {
@@ -244,3 +247,38 @@ test('list truncates long message bodies by default (< 2KB) and get returns the 
   assert.equal(full.body, longBody);
 });
 
+
+test('register names a pending claim for the calling session and writes no mail; post claims its own id', () => {
+  const withSession = { ...env, CLAUDE_CODE_SESSION_ID: 'mail-test-session' };
+  const reg = spawnSync(process.execPath, [cli, 'register', '--project', 'p', '--role', 'worker'], { env: withSession, encoding: 'utf8', timeout: 5000 });
+  assert.equal(reg.status, 0, reg.stderr);
+  const line = JSON.parse(reg.stdout);
+  assert.equal(line.ok, true);
+  assert.equal(line.command, 'register');
+  assert.equal(line.project, 'p');
+  assert.equal(line.role, 'worker');
+  assert.equal(line.pending, true);
+  assert.match(line.claimId, /^reg-\d+-/);
+  assert.equal(fs.existsSync(path.join(env.BG_MAIL_DIR, 'p')), false, 'register must not create mail');
+
+  const post = spawnSync(process.execPath, [cli, ...question()], { env: withSession, encoding: 'utf8', timeout: 5000 });
+  assert.equal(post.status, 0, post.stderr);
+  const posted = JSON.parse(post.stdout);
+  const files = fs.readdirSync(env.BGZFLOW_SESSIONS_DIR).filter((f) => f.endsWith('.json'));
+  assert.equal(files.length, 1);
+  const state = JSON.parse(fs.readFileSync(path.join(env.BGZFLOW_SESSIONS_DIR, files[0]), 'utf8'));
+  assert.equal(state.sessionId, 'mail-test-session');
+  assert.equal(state.role, undefined, 'bg-mail never sets the identity itself');
+  assert.deepEqual(Object.keys(state.pendingClaims).sort(), [line.claimId, posted.id].sort());
+  assert.equal(state.pendingClaims[posted.id].role, 'worker');
+
+  // A session store that cannot be written never fails the post or register.
+  const blocked = path.join(env.BG_MAIL_DIR, 'not-a-folder');
+  fs.writeFileSync(blocked, 'x');
+  const broken = { ...withSession, BGZFLOW_SESSIONS_DIR: path.join(blocked, 'sessions') };
+  assert.equal(spawnSync(process.execPath, [cli, ...question()], { env: broken, encoding: 'utf8', timeout: 5000 }).status, 0);
+  const reg2 = spawnSync(process.execPath, [cli, 'register', '--project', 'p', '--role', 'worker'], { env: broken, encoding: 'utf8', timeout: 5000 });
+  assert.equal(reg2.status, 0, reg2.stderr);
+  assert.equal(JSON.parse(reg2.stdout).pending, false);
+  assert.equal(spawnSync(process.execPath, [cli, 'register', '--project', 'p', '--role', '../x'], { env: withSession, encoding: 'utf8', timeout: 5000 }).status === 0, false);
+});
