@@ -362,6 +362,10 @@ const DETERMINISTIC_PATTERNS = [
   { tool: 'bgz scan', re: /^(?:run\s+)?bgz\s+scan\b/i },
   { tool: 'bgz preflight', re: /^(?:run\s+)?bgz\s+preflight\b/i },
   { tool: 'bgz taste', re: /^(?:run\s+)?bgz\s+taste\b/i },
+  { tool: 'bgz egm', re: /^(?:run\s+)?bgz\s+egm\b/i },
+  { tool: 'bgz eval', re: /^(?:run\s+)?bgz\s+eval\b/i },
+  { tool: 'bgz graph', re: /^(?:run\s+)?bgz\s+graph\b/i },
+  { tool: 'bgz skill-forge', re: /^(?:run\s+)?bgz\s+skill-forge\b/i },
   { tool: 'formatter/linter', re: /^(?:run\s+)?(?:npx\s+)?(?:prettier|eslint\s+--fix|biome\s+format)\b/i },
   { tool: 'hash/checksum', re: /^(?:(?:compute|verify|check)\s+)?(?:sha256|checksum|file\s+hash)\b/i },
 ];

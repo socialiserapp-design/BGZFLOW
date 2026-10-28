@@ -23,12 +23,12 @@ export const LEVELS = [
 ];
 // BG skills the job's stage always needs (names without the plugin prefix).
 export const STAGE_SKILLS = {
-  build: ['bg-build-with-me', 'bg-efficiency', 'bg-jev'],
-  check: ['bg-check-it-before-release', 'bg-jev', 'bg-efficiency'],
-  finish: ['bg-finish-the-whole-job', 'bg-check-it-before-release', 'bg-jev'],
+  build: ['bg-build-with-me', 'bg-egm-coarchitect', 'research-scout-ground-truth', 'bg-efficiency', 'bg-jev'],
+  check: ['bg-check-it-before-release', 'bg-egm-coarchitect', 'bg-jev', 'bg-efficiency'],
+  finish: ['bg-finish-the-whole-job', 'bg-check-it-before-release', 'bg-egm-coarchitect', 'bg-jev'],
   ship: ['bg-ship-and-recover', 'bg-check-it-before-release'],
-  design: ['bg-personal-product-design', 'bg-efficiency'],
-  continue: ['bg-continue-my-project', 'bg-efficiency'],
+  design: ['bg-plain-english-builder', 'bg-egm-coarchitect', 'research-scout-ground-truth', 'bg-personal-product-design', 'bg-efficiency', 'bg-jev'],
+  continue: ['bg-continue-my-project', 'bg-egm-coarchitect', 'bg-efficiency'],
 };
 
 function frontmatter(text) {

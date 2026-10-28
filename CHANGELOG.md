@@ -2,6 +2,13 @@
 
 All notable changes to BGZFLOW. Versions follow the `VERSION` file; each public release is a single commit on `main` with a matching tag.
 
+## 0.9.10 (2026-10-27)
+
+**Google Elephant-Goldfish Model (`bgz egm`), Stage 0 Whole-System X-Ray, Anti-Sycophancy Co-Architect Mentor, Zero-Bottleneck Self-Setup, Truncation/Anti-Reward-Hacking Drift Blocker, and Stage Skill Autoloading.**
+
+- **Elephant-Goldfish Model & Proactive Co-Architect (`tools/egm/egm.mjs`, `commands/egm.md`, `skills/bg-egm-coarchitect/SKILL.md`)**: adds `bgz egm` (`xray`, `mentor`, `goldfish`, `autosetup`, `drift`) enforcing 6-stage lifecycle situational awareness, anti-sycophancy root-cause mentoring with plain-English architecture teaching, stateless zero-context 6-lens pre-code review (`codeUnlocked` gate), autonomous Turn-1 trace provisioning (`.bgzflow/traces/execution-trace-schema.json`), and post-build truncation auto-continuation plus anti-reward-hacking test checks.
+- **Expanded Domain Playbooks & Automatic Open-Source Discovery (`tools/goal/goal.mjs`, `skills/research-scout-ground-truth/SKILL.md`, `tools/jev/skills.mjs`)**: `DOMAIN_QUALITY_STANDARDS` now injects multi-item expert unknown-unknowns playbooks (including 4-Channel × 4-Angle open-source discovery / Build-vs-Buy on `software` and `research` tasks, and procedural-stage precondition locks on `legal` tasks), and `STAGE_SKILLS` autoloads `bg-egm-coarchitect` and `research-scout-ground-truth` automatically at each lifecycle stage.
+
 ## 0.9.9 (2026-10-26)
 
 **Google Graph Engineering (`bgz graph`), Universal 8-Domain Eval Engine (`bgz eval`), 6-Stage Harness 2 SDLC Loop, and 2-Failure `Assess, Research, Adapt` Circuit Breaker.**

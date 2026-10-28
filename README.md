@@ -9,11 +9,21 @@ BGZFLOW is a free, open-source plugin for Claude Code, Codex and Grok. One lead 
 **Created by [Simeon Kontogeorges](https://github.com/socialiserapp-design)** · LinkedIn: [Simeon Kontogeorges](https://www.linkedin.com/in/simeon-konto-soclo/) · X: [@socloapp](https://x.com/socloapp) · Email: [simeon@socialiser.app](mailto:simeon@socialiser.app)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.9-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.10-informational.svg)](CHANGELOG.md)
 [![X: @socloapp](https://img.shields.io/badge/X-%40socloapp-000.svg)](https://x.com/socloapp)
 ![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Grok-555.svg)
 
 ---
+
+## New in 0.9.10: Google Elephant-Goldfish Model (`bgz egm`), Whole-System X-Ray, Co-Architect Mentor & Stage Autoloading
+
+BGZFLOW 0.9.10 adds proactive whole-system situational awareness and Google's **Elephant-Goldfish Model (EGM)** so short prompts, non-expert framing, or symptom-only requests never lead to broken architecture, reinvented open-source wheels, or truncated outputs:
+- **Stage 0 Whole-System Situational Awareness X-Ray (`bgz egm xray`)**: inspects all 6 system lifecycle stages (`Inputs/Onboarding -> State/Mode Exclusivity -> Queue/Revision Epochs -> Generator/Token Ceiling -> Delivery/Fallbacks -> Lineage Trace/Learner`) before asking questions or writing code, surfacing broken links the user did not know to ask about.
+- **Anti-Sycophancy Co-Architect Mentor & Unknown-Unknowns Playbook (`bgz egm mentor` & `bgz goal compile`)**: refuses sycophantic "order-taker" symptom patches that violate upstream/downstream system invariants, automatically injects domain Expert Playbooks (including **4-Channel × 4-Angle Open-Source Discovery / Download-Before-Build** on software tasks), and teaches the relevant software engineering principle in plain English.
+- **Stateless Zero-Context 6-Lens Goldfish Pre-Code Gate (`bgz egm goldfish`)**: enforces a strict **No-Code Rule** (`codeUnlocked: false`) until a fresh zero-context critic passes all 6 adversarial lenses (`Root-Cause/YAGNI`, `State Exclusivity & Epoch Cancellation`, `UX & Silent Black-Hole Prevention`, `Cost Cap & Per-Item Token-Ceiling Chunking`, `Per-Execution Lineage Trace & Learner`, and `Migration/Rollback Safety`).
+- **Zero-Bottleneck Self-Setup (`bgz egm autosetup`)**: eliminates the human bottleneck on engineering hygiene by auto-provisioning per-execution lineage tracing (`.bgzflow/traces/execution-trace-schema.json`), system maps, and read-only health audits without stopping to ask permission, reserving human prompts strictly for real spend, external publishing, or locked brand/product policy.
+- **Post-Build Drift, Anti-Reward-Hacking & Truncation Gate (`bgz egm drift`)**: blocks self-healing test gaming (`test.skip`, commented-out `expect()`) and blocks any output cut off at a model response token limit, forcing automatic per-item chunked continuation until 100% complete.
+- **Automatic Stage Skill Autoloading (`bg-egm-coarchitect` & `research-scout-ground-truth`)**: `STAGE_SKILLS` in `bgz jev skills` now automatically loads `bg-egm-coarchitect` and `research-scout-ground-truth` across `design`, `build`, `check`, `finish`, and `continue` stages.
 
 ## New in 0.9.9: Google Graph Engineering (`bgz graph`), Universal 8-Domain Eval Engine (`bgz eval`) & 6-Stage Harness 2
 

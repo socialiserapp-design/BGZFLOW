@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const version = readFileSync(join(root, "VERSION"), "utf8").trim();
+const version = readFileSync(join(root, "VERSION"), "utf8").trim().split("+")[0];
 
 if (!/^\d+\.\d+\.\d+$/.test(version)) {
   console.error("VERSION must be major.minor.patch");
@@ -170,6 +170,11 @@ const tools = [
     name: "eval",
     hint: "<domains|codesign|research|architecture|claims|math|chaos|craft|learn|run|status> [options]",
     about: "Run the Universal 8-Domain Eval Engine covering Co-Designed Task Eval Cards, 4-Channel x 4-Angle OSS/Research Recall, Build-vs-Buy Architecture, Claim/Exhibit/Precondition Lock, Math Cross-Footing, Chaos/Security, Craft, and Permanent User Standards",
+  },
+  {
+    name: "egm",
+    hint: "<xray|mentor|goldfish|autosetup|drift> [options]",
+    about: "Run Google's Elephant-Goldfish Model (EGM), Stage 0 Whole-System X-Ray, Anti-Sycophancy Co-Architect Mentor, 6-Lens Stateless Pre-Code Gate, Zero-Bottleneck Self-Setup, and Drift/Truncation Guard",
   },
 ];
 

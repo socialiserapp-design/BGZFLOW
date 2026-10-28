@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { main as lessons } from './lessons/lessons.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const versionFile = path.join(here, '..', 'VERSION');
+const BGZ_VERSION = fs.existsSync(versionFile) ? fs.readFileSync(versionFile, 'utf8').trim() : '0.9.10+20261027.1';
 // Each subcommand runs its own script in a child process, so its exit code and output pass through unchanged.
 const SCRIPTS = {
   engine: 'engine/cli.mjs',
@@ -25,6 +28,7 @@ const SCRIPTS = {
   'skill-forge': 'forge/forge.mjs',
   taste: 'taste/taste.mjs',
   eval: 'eval/eval.mjs',
+  egm: 'egm/egm.mjs',
 };
 const USAGE = [
   'usage: bgz <command> [options]',
@@ -45,12 +49,15 @@ const USAGE = [
   '  skill-forge <--from-rea|--from-book|--from-video|--from-paper|--from-teardown|--from-source> ...  forge & harmonize skills from deep sources & REA',
   '  taste <status|lock|unlock|verify-round|anti-slop>  mechanical LOCKED_IDENTITY protection & 10-project anti-repetition engine',
   '  eval <domains|codesign|research|claims|math|learn|status>  Universal 8-Domain Quality, Research, Architecture & Zero-Hallucination Eval Engine',
+  '  egm <xray|mentor|goldfish|autosetup|drift>  Google Elephant-Goldfish Model (EGM), Whole-System X-Ray, Co-Architect Mentor & Zero-Bottleneck Engine',
   '  graph <init|compile|validate|status|transition|context|assess|precedent|advisory|stages>  Google Graph Engineering & Harness 2 SDLC controller',
   '  engine <start|resume|recover|status|truth>  durable goal engine with execution-graph & current-truth verification',
 ].join('\n');
 
 const [command, ...args] = process.argv.slice(2);
-if (command === 'lessons') lessons(args);
+if (command === '--version' || command === '-v' || command === 'version') {
+  console.log(`BGZFLOW ${BGZ_VERSION} (EGM Co-Architect + 8-Domain Eval + 4x4 OSS Discovery + Graph Engineering)`);
+} else if (command === 'lessons') lessons(args);
 else if (Object.hasOwn(SCRIPTS, command)) {
   const r = spawnSync(process.execPath, [path.join(here, SCRIPTS[command]), ...args], { stdio: 'inherit' });
   if (r.error) {

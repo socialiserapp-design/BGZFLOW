@@ -40,6 +40,12 @@ export const DOMAIN_QUALITY_STANDARDS = {
       sourceRef: 'bgzflow-domain-standard:universal#full-outcome',
       origin: 'standard_quality_check',
     },
+    {
+      id: 'std-universal-no-truncation',
+      requirement: 'Multi-item generations are chunked per-item with response token-ceiling checks (bgz egm drift) so zero outputs are ever cut off mid-sentence.',
+      sourceRef: 'bgzflow-domain-standard:universal#no-truncation',
+      origin: 'standard_quality_check',
+    },
   ],
   ui: [
     {
@@ -51,9 +57,45 @@ export const DOMAIN_QUALITY_STANDARDS = {
   ],
   software: [
     {
+      id: 'std-sw-oss-build-vs-buy-discovery',
+      requirement: 'Every non-trivial capability checks 4-Channel x 4-Angle open-source discovery (bgz eval research + bgz eval architecture) so existing permissive packages/tools are downloaded or forged (bgz skill-forge) instead of reinvented from scratch.',
+      sourceRef: 'bgzflow-domain-standard:software#oss-build-vs-buy-discovery',
+      origin: 'standard_quality_check',
+    },
+    {
       id: 'std-sw-real-effect',
       requirement: 'Every built feature executes against the real served runtime and proves its state change or effect read-back.',
       sourceRef: 'bgzflow-domain-standard:software#real-effect',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-sw-single-source-mode-exclusivity',
+      requirement: 'Mutually exclusive modes or plans cannot run concurrently; a single canonical state machine governs active execution (bgz egm xray).',
+      sourceRef: 'bgzflow-domain-standard:software#single-source-mode-exclusivity',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-sw-revision-epoch-cancellation',
+      requirement: 'Any user plan update, config change, or stop signal increments a revision epoch (planRevision) and immediately cancels stale queued or in-flight work.',
+      sourceRef: 'bgzflow-domain-standard:software#revision-epoch-cancellation',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-sw-zero-silent-blackholes',
+      requirement: 'No active configuration, queue, or fallback can silently do nothing or ship a degraded fallback without an explicit diagnostic alert and completeness gate.',
+      sourceRef: 'bgzflow-domain-standard:software#zero-silent-blackholes',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-sw-lineage-trace-and-learner',
+      requirement: 'Every automated pipeline execution writes a deterministic lineage trace (inputs -> skills -> model -> script -> output completeness) and wires outcomes back to the learner loop (bgz egm autosetup).',
+      sourceRef: 'bgzflow-domain-standard:software#lineage-trace-and-learner',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-sw-bounded-chunk-no-truncation',
+      requirement: 'Multi-item generations are chunked per-item with response token-ceiling checks (bgz egm drift) so zero outputs are ever cut off mid-sentence.',
+      sourceRef: 'bgzflow-domain-standard:software#bounded-chunk-no-truncation',
       origin: 'standard_quality_check',
     },
   ],
@@ -64,12 +106,36 @@ export const DOMAIN_QUALITY_STANDARDS = {
       sourceRef: 'bgzflow-domain-standard:research#primary-sources',
       origin: 'standard_quality_check',
     },
+    {
+      id: 'std-research-4x4-saturation',
+      requirement: 'Every search covers all 4 channels (code_forges, package_registries, academic_and_specs, community_and_benchmarks) x 4 query angles (exact_domain_terms, problem_symptom_synonyms, adjacent_industry_terms, permissive_license_filters) until saturation (bgz eval research).',
+      sourceRef: 'bgzflow-domain-standard:research#4x4-saturation',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-research-build-vs-buy',
+      requirement: 'Every custom component is evaluated against permissive open-source candidates (MIT/Apache-2.0/BSD) before writing custom code (bgz eval architecture).',
+      sourceRef: 'bgzflow-domain-standard:research#build-vs-buy',
+      origin: 'standard_quality_check',
+    },
   ],
   legal: [
     {
       id: 'std-legal-verified-authority',
       requirement: 'Every legal or compliance clause is checked against the exact governing text with zero hallucinated references.',
       sourceRef: 'bgzflow-domain-standard:legal#verified-authority',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-legal-procedural-stage-lock',
+      requirement: 'Every statutory precondition and procedural stage (pre-action, issued-claim, trial, enforcement) is verified before citing any rule or remedy (bgz eval claims).',
+      sourceRef: 'bgzflow-domain-standard:legal#procedural-stage-lock',
+      origin: 'standard_quality_check',
+    },
+    {
+      id: 'std-legal-math-crossfoot',
+      requirement: 'Every financial schedule, damages table, and date timeline cross-foots with zero discrepancy (bgz eval math).',
+      sourceRef: 'bgzflow-domain-standard:legal#math-crossfoot',
       origin: 'standard_quality_check',
     },
   ],
