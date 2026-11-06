@@ -1,0 +1,1 @@
+{"cards":["Invoices","Payments","Customers","Settings"],"participants":[{"id":"P1","groups":[["Invoices","Payments"],["Customers","Settings"]]},{"id":"P2","groups":[["Invoices","Payments","Customers"],["Settings"]]},{"id":"P3","groups":[["Invoices"],["Payments","Customers"]]}]}

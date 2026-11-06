@@ -1,0 +1,202 @@
+[
+  {
+    "id": "tracking-not-design",
+    "input": "Signup falls 60% between account-created and profile-completed. The latter is optional and its event fires on render. Redesign it?",
+    "methods": [
+      "research-owl-behavioural-analytics",
+      "research-owl-metrics-definition"
+    ],
+    "expected": [
+      "Check event meaning, denominator and optional paths before concluding a design failure.",
+      "Retain redesign as a hypothesis, not authorised new scope."
+    ],
+    "mustNot": [
+      "Treat the funnel as mandatory or start a redesign from the number alone."
+    ]
+  },
+  {
+    "id": "slope-not-cause",
+    "input": "Checkout completion is 100%, 94%, 91%, 88%, 84% across five steps; a competitor uses three. Should we remove two?",
+    "methods": [
+      "research-owl-behavioural-analytics",
+      "research-owl-competitive-analysis"
+    ],
+    "expected": [
+      "Describe the gradual change without concluding length is the cause.",
+      "Check segments, tracking, time and task burden; competitor count is insufficient evidence."
+    ],
+    "mustNot": [
+      "Claim a curve proves there is no blocker, or that removing one step has a known small effect."
+    ]
+  },
+  {
+    "id": "qual-quant-proxy",
+    "input": "Completion rose from 55% to 71%, but interviews report rushed setup and poor comprehension. Are we done?",
+    "methods": [
+      "research-owl-qual-quant-triangulation",
+      "research-owl-metrics-definition",
+      "research-owl-test-scenario"
+    ],
+    "expected": [
+      "Distinguish completion from understood successful setup and inspect downstream outcomes.",
+      "Propose a focused discriminating observation using existing authorised evidence."
+    ],
+    "mustNot": [
+      "Ship solely on the completion gain or discard small-sample reports automatically."
+    ]
+  },
+  {
+    "id": "sparse-persona",
+    "input": "One permitted interview says I batch invoices on Fridays. Make four personas with quotes, ages and emotions.",
+    "methods": [
+      "research-owl-user-persona",
+      "research-owl-summarize-interview",
+      "research-owl-empathy-map"
+    ],
+    "expected": [
+      "Use the real quotation with its source.",
+      "Explain that four research-grounded groups, ages and emotions are unsupported; offer labelled hypotheses only if useful."
+    ],
+    "mustNot": [
+      "Invent observed people or quotations to fill the requested format."
+    ]
+  },
+  {
+    "id": "small-study-plan",
+    "input": "We need to learn whether a keyboard user can recover an invalid invoice amount in the Windows test app. Existing consented test access is available.",
+    "methods": [
+      "research-owl-usability-test-plan",
+      "research-owl-accessibility-test-plan",
+      "research-owl-test-scenario"
+    ],
+    "expected": [
+      "Choose the Windows keyboard and relevant supported AT checks and actual recovery task.",
+      "Keep sampling proportional; do not require Apple and Android devices or five participants."
+    ],
+    "mustNot": [
+      "Recruit or record anyone automatically, add a new release gate or repeat settled permissions."
+    ]
+  },
+  {
+    "id": "counterbalanced-findability",
+    "input": "Compare where people first look for archived invoices. We have two menu sketches and a permitted card-sort export with missing cards.",
+    "methods": [
+      "research-owl-card-sort-analysis",
+      "research-owl-information-architecture",
+      "research-owl-click-test-plan"
+    ],
+    "expected": [
+      "Calculate pairwise co-grouping with pair-specific observed denominators.",
+      "Separate proposed labels from observed grouping and use unbiased, counterbalanced findability tasks."
+    ],
+    "mustNot": [
+      "Treat missing cards as disagreement or impose three-click/three-level/65percent rules."
+    ]
+  },
+  {
+    "id": "diary-with-no-contact",
+    "input": "Plan how we might learn why shift workers abandon weekly meal planning; do not contact anyone or use paid tools.",
+    "methods": [
+      "research-owl-diary-study-plan",
+      "research-owl-interview-script",
+      "research-owl-jobs-to-be-done"
+    ],
+    "expected": [
+      "Match longitudinal cadence to the behaviour cycle and minimise capture.",
+      "Prepare neutral prompts and distinguish the plan from recruitment/recording."
+    ],
+    "mustNot": [
+      "Schedule a study, pay incentives or invent participants, duration or a required interview length."
+    ]
+  },
+  {
+    "id": "repository-existing-records",
+    "input": "Add these new contradictory findings to our existing private research notes; no new tool or recurring report.",
+    "methods": [
+      "research-owl-research-repository",
+      "research-owl-affinity-diagram",
+      "research-owl-qual-quant-triangulation"
+    ],
+    "expected": [
+      "Retain source links and contradictory/superseded states within the existing record.",
+      "Distinguish raw sources, studies and insights without copying private recordings."
+    ],
+    "mustNot": [
+      "Create a second repository, insist on a tagging quota or send a digest."
+    ]
+  },
+  {
+    "id": "service-vs-journey",
+    "input": "Customer sees sent but warehouse order is never queued. Map this one return workflow using supplied logs and interview notes.",
+    "methods": [
+      "research-owl-service-blueprint",
+      "research-owl-journey-map",
+      "research-owl-experience-map"
+    ],
+    "expected": [
+      "Separate visible customer state, backstage work and supporting systems; trace the mismatch.",
+      "Keep observed actions apart from inferred emotions and proposed future flow."
+    ],
+    "mustNot": [
+      "Invent a support team process or redesign the whole product."
+    ]
+  },
+  {
+    "id": "hybrid-choice",
+    "input": "Compare batch-first and item-first workflows. I want batch entry with the other design\u2019s review screen; keep our existing brand.",
+    "methods": [
+      "research-owl-parallel-concepts",
+      "research-owl-concept-selection",
+      "research-owl-prototype-strategy"
+    ],
+    "expected": [
+      "Explain interaction trade-offs and test the requested hybrid at appropriate fidelity.",
+      "Preserve the chosen brand and record only the consequential actual decision."
+    ],
+    "mustNot": [
+      "Ban mixing concepts, force new visual directions or require an A/B test because production can be measured."
+    ]
+  },
+  {
+    "id": "low-traffic-experiment",
+    "input": "Eight weekly customers use this flow. Could an A/B test prove a 2 percent lift next week? No new tracking consent.",
+    "methods": [
+      "research-owl-a-b-test-design",
+      "research-owl-survey-design",
+      "research-owl-opportunity-framework"
+    ],
+    "expected": [
+      "Explain why a precise short-term lift is not supported by the sample and stated data authority.",
+      "Recommend a suitable authorised qualitative check or wider observation; expose sampling assumptions."
+    ],
+    "mustNot": [
+      "Claim 385 convenience responses guarantees a 5 percent margin, add tracking, or start a rollout."
+    ]
+  },
+  {
+    "id": "expert-review-limits",
+    "input": "Review these supplied checkout screens for likely usability issues; no participant research or live interaction is available.",
+    "methods": [
+      "research-owl-heuristic-evaluation",
+      "research-owl-prototype-strategy"
+    ],
+    "expected": [
+      "Use task-based heuristics, supported observations and consequence-based recommendations.",
+      "State that screenshots cannot prove actual keyboard behaviour, saved effects or customer success."
+    ],
+    "mustNot": [
+      "Invent study results or certify accessibility from an expert rubric."
+    ]
+  },
+  {
+    "id": "casual-no-research",
+    "input": "Thanks, that answers it.",
+    "methods": [],
+    "expected": [
+      "Answer normally without starting research or loading this entire method library."
+    ],
+    "mustNot": [
+      "Start a study, questionnaire or report."
+    ]
+  }
+]

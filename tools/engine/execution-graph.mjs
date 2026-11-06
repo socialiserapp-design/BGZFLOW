@@ -758,11 +758,76 @@ export function loadExecutionGraph(projectDir = process.cwd()) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+export function syncUnifiedSpineSnapshot(projectDir = process.cwd()) {
+  try {
+    const root = path.resolve(projectDir);
+    const dir = getGraphDir(root);
+    fs.mkdirSync(dir, { recursive: true });
+    const execSpec = loadExecutionGraph(root);
+    const ctxGraph = loadContextGraph(root);
+    const slug = path.basename(root).toLowerCase().replace(/[^a-z0-9._-]+/g, '-') || 'project';
+    const waveExecFile = path.join(dir, `${slug}-execution-graph.json`);
+    const waveCtxFile = path.join(dir, `${slug}-context-graph.json`);
+    const waveExec = fs.existsSync(waveExecFile) ? JSON.parse(fs.readFileSync(waveExecFile, 'utf8')) : null;
+    const waveCtx = fs.existsSync(waveCtxFile) ? JSON.parse(fs.readFileSync(waveCtxFile, 'utf8')) : null;
+    if (waveCtx && Array.isArray(ctxGraph?.precedents)) {
+      const existingIds = new Set((waveCtx.precedents || []).map((p) => p.id));
+      waveCtx.precedents = [
+        ...(waveCtx.precedents || []),
+        ...ctxGraph.precedents.filter((p) => p && !existingIds.has(p.id)),
+      ];
+      fs.writeFileSync(waveCtxFile, JSON.stringify(waveCtx, null, 2) + '\n', 'utf8');
+    }
+    const spine = {
+      schemaVersion: '1.1.0',
+      updatedAtIso: new Date().toISOString(),
+      projectDir: root,
+      projectSlug: slug,
+      executionGraphSpec: execSpec
+        ? {
+            graphId: execSpec.graphId,
+            goalSummary: execSpec.goalSummary,
+            nodesCount: execSpec.nodes?.length || 0,
+            passedNodesCount: (execSpec.nodes || []).filter((n) => n.status === 'passed').length,
+          }
+        : null,
+      waveExecutionGraph: waveExec
+        ? {
+            wavesCount: waveExec.waves?.length || 0,
+            activeWave: (waveExec.waves || []).find((w) => w.state === 'active')?.waveId || null,
+          }
+        : null,
+      contextGraphPrecedentsCount: ctxGraph?.precedents?.length || 0,
+      latestPrecedent: ctxGraph?.precedents?.slice(-1)[0] || null,
+    };
+    fs.writeFileSync(path.join(dir, 'unified-3graph-spine.json'), JSON.stringify(spine, null, 2) + '\n', 'utf8');
+    const curTruthFile = path.join(root, '.bgzflow', 'current-truth.json');
+    const curTruth = fs.existsSync(curTruthFile) ? JSON.parse(fs.readFileSync(curTruthFile, 'utf8')) : {};
+    fs.writeFileSync(
+      curTruthFile,
+      JSON.stringify(
+        {
+          ...curTruth,
+          unifiedThreeGraphSpine: spine,
+          updatedAtIso: spine.updatedAtIso,
+        },
+        null,
+        2
+      ) + '\n',
+      'utf8'
+    );
+    return spine;
+  } catch {
+    return null;
+  }
+}
+
 export function saveExecutionGraph(projectDir, spec) {
   const dir = getGraphDir(projectDir);
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, 'execution-graph.json');
   fs.writeFileSync(file, JSON.stringify(spec, null, 2) + '\n', 'utf8');
+  syncUnifiedSpineSnapshot(projectDir);
   return file;
 }
 
@@ -811,6 +876,7 @@ export function addContextGraphPrecedent(
   cg.precedents.push(node);
   const file = path.join(dir, 'context-graph.json');
   fs.writeFileSync(file, JSON.stringify(cg, null, 2) + '\n', 'utf8');
+  syncUnifiedSpineSnapshot(projectDir);
   return { file, node, totalPrecedents: cg.precedents.length };
 }
 

@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "description": "Individually reviewed public source examples/notices. An exact path, line, rule and SHA-256 of the complete line must match; a changed line receives no exception.",
+  "exceptions": [
+    {
+      "path": "hooks/test/mechanical-patch.test.mjs",
+      "line": 36,
+      "rule": "private-key",
+      "lineDigest": "c5b49d5d1f1bde5804963022f5e5fdc5cfd887fea51295433a586e451b1f1321",
+      "reason": "Deliberately synthetic invalid credential or password assignment used by an offline regression."
+    },
+    {
+      "path": "skills/design-engineering-graph/references/anti-patterns/content-authenticity.md",
+      "line": 43,
+      "rule": "email",
+      "lineDigest": "138428b8e6f1b4bedcd1e499ff8f494d6b05ab86dad135106a59440ad1ffba02",
+      "reason": "Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "skills/design-engineering-graph/references/components/forms-validation.md",
+      "line": 42,
+      "rule": "email",
+      "lineDigest": "41a41253d912155db9f51b7861abe029bde0b24bef1d2d70190211a2001b3ad8",
+      "reason": "Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "skills/design-engineering-graph/references/components/forms-validation.md",
+      "line": 56,
+      "rule": "email",
+      "lineDigest": "6766363cd64bc3358e1d295f2198361c5c58112fbd655d5ed84862675d812e3d",
+      "reason": "Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "skills/design-engineering-graph/references/components/strings-and-locale.md",
+      "line": 67,
+      "rule": "email",
+      "lineDigest": "008ef5fc4b55b5d6f4efb1b0a1fc79ecce51f2d0668a1fb12a945e4420fc6503",
+      "reason": "Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "skills/design-taste-assets/LICENSES/CC-by-2.0.html",
+      "line": 667,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "skills/design-taste-assets/LICENSES/CC-by-sa-2.0.html",
+      "line": 708,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "skills/design-taste-assets/LICENSES/CC-by-sa-3.0-at.html",
+      "line": 929,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/components/fx-feature-card/component.html",
+      "line": 45,
+      "rule": "email",
+      "lineDigest": "69660eda60539afed5ab6deb5f5cdfabdefb193d68afe66e0f5311876046bc39",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/components/fx-feature-card/component.html",
+      "line": 99,
+      "rule": "email",
+      "lineDigest": "bf1371cc2b29c2b638c2f175c7e9acddeada62e84874dd57adfdb3903ff359bb",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/components/fx-feature-card/component.js",
+      "line": 199,
+      "rule": "email",
+      "lineDigest": "2511d13e36145ad780b0308ec2657633b0b75b0245f0597e80a5c75c7d686b07",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-editorial.html",
+      "line": 102,
+      "rule": "email",
+      "lineDigest": "a5bba3326dfd56b515e874b8a93a35b3faf624e5b2d26c405c2d01d23fb27031",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-film.html",
+      "line": 108,
+      "rule": "email",
+      "lineDigest": "e57c0be1d88de465aca8cac84ffcfb70a273a6cc5bf459e8d9debc4bf41077e1",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-photo.html",
+      "line": 108,
+      "rule": "email",
+      "lineDigest": "23661b789b54121e29ccdff4ba04b2df2a205cc7addf5d16be264955075d7b72",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-place.html",
+      "line": 81,
+      "rule": "email",
+      "lineDigest": "2ec9b9f816919c2957b09721bf1e398c54edfea34535f59faf0cb51c67cc6c73",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-place.html",
+      "line": 105,
+      "rule": "email",
+      "lineDigest": "11d73d36bd5c6c13d59b1a1b08417fe5f6bcd4c47519e2d3dc52557ca211ec27",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-split.html",
+      "line": 110,
+      "rule": "email",
+      "lineDigest": "28076602a400942debbb02b401b3b7fe228629d055f8f15c7ba802ccf922f273",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/layout/hero-word.html",
+      "line": 113,
+      "rule": "email",
+      "lineDigest": "96ca081c1634b54d1474e1adfa8b48aeba3e1422a9f06ec8557d970008b69168",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/assets/motion/demo.html",
+      "line": 420,
+      "rule": "email",
+      "lineDigest": "3a32ff9d7d6d69bfbb9be050745097d7da06e741a6f3ea6de9e469f63dadf683",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/references/upstream-tools/scripts/consistency.mjs.source.txt",
+      "line": 721,
+      "rule": "email",
+      "lineDigest": "5575ac21ad1b8e774a6d4d73ad90e196aa8d8e0105e8c16c4cd088b99564fd32",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/references/upstream-tools/scripts/consistency.mjs.source.txt",
+      "line": 6361,
+      "rule": "email",
+      "lineDigest": "c747f3fa04525071a52b08290e9eb992e03b659f1ba4fdff310e548e62633068",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/design-taste-assets/references/upstream/copy.md.source.txt",
+      "line": 126,
+      "rule": "email",
+      "lineDigest": "0e9b3449395a678dc6e2f9d75b22788c10c93fa0c4b17d2fc06331fadbe0a4f4",
+      "reason": "Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/auth-patterns.md",
+      "line": 25,
+      "rule": "password",
+      "lineDigest": "51b670ab5a250b886b2790706a14446c5c84e32ce15dcf987b600a341f98e9e6",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/auth-patterns.md",
+      "line": 34,
+      "rule": "password",
+      "lineDigest": "acc771fee99083e68b4d95da4494b2573b22f353e7a648cc7486e66df1bec145",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/case-studies.md",
+      "line": 263,
+      "rule": "password",
+      "lineDigest": "b967a8adda32fb9183786f313ffad4bb18979e53c62f5fe56567d19d599c86b0",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/config-patterns.md",
+      "line": 41,
+      "rule": "password",
+      "lineDigest": "f869b36988b15c7f8f6ce5b033b91ae4b9082803f79f729d34b03125eddd61ba",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/config-patterns.md",
+      "line": 169,
+      "rule": "password",
+      "lineDigest": "4ea8eb71eb41852515ff5b4dccbba27a203adec751f78b161c5fc7df130aa668",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/crypto-apis.md",
+      "line": 171,
+      "rule": "password",
+      "lineDigest": "6fbc2fb185dfd6460230816b9cefcaffeedd1c10907d62948ed0c84d9f674b73",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "skills/sharp-edges/references/crypto-apis.md",
+      "line": 175,
+      "rule": "password",
+      "lineDigest": "1e68e4d1d4e94dc3ac05aae2d04806cae155258d0c29e55b5aca874e1526dc92",
+      "reason": "Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "tools/foundation/test/continuity.test.mjs",
+      "line": 30,
+      "rule": "openai-token",
+      "lineDigest": "70f3f35485fe7e935c291b2f4e88b6a44c44b099dfc4db851328701a9e6dd6ed",
+      "reason": "Deliberately synthetic invalid credential or password assignment used by an offline regression."
+    },
+    {
+      "path": "tools/foundation/test/continuity.test.mjs",
+      "line": 66,
+      "rule": "openai-token",
+      "lineDigest": "cd43c9385bbbb9a2d569303d3c45bb6ef330d5eee0bfdc3e32c68effea1c3f30",
+      "reason": "Deliberately synthetic invalid credential or password assignment used by an offline regression."
+    },
+    {
+      "path": "tools/foundation/test/continuity.test.mjs",
+      "line": 145,
+      "rule": "password",
+      "lineDigest": "336b2780e23408760820c4ff68ed6bbadc80fd83365cc9b6c3627d87a8b57e7b",
+      "reason": "Deliberately synthetic invalid credential or password assignment used by an offline regression."
+    },
+    {
+      "path": "tools/foundation/test/session.test.mjs",
+      "line": 142,
+      "rule": "password",
+      "lineDigest": "830ccd0344579d1a47ce502ea25f6232a385282e2b43e6ba4d1b2702009140da",
+      "reason": "Deliberately synthetic invalid credential or password assignment used by an offline regression."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-engineering-graph/references/anti-patterns/content-authenticity.md",
+      "line": 43,
+      "rule": "email",
+      "lineDigest": "138428b8e6f1b4bedcd1e499ff8f494d6b05ab86dad135106a59440ad1ffba02",
+      "reason": "Validated byte-identical ready-bundle copy. Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-engineering-graph/references/components/forms-validation.md",
+      "line": 42,
+      "rule": "email",
+      "lineDigest": "41a41253d912155db9f51b7861abe029bde0b24bef1d2d70190211a2001b3ad8",
+      "reason": "Validated byte-identical ready-bundle copy. Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-engineering-graph/references/components/forms-validation.md",
+      "line": 56,
+      "rule": "email",
+      "lineDigest": "6766363cd64bc3358e1d295f2198361c5c58112fbd655d5ed84862675d812e3d",
+      "reason": "Validated byte-identical ready-bundle copy. Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-engineering-graph/references/components/strings-and-locale.md",
+      "line": 67,
+      "rule": "email",
+      "lineDigest": "008ef5fc4b55b5d6f4efb1b0a1fc79ecce51f2d0668a1fb12a945e4420fc6503",
+      "reason": "Validated byte-identical ready-bundle copy. Illustrative documentation address used to explain validation/content; not private user data."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/LICENSES/CC-by-2.0.html",
+      "line": 667,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Validated byte-identical ready-bundle copy. Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/LICENSES/CC-by-sa-2.0.html",
+      "line": 708,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Validated byte-identical ready-bundle copy. Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/LICENSES/CC-by-sa-3.0-at.html",
+      "line": 929,
+      "rule": "email",
+      "lineDigest": "9027bc274620eccae9635599ba48ca232f0c76c87ed24bfb5d09b249a62a03f9",
+      "reason": "Validated byte-identical ready-bundle copy. Required public upstream licence contact; preserve original legal notice."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/components/fx-feature-card/component.html",
+      "line": 45,
+      "rule": "email",
+      "lineDigest": "69660eda60539afed5ab6deb5f5cdfabdefb193d68afe66e0f5311876046bc39",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/components/fx-feature-card/component.html",
+      "line": 99,
+      "rule": "email",
+      "lineDigest": "bf1371cc2b29c2b638c2f175c7e9acddeada62e84874dd57adfdb3903ff359bb",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/components/fx-feature-card/component.js",
+      "line": 199,
+      "rule": "email",
+      "lineDigest": "2511d13e36145ad780b0308ec2657633b0b75b0245f0597e80a5c75c7d686b07",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-editorial.html",
+      "line": 102,
+      "rule": "email",
+      "lineDigest": "a5bba3326dfd56b515e874b8a93a35b3faf624e5b2d26c405c2d01d23fb27031",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-film.html",
+      "line": 108,
+      "rule": "email",
+      "lineDigest": "e57c0be1d88de465aca8cac84ffcfb70a273a6cc5bf459e8d9debc4bf41077e1",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-photo.html",
+      "line": 108,
+      "rule": "email",
+      "lineDigest": "23661b789b54121e29ccdff4ba04b2df2a205cc7addf5d16be264955075d7b72",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-place.html",
+      "line": 81,
+      "rule": "email",
+      "lineDigest": "2ec9b9f816919c2957b09721bf1e398c54edfea34535f59faf0cb51c67cc6c73",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-place.html",
+      "line": 105,
+      "rule": "email",
+      "lineDigest": "11d73d36bd5c6c13d59b1a1b08417fe5f6bcd4c47519e2d3dc52557ca211ec27",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-split.html",
+      "line": 110,
+      "rule": "email",
+      "lineDigest": "28076602a400942debbb02b401b3b7fe228629d055f8f15c7ba802ccf922f273",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/layout/hero-word.html",
+      "line": 113,
+      "rule": "email",
+      "lineDigest": "96ca081c1634b54d1474e1adfa8b48aeba3e1422a9f06ec8557d970008b69168",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/assets/motion/demo.html",
+      "line": 420,
+      "rule": "email",
+      "lineDigest": "3a32ff9d7d6d69bfbb9be050745097d7da06e741a6f3ea6de9e469f63dadf683",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/references/upstream-tools/scripts/consistency.mjs.source.txt",
+      "line": 721,
+      "rule": "email",
+      "lineDigest": "5575ac21ad1b8e774a6d4d73ad90e196aa8d8e0105e8c16c4cd088b99564fd32",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/references/upstream-tools/scripts/consistency.mjs.source.txt",
+      "line": 6361,
+      "rule": "email",
+      "lineDigest": "c747f3fa04525071a52b08290e9eb992e03b659f1ba4fdff310e548e62633068",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/design-taste-assets/references/upstream/copy.md.source.txt",
+      "line": 126,
+      "rule": "email",
+      "lineDigest": "0e9b3449395a678dc6e2f9d75b22788c10c93fa0c4b17d2fc06331fadbe0a4f4",
+      "reason": "Validated byte-identical ready-bundle copy. Public pinned upstream demo/example or inactive source-reference text; not a local account or credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/auth-patterns.md",
+      "line": 25,
+      "rule": "password",
+      "lineDigest": "51b670ab5a250b886b2790706a14446c5c84e32ce15dcf987b600a341f98e9e6",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/auth-patterns.md",
+      "line": 34,
+      "rule": "password",
+      "lineDigest": "acc771fee99083e68b4d95da4494b2573b22f353e7a648cc7486e66df1bec145",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/case-studies.md",
+      "line": 263,
+      "rule": "password",
+      "lineDigest": "b967a8adda32fb9183786f313ffad4bb18979e53c62f5fe56567d19d599c86b0",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/config-patterns.md",
+      "line": 41,
+      "rule": "password",
+      "lineDigest": "f869b36988b15c7f8f6ce5b033b91ae4b9082803f79f729d34b03125eddd61ba",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/config-patterns.md",
+      "line": 169,
+      "rule": "password",
+      "lineDigest": "4ea8eb71eb41852515ff5b4dccbba27a203adec751f78b161c5fc7df130aa668",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/crypto-apis.md",
+      "line": 171,
+      "rule": "password",
+      "lineDigest": "6fbc2fb185dfd6460230816b9cefcaffeedd1c10907d62948ed0c84d9f674b73",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/skills/sharp-edges/references/crypto-apis.md",
+      "line": 175,
+      "rule": "password",
+      "lineDigest": "1e68e4d1d4e94dc3ac05aae2d04806cae155258d0c29e55b5aca874e1526dc92",
+      "reason": "Validated byte-identical ready-bundle copy. Public security-method example or symbolic password variable; not an operational credential."
+    },
+    {
+      "path": "plugins/bgzflow/vendor/yaml.LICENSE",
+      "line": 1,
+      "rule": "email",
+      "lineDigest": "b81c5ebc00b953d0c24b1823612a4e1280e804bacbc9d4670dc1866693c895b1",
+      "reason": "Unmodified ISC copyright/contact notice from yaml2.9.1; entire bundled licence byte-matches the installed upstream package."
+    }
+  ]
+}

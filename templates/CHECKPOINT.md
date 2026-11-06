@@ -1,57 +1,36 @@
-<!-- One page of CURRENT state: about 1,500 words, within BGZFLOW_CHECKPOINT_KB (8 KB).
-     Move anything no longer current to ARCHIVE.md; never delete history.
-     Update at every state change. Take timestamps from the system clock (e.g. `date -u +%FT%TZ`).
-     Keep <project>/.bgzflow/ versioned or snapshotted.
-     At each stage end: update this page, write the 2 KB handoff (templates/HANDOFF.md) and start a
-     fresh chat from it; prefer that to compacting one long chat again and again. An idle lead holds
-     inbound messages and handles finished jobs, notices and mail together in one wake-up. -->
-# Checkpoint: <project>
+# Current project brief
 
-Updated: <system-clock timestamp, UTC> by <role + job ID>
+Optional example: use the project's existing brief or task system. Do not create
+a second tracker or copy every captured event here. Native BGZFLOW records keep
+the original supported messages and observations automatically.
 
-## Outcome
-<!-- Intended result in two sentences, and how acceptance is observed. -->
+## Requested result
 
-## CURRENT RULES
-<!-- The single block of rules in force now. Cite DECISIONS.md IDs instead of copying them.
-     Superseded rules move to ARCHIVE.md. No second rules block anywhere else. -->
-- 
+The user's current objective, intended users and observable success.
+Keep deferred or unverified parts visible; a finished component is not the whole result.
 
-## OWNERS
-<!-- Exactly one lead and one integration writer. One owner per task, worktree and shared mutation.
-     Only roles defined in AGENTS.md; `startup-check` flags unknown roles. -->
-| Role | Who (role + job/thread/session) | Since |
-|---|---|---|
-| Lead | | |
-| Integration writer | | |
-| T1 owner | | |
+## Decisions and authority
 
-## Candidate
-<!-- Exact branch, base, commit, artifact, configuration, environment. One state:
-     proposed / implemented / tested / integrated / accepted / deployed / verified-in-use. -->
+Point to the original user choices and current project decisions. Distinguish
+those from engineering proposals. Apply a new correction to its affected scope,
+preserve unrelated decisions and retain superseded history separately.
+State actual permission, spending and release boundaries; this brief grants none.
 
-## Worktrees (project ledger)
-| Clone or worktree | Owner | Branch | Last integrated commit |
-|---|---|---|---|
+## Current work
 
-## System map
-<!-- Owner: the integration writer, who alone writes the map. Paste the output of `bgz map --brief` below
-     after each handback is recorded. Advice only; it blocks nothing. -->
-Owner: 
+Name the accountable lead and owners of shared changes. Record the current
+candidate, useful dependencies, checks already run and their actual results.
+Use native job identities when available. A queued or sent request is not proof
+that a process is running; an unknown external result needs reconciliation.
 
-## Jobs
-<!-- A job recorded running or queued whose process is dead is `uncertain`, never active.
-     A job queued more than 5 minutes is stuck: reconcile, cancel, redispatch. -->
-| Job ID | Executor (role, model, effort) | Recorded status | Process alive? | Exit | Live log | Result path |
-|---|---|---|---|---|---|---|
+## Remaining work
 
-## Open findings
-<!-- Stable IDs across rounds; the `bg-rounds` ledger counts rounds. Round 3 needs the founder's explicit approval. -->
-| ID | Severity | Owner | Round (0/1/2) | Next action |
-|---|---|---|---|---|
+Preserve unresolved questions, findings, missing evidence and uncertain effects.
+Give each material unfinished item its next action and owner when known.
+Update this view when a meaningful fact changes, not after every tool call.
 
-## Holds and uncertain effects
-<!-- Scoped holds, and each uncertain external effect with its durable operation ID. Reconcile before any retry. -->
+## Continue
 
-## Next actions
-1. <one concrete authorised step> | owner | prerequisite | result route
+Use the host's native compaction and resume in the same conversation. Restore
+original sources when a summary is ambiguous. A fresh worker receives the relevant
+brief for its independent assignment; no stage boundary requires a new lead chat.

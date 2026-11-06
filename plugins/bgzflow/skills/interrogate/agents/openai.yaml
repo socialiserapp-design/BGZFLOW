@@ -1,0 +1,6 @@
+interface:
+  display_name: "Interrogate (Adversarial Audit)"
+  short_description: "Model-agnostic multi-reviewer adversarial audit with Frequency x Severity scoring"
+  default_prompt: "Use $interrogate to run an independent context-scrubbed adversarial audit of these changes with neutral review briefs, Frequency x Severity scoring, and fake-bug filtering."
+policy:
+  allow_implicit_invocation: false

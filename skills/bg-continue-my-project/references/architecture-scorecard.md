@@ -1,15 +1,15 @@
 # Architecture scorecard
 
-A short, honest read of how sound each system is, so the lead picks the right amount of work: keep it, simplify it or rebuild it. The lead runs it at project start and again when the same incident cause recurs (see rework in the [incident reference](../../bg-ship-and-recover/references/incidents-and-postmortems.md#record-every-incident-and-count-rework)). It is a planning aid for the lead, not a gate: it adds no review, hold or approval, and spending money still needs the authority the brief already names.
+A short, honest read of how sound each system is, so the lead picks the right amount of work: keep it, simplify it or rebuild it. Consider it when architecture quality is the requested question or repeated evidence suggests a structural cause (see rework in the [incident reference](../../bg-ship-and-recover/references/incidents-and-postmortems.md#record-every-incident-and-count-rework)). It is a planning aid for the lead, not a gate: it adds no review, hold or approval, and spending money still needs the authority the brief already names.
 
 ## How to run it
 
-1. List the bounded systems (for example billing, publishing, the customer app, the scheduler). Score each one separately.
-2. For each practice below, score 0 to 4 from evidence you inspected (code, records, the live manifest, test output), not from memory or from what people say.
-3. Write one line of evidence per score. If you could not inspect something, score it 0 and say it was not inspected.
+1. Identify the systems relevant to the requested decision (for example billing, publishing or the customer app). Do not audit unrelated systems by default.
+2. Inspect relevant practices below using code, records, actual running state and test output. Optional scores can help compare observed evidence, but do not replace the explanation.
+3. Record the supporting observation for relevant categories. Missing evidence is unknown, not an automatic zero or a demonstrated failure.
 4. Give each system a verdict and one next action with an owner.
 
-Scores: **0** absent or unknown; **1** exists but ad hoc or known to fail; **2** partly works, with known gaps; **3** works and is checked; **4** works, is checked on the real platform, and has survived a real failure or rollback.
+Optional scores: **0** demonstrated absent; **1** exists but ad hoc or known to fail; **2** partly works, with known gaps; **3** works and is checked; **4** works, is checked on the real platform, and has survived a real failure or rollback.
 
 ## The 12 practices
 
@@ -22,7 +22,7 @@ Scores: **0** absent or unknown; **1** exists but ad hoc or known to fail; **2**
 | 5 | Rules defined once | Is each business rule (price, limit, eligibility) written in one place, not copied across app, server and database? |
 | 6 | Recovery and honest status | Can a stuck or failed operation be found and recovered, and does the customer see its true state? |
 | 7 | Durable work | Does multi-step work survive a crash with one operation identity, saved steps and checked unknown outcomes ([durable work](../../bg-build-with-me/references/durable-work.md))? |
-| 8 | Customer-outcome monitoring | Would we know within the hour that customers stopped being served, from outcomes and a canary, not job success ([outcome watch](../../bg-ship-and-recover/references/outcome-watch.md))? |
+| 8 | Customer-outcome monitoring | Would the authorised observation detect a failure soon enough for this service, from actual outcomes rather than job success alone ([outcome watch](../../bg-ship-and-recover/references/outcome-watch.md))? |
 | 9 | Tests prove outcomes | Do tests assert what the customer got through real adapters in test mode, against the candidate, in a qualified environment ([testing ladder](../../../docs/testing-ladder.md))? |
 | 10 | Known release and rollback | Do we know exactly what is live ([live manifest](../../../templates/LIVE-MANIFEST.md)) and can we put the last good version back? |
 | 11 | Security and privacy | Are boundaries, secrets (by name) and personal data handled so that a mistake cannot expose or move them? |
@@ -30,8 +30,8 @@ Scores: **0** absent or unknown; **1** exists but ad hoc or known to fail; **2**
 
 ## Verdict
 
-- **Keep:** no practice below 2, and the money, state and security rows (1, 2, 11) at 3 or more. Fix the gaps in place.
-- **Simplify:** the system works but practice 12 is low or several rows are 2 because of tangled or duplicated parts. Remove or merge parts, behind the existing entry point.
-- **Rebuild:** a money, state or security row (1, 2, 11) scores 0 or 1 and cannot be fixed in place, or the same cause keeps returning. Build [beside the old](../../bg-build-with-me/references/durable-work.md#rebuild-beside-the-old), switch one capability at a time, and retire the old path only after usage evidence.
+- **Keep:** evidence supports the current structure and relevant gaps can be repaired safely in place. Explain the known limitation and repair.
+- **Simplify:** demonstrated duplication or unnecessary parts cause the problem. Compare a smaller design with the existing one, preserving required behaviour and rollback.
+- **Rebuild:** causal evidence shows that an in-place repair cannot reliably meet the need, or a reproduced structural cause keeps returning. Compare replacement cost, risk and recovery before choosing it. Where appropriate, [replace beside the existing path](../../bg-build-with-me/references/durable-work.md#replace-a-live-path-safely); retire live work only with the necessary ownership checks and authority.
 
-These are defaults for the lead's judgment. Record the scorecard, the evidence and the verdict in the project's handoff, and an engineering decision to rebuild as an ADR.
+These are discussion prompts, not thresholds that select a rebuild. Choose from actual causal evidence and the task scope. Use existing project records only when the decision warrants a durable record.

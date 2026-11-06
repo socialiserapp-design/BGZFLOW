@@ -1,0 +1,65 @@
+> BGZFLOW adaptation: use this technical reference only for the current requested outcome. Existing user decisions, actual project architecture and host permissions govern. Numeric examples and aesthetic opinions below are options, not universal rules, new gates or authority to redesign. External products, model weights and licences need current verification before use; none is installed by reading this page. Use the same brief and private project records; do not modify installed learning files.
+
+---
+title: marketing-surface-rules
+summary: Marketing pages earn a bigger motion budget and still overspend it. Motion maps to input, intros play once per session, everything pre-renders, fonts and hero images preload, nav content stays in the DOM, CTAs know who is looking, docs are for copying, blogs and changelogs are feeds.
+tags: [layout, marketing, landing, docs, blog, performance]
+---
+
+# Marketing surface rules
+
+[marketing-vs-product-ui](../philosophy/marketing-vs-product-ui.md) says *why* marketing tolerates more expression. This node is the build checklist: what a landing page, blog, docs site, or changelog has to do to be fast, readable, and honest. A visitor sees the page once, not a hundred times a day, so the animation budget is larger; it is still small, and restraint is the house style.
+
+## Motion
+
+- **Motion maps to user input.** No scroll-triggered fade-ups, no scroll hijacking, no parallax that isn't 1:1 with scroll, no auto-advancing carousels. If the user didn't cause it, cut it.
+- **Intro animations play once per session.** Gate hero reveals and logo sequences with `sessionStorage` so internal navigation skips them but a genuinely new visit sees them. `localStorage` would kill them forever.
+- **A product demo is a figure, not page motion.** One looping or play-once demo may lead a viewport: stopped offscreen, a poster under reduced motion, and a visible pause when it moves for more than 5 s ([stageshow-reconciliation](../faux-ui/stageshow-reconciliation.md), [MOC-faux-ui](../faux-ui/MOC-faux-ui.md)).
+- Hover-revealed content still obeys [touch-and-focus](../components/touch-and-focus.md): gated, and never the only route.
+- **Readable on the first frame.** In taste-skill's capture of 99 Awwwards Sites of the Day (October 2026), 60 opened on a loading screen and a third were still unreadable 4.5 s after load. The model panel's design marks were the same whatever the wait; only usability fell. Keep meaningful content and loading feedback available promptly; a 1.2s observation is not a universal deadline or ban on a justified approved loading sequence. Scroll hijacking scored 6.01 on usability against 6.50 for pages that scroll. Only 35 of 99 had any `prefers-reduced-motion` rule, and under it the finished state must show, never a hidden one ([prefers-reduced-motion](../motion/prefers-reduced-motion.md)).
+
+## Performance
+
+- **Rendering strategy:** pre-render reusable public content where compatible with freshness, privacy and architecture. Request-time or client fetching can be necessary; do not migrate it solely for this recipe.
+- **Kill layout shift at the source.** Preload fonts (`<link rel="preload" as="font" type="font/woff2" crossorigin>`) and above-the-fold images; lazy-load the rest. See [performance-discipline](../motion/performance-discipline.md).
+
+## Structure
+
+- **Content lives in the DOM.** Hover-revealed nav submenus are visually hidden, not mounted on hover — crawlers and assistive tech need the real markup.
+- **CTAs know who's looking.** Logged-out: "Get started". Logged-in: "Open app". Never "Sign up" to a signed-in user.
+- **First viewport**: brand, one headline, one supporting line, one CTA group, one dominant visual. No card soup, stat strips, or floating promo chips — see [unslop-pass](../anti-patterns/unslop-pass.md).
+- **Code-built illustrations** get `role="img"` + `aria-label`, `user-select: none`, and `pointer-events: none` unless interactive.
+
+## Docs, blogs, changelogs
+
+- **Docs are for copying.** A copy button on every snippet; every page exportable as markdown (a "Copy as Markdown" button and `.md` URLs such as `/docs/getting-started.md`) — people and the models reading your docs both want it; a visual example for every concept.
+- **Blogs and changelogs are feeds.** RSS at predictable paths (`/blog/rss.xml`, `/changelog/rss.xml`); `text-wrap: balance` on article headings.
+
+## Pre-ship checklist
+
+- [ ] No scroll-triggered animation, hijacking, non-1:1 parallax, or auto-carousel
+- [ ] No preloader; the `h1` readable on first paint, under reduced motion too
+- [ ] The frame holds at 1440, 768 and 390: equal margins, no holes ([page-frame](page-frame.md))
+- [ ] Intro gated behind `sessionStorage`
+- [ ] Fonts and hero image preloaded; no shift on load
+- [ ] Content pages statically generated with revalidation
+- [ ] Nav submenu content present in the DOM when closed
+- [ ] CTAs switch copy and destination on auth state
+- [ ] Snippets have copy buttons; pages export as `.md`; concepts have visual examples
+- [ ] RSS live; headings balanced
+- [ ] Code illustrations labeled, unselectable, inert
+- [ ] The [ai-default-tells](../anti-patterns/ai-default-tells.md) deletion pass has run
+
+## When to apply
+
+Creating or reviewing any public-facing page, and any time parallax, a carousel, or a scroll animation is tempting.
+
+## Gotcha
+
+"Marketing tolerates more motion" is read by agents as "marketing wants more motion". The permitted extra is one first-run hero moment. A page where every section animates in is the AI-default look, not expression. taste-skill's inspector fails a page where fewer than 8 elements move; this graph does not adopt that floor.
+
+## Sources
+
+- Emil Kowalski's design-engineering practice on marketing pages, distilled by HKTITAN.
+- Leonxlnx, taste-skill v2.1.1 (MIT, HEAD a9c73c3): `skills/taste-skill/references/motion.md` §2 and §9 (99 Sites of the Day captured October 2026: preloaders, readable time, reduced-motion rules, hijacking's usability score; scores are model-panel judgements) and `scripts/lib/rules.mjs` (`still-page`, not adopted).
+- Related: [marketing-vs-product-ui](../philosophy/marketing-vs-product-ui.md), [performance-discipline](../motion/performance-discipline.md), [unslop-pass](../anti-patterns/unslop-pass.md), [viewport-custom-design](viewport-custom-design.md).

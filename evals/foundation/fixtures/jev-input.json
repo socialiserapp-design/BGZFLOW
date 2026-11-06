@@ -1,0 +1,9 @@
+{
+  "model": "jev-1.14.0",
+  "state": {"message": "The export crashes and I cannot download the report."},
+  "questions": {
+    "blocked": {"type": "noul", "instructions": "Does the message describe an export that cannot be completed?"},
+    "area": {"type": "choice", "instructions": "Which area is mentioned?", "criteria": {"export": "Report download", "login": "Account sign-in"}},
+    "impact": {"type": "score", "instructions": "What impact is described?", "criteria": ["No failure", "Inconvenience with a workaround", "Requested operation cannot be completed"]}
+  }
+}

@@ -486,7 +486,7 @@ async function main() {
     const rawLimit = flag('limit');
     const limitFlag = rawLimit !== null ? Number(rawLimit) : (allFlag ? 0 : 10);
     if (!project) throw new Error('list needs --project');
-    let filtered = rows(project).filter((row) => (!to || row.to === to) && (!stateFilter || row.state === stateFilter));
+    let filtered = rows(project).filter((row) => (!to || row.to === to || row.to === 'all' || row.to === 'broadcast') && (!stateFilter || row.state === stateFilter));
     if (limitFlag > 0) filtered = filtered.slice(-limitFlag);
     if (!fullFlag) {
       filtered = filtered.map((row) => {

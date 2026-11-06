@@ -1,9 +1,9 @@
 # Two-way worker mailbox
 
-`bg-mail` is a provider-neutral filesystem mailbox. It works with any worker that can run Node and share the configured state folder. A worker posts a concise question, states the safe default and continues waiting in the same job. The lead lists its inbox and replies. After the declared timeout the worker proceeds with the default instead of ending and requiring a restart.
+`bg-mail` is a provider-neutral filesystem mailbox. It works with any worker that can run Node and share the configured state folder. A worker posts a concise question, states an already authorized safe default and continues waiting in the same job. The lead lists its inbox and replies. A timeout returns the configured default; it does not grant permission. If the answer is required before a consequential action, hold that action and continue independent work instead.
 
 ```sh
-node tools/bg-mail/bg-mail.mjs post --project launch --from worker-a --to lead --body "Use existing schema?" --default "yes" --wait-minutes 15
+node tools/bg-mail/bg-mail.mjs post --project launch --from worker-a --to lead --body "Which optional comparison should I run next?" --default "Continue the already authorized read-only inspection" --wait-minutes 15
 node tools/bg-mail/bg-mail.mjs list --project launch --to lead
 node tools/bg-mail/bg-mail.mjs watch --project launch --to lead
 node tools/bg-mail/bg-mail.mjs reply --project launch --id MESSAGE_ID --from lead --body "yes"

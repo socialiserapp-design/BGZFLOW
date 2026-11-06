@@ -48,6 +48,9 @@ export function findTlc() {
     if (found.jar && found.java) return found;
     const tools = [!found.java && JAVA_TOOL, !found.jar && TLC_TOOL].filter(Boolean);
     const names = [!found.jar && "TLC", !found.java && "Java"].filter(Boolean);
+    if (process.env.STATECHART_ALLOW_INSTALL !== "1") {
+      throw new Error(`Optional ${names.join(" and ")} unavailable. ${SET_TLC_VARS} When setup is authorised, set STATECHART_ALLOW_INSTALL=1 to enable the mise download.`);
+    }
     console.error(`Installing ${names.join(" and ")} with mise. This happens once.`);
     const r = run("install", "--quiet", ...tools);
     const installed = resolve();

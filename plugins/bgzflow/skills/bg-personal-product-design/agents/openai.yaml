@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Personal Product Design"
+  short_description: "Select design specialists for the intended experience"
+  default_prompt: "Use $bg-personal-product-design to select the useful design specialists, preserve current decisions and verify the intended surfaces and affected journeys."
+policy:
+  allow_implicit_invocation: true

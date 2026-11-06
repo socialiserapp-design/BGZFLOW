@@ -139,7 +139,7 @@ Context transfers are explicit: `source.transferTo(target, { key, targetKey, tra
 
 The local adapter and clean-install package are the initial executable slice. Native model providers, phone/desktop UI integration and cross-host equivalence require their own adapter qualification. The package is marked private while that work continues; packing it locally does not publish it.
 
-Run `node --test tools/engine/test/*.test.mjs` from the BGZFLOW repository. Tests use real temporary files and local processes. They do not establish model quality, comparative performance or universal exactly-once execution.
+Run `npm test` from the BGZFLOW source root for the active suite, including foundation/session integration with the engine. This public tree does not include a separate engine-only test directory. The checks do not establish model quality, comparative performance or universal exactly-once execution.
 
 ## Current evidence dependencies
 

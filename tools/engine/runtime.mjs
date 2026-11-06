@@ -5,6 +5,8 @@ import net from 'node:net';
 import { checkCurrentTruth } from './current-truth.mjs';
 import { prepareRequest, methodGuidance, validateMethodContext } from './method-policy.mjs';
 import { validateExecutionGraph, compileExecutionGraph, buildNodeContextProjection } from './execution-graph.mjs';
+import { createFoundationSession } from '../foundation/session.mjs';
+import { loadSelectedSkills } from '../foundation/router.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 const copy = value => structuredClone(value);
@@ -43,6 +45,7 @@ export async function createEngine({ projectRoot, adapter, product = 'bgzflow' }
   await fs.mkdir(directory, { recursive: true });
   if (!contained(root, await fs.realpath(directory))) throw new Error('Engine state escapes the project root.');
   const listeners = new Set();
+  const foundationFor = id => createFoundationSession({ projectRoot: root, sessionId: `engine:${id}`, storageRoot: adapter.continuityRoot, host: adapter.foundationHost || {} });
   const active = new Set();
   let disposed = false;
   const filename = id => path.join(directory, `${digest(id)}.json`);
@@ -137,6 +140,7 @@ export async function createEngine({ projectRoot, adapter, product = 'bgzflow' }
     catch (error) { result = { status: 'uncertain', reason: error.message }; }
     record.result = result ?? { status: 'uncertain' };
     record.status = result?.status === 'completed' ? 'completed' : 'uncertain';
+    if (state.foundationRevision) foundationFor(state.id).observeOperation({ id: record.stepId, revision: state.foundationRevision, operationId: record.operationId, status: record.status, source: 'engine host adapter' });
     await emit(state, 'operation-result', { operationId: record.operationId, stepId: record.stepId, result: record.result });
     return record.status === 'completed' && result.exitCode === 0;
   };
@@ -188,7 +192,12 @@ export async function createEngine({ projectRoot, adapter, product = 'bgzflow' }
     const artifacts = await readArtifacts(state);
     state.integrity = { checkedAt: new Date().toISOString(), matches: artifacts.every(a => a.matches), artifacts };
     await emit(state, 'artifact-integrity-checked', { integrity: copy(state.integrity) });
-    return { ...copy(state), ...acceptanceScope, freshness: 'checked', status: state.integrity.matches && truthMatches ? 'accepted' : 'invalidated' };
+    let outcomeStatus = 'not-assessed';
+    if(state.spec.outcome && state.foundationRevision) {
+      try { outcomeStatus=(await foundationFor(state.id).verifyOutcome({id:state.spec.outcome.id||state.id,revision:state.foundationRevision,candidate:digest(JSON.stringify(artifacts)),expectation:state.spec.outcome.expectation})).status; }
+      catch { outcomeStatus='unverified'; }
+    }
+    return { ...copy(state), ...acceptanceScope, wholeOutcomeStatus:outcomeStatus, freshness: 'checked', status: state.integrity.matches && truthMatches && (!state.spec.outcome || outcomeStatus==='verified') ? 'accepted' : 'invalidated' };
   };
   const run = async state => {
     if (active.has(state.id)) throw new Error('Goal is already running in this engine.');
@@ -235,6 +244,12 @@ export async function createEngine({ projectRoot, adapter, product = 'bgzflow' }
       await emit(state, 'artifacts-read', { artifacts: copy(state.artifacts) });
       if (state.artifacts.some(a => !a.matches)) return incomplete(state, 'Requested artifact acceptance did not match actual bytes.');
       if (!await checkTruth(state)) return incomplete(state, truthReason(state, 'Evidence changed before acceptance.'));
+      if (state.spec.outcome && !state.foundationRevision) return incomplete(state, 'No confirmed original request source for the requested outcome.');
+      if (state.foundationRevision && state.spec.outcome) {
+        const outcome = await foundationFor(state.id).verifyOutcome({ id: state.spec.outcome.id || state.id, revision: state.foundationRevision, candidate: digest(JSON.stringify(state.artifacts)), expectation: state.spec.outcome.expectation });
+        state.wholeOutcomeStatus = outcome.status;
+        if (outcome.status !== 'verified') return incomplete(state, 'The intended outcome has not been observed on the actual candidate.');
+      }
       state.status = 'accepted';
       state.acceptedAt = new Date().toISOString();
       state.integrity = { checkedAt: state.acceptedAt, matches: true, artifacts: copy(state.artifacts) };
@@ -247,14 +262,15 @@ export async function createEngine({ projectRoot, adapter, product = 'bgzflow' }
       validate(spec);
       return exclusive(spec.id, async () => {
       if (await load(spec.id)) throw new Error('Goal already exists; resume its stable identity.');
-      const executionGraph = spec.executionGraph
-        ? copy(spec.executionGraph)
-        : compileExecutionGraph({
-            graphId: `graph-${spec.id}`,
-            goalSummary: spec.text,
-            slices: spec.steps.map(s => ({ id: s.id, label: s.id })),
-          });
+      const executionGraph = spec.executionGraph ? copy(spec.executionGraph) : null;
       const state = { version: 1, id: spec.id, spec: copy(spec), ...acceptanceScope, executionGraph, methodContext: await prepareRequest({ text: spec.text, product, vocabulary: spec.vocabulary ?? spec.goalContract?.vocabulary }), status: 'pending', events: [], checks: [], artifacts: [], repairs: [] };
+      const foundation = foundationFor(spec.id);
+      if (adapter.foundationHost?.confirmRequest) state.foundationRevision = (await foundation.acceptRequest({ text: spec.text, sourceId: spec.sourceId || spec.id })).revision;
+      const selection = await foundation.select({ request: spec.text, stage: 'execution', catalog: adapter.skillCatalog, decide: adapter.foundationHost?.decide || (async () => { throw Error('Main-agent selection required; no authorized model router supplied.'); }) });
+      state.selection = { status: selection.status, strategy: selection.strategy, missing: selection.missing, selected: selection.selected.map(({ id, name, path, version }) => ({ id, name, path, version })) };
+      // Keep legacy policy bytes for saved-run compatibility, but use the same selected
+      // library as native sessions rather than an independent fixed four-method set.
+      state.methodContext = await prepareRequest({ text: spec.text, product, vocabulary: spec.vocabulary ?? spec.goalContract?.vocabulary, selectedMethods: loadSelectedSkills(selection) });
       state.steps = spec.steps.map(step => operation(state, step, `step:${step.id}`));
       // Exclusive creation prevents two initial submissions from overwriting the goal.
       await fs.writeFile(filename(state.id), JSON.stringify(state, null, 2), { flag: 'wx' });

@@ -1,0 +1,5 @@
+> BGZFLOW adaptation: use this technical reference only for the current requested outcome. Existing user decisions, actual project architecture and host permissions govern. Numeric examples and aesthetic opinions below are options, not universal rules, new gates or authority to redesign. External products, model weights and licences need current verification before use; none is installed by reading this page. Use the same brief and private project records; do not modify installed learning files.
+
+# Scope of production checks
+
+A request to review, polish or inspect is not permission to edit the whole app, publish or release. Use the current brief and authorised scope. The existing BGZFLOW verification and release methods own checks and deployment; real user-journey and saved-effect evidence remain required. Check affected accessibility, data, security and recovery boundaries in proportion to the change. [production-baseline](production-baseline.md) provides inspection leads, not a mandatory whole-app change list.

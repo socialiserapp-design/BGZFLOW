@@ -1,0 +1,6 @@
+{
+  "primaryAction": { "id": "send", "label": "Send", "enabled": true },
+  "secondaryAction": { "id": "cancel", "label": "Cancel", "enabled": true },
+  "appearance": { "palette": "light", "fontFamily": "system-ui", "cornerRadius": 8 },
+  "behaviour": { "sendOnEnter": true, "offlineDrafts": true }
+}

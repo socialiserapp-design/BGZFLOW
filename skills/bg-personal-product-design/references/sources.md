@@ -47,4 +47,4 @@ How each part of the [looks library](looks-library.md), [craft toolbox](craft-to
 
 ## Cinematic motion and deep-source skill forging
 
-The cinematic recipes, 3D asset pipeline, library choices, guardrails and native motion equivalents are recorded in [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md). New design, engineering and domain techniques distilled from books, videos, papers, live teardowns and clean-room reverse engineering (`bgz skill-forge`) pass through the same harmonization filter before entering the skill overlay.
+The cinematic recipes, 3D asset pipeline, library choices, guardrails and native motion equivalents are recorded in [cinematic motion and 3D](cinematic-motion-and-3d.md) and [motion by platform](motion-by-platform.md). New design, engineering and domain techniques distilled from books, videos, papers, live teardowns and clean-room reverse engineering (through an explicitly scoped skill adaptation) pass through the same harmonization filter before entering the skill overlay.

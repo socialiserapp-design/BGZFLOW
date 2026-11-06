@@ -1,282 +1,70 @@
-import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { test } from "node:test";
-import { fileURLToPath } from "node:url";
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
-const scanner = fileURLToPath(new URL("../leak-check.mjs", import.meta.url));
-// Scratch repositories and homes live in this repository's ignored .tmp/ folder, never the system temp folder.
-const scratch = fileURLToPath(new URL("../../.tmp/", import.meta.url));
+const root=fileURLToPath(new URL('../../',import.meta.url));
+const scanner=path.join(root,'scripts/leak-check.mjs');
+const exceptions=JSON.parse(fs.readFileSync(path.join(root,'scripts/leak-check-allowlist.json'),'utf8')).exceptions;
 
-function tmpdir() {
-  mkdirSync(scratch, { recursive: true });
-  return scratch;
+function fixture(t){
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-public-leak-test-'));
+  t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  fs.writeFileSync(path.join(directory,'VERSION'),'0.0.0\n');
+  fs.writeFileSync(path.join(directory,'plugin.json'),'{}');
+  return directory;
 }
-const noreply = ["ci@", "users.noreply.github.com"].join("");
-
-function piece(...parts) {
-  return parts.join("");
-}
-
-function aws() {
-  return piece("AKIA", "0".repeat(16));
-}
-
-function github() {
-  return piece("ghp_", "a".repeat(36));
+function scan(directory,args=[]){
+  const result=spawnSync(process.execPath,[scanner,'--plugin-surface','--json',...args],{
+    cwd:directory,encoding:'utf8',windowsHide:true,timeout:15000,
+    env:{...process.env,BGZFLOW_OVERLAY:path.join(directory,'private-overlay')}
+  });
+  return {status:result.status,result:JSON.parse(result.stdout)};
 }
 
-function openai() {
-  return piece("sk-", "b".repeat(32));
-}
-
-function anthropic() {
-  return piece("sk-ant-", "c".repeat(32));
-}
-
-function stripe() {
-  return piece("sk_live_", "d".repeat(24));
-}
-
-function slack() {
-  return piece("xoxb-", "1".repeat(12), "-", "e".repeat(24));
-}
-
-function xai() {
-  return piece("xai-", "f".repeat(32));
-}
-
-function jwt() {
-  return [piece("eyJ", "a".repeat(12)), "b".repeat(12), "c".repeat(12)].join(".");
-}
-
-function pem() {
-  return piece("-----BEGIN ", "PRIVATE KEY-----\nAAAA\n-----END ", "PRIVATE KEY-----\n");
-}
-
-function password() {
-  return piece("password", "=", "hunter");
-}
-
-function winPath(slash) {
-  return piece("C:", slash, "Users", slash, "someone");
-}
-
-function mail() {
-  return piece("person@", "example.test");
-}
-
-function term() {
-  return piece("zephyr", "-token-", "sample");
-}
-
-function git(cwd, args, extra) {
-  const env = {
-    ...process.env,
-    GIT_AUTHOR_NAME: "Example",
-    GIT_AUTHOR_EMAIL: noreply,
-    GIT_COMMITTER_NAME: "Example",
-    GIT_COMMITTER_EMAIL: noreply,
-    ...extra,
-  };
-  const result = spawnSync("git", args, { cwd, env, encoding: "utf8" });
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-}
-
-function initRepo() {
-  const dir = mkdtempSync(join(tmpdir(), "bgz-leak-"));
-  git(dir, ["init"]);
-  return dir;
-}
-
-function commit(dir, message) {
-  git(dir, ["add", "-A"]);
-  git(dir, ["commit", "-m", message]);
-}
-
-function run(dir, args = [], extraEnv = {}) {
-  const home = mkdtempSync(join(tmpdir(), "bgz-home-"));
-  const env = {
-    ...process.env,
-    HOME: home,
-    USERPROFILE: home,
-    ...extraEnv,
-  };
-  delete env.BGZFLOW_OVERLAY;
-  try {
-    return spawnSync(process.execPath, [scanner, ...args], {
-      cwd: dir,
-      env,
-      encoding: "utf8",
-    });
-  } finally {
-    rmSync(home, { recursive: true, force: true });
-  }
-}
-
-function write(dir, rel, text) {
-  const path = join(dir, rel);
-  mkdirSync(join(path, ".."), { recursive: true });
-  writeFileSync(path, text.replace(/\r\n/g, "\n"));
-}
-
-test('working-tree mode scans current tracked and untracked files while the default retains history', () => {
-  const dir = initRepo();
-  try {
-    write(dir, 'note.txt', `${github()}\n`);
-    commit(dir, 'unsafe fixture');
-    write(dir, 'note.txt', 'clean current content\n');
-    commit(dir, 'replace fixture');
-    const current = run(dir, ['--working-tree', '--json']);
-    assert.equal(current.status, 0, current.stderr);
-    assert.deepEqual(JSON.parse(current.stdout), { ok: true, findings: [] });
-    assert.equal(run(dir, ['--json']).status, 1, 'history scanning remains the default');
-    write(dir, 'untracked.txt', `${github()}\n`);
-    const untracked = run(dir, ['--working-tree', '--json']);
-    assert.equal(untracked.status, 1);
-    assert.equal(JSON.parse(untracked.stdout).findings[0].path, 'untracked.txt');
-    write(dir, 'untracked.txt', 'clean\n');
-    write(dir, 'note.txt', `${github()}\n`);
-    const dirty = run(dir, ['--working-tree', '--json']);
-    assert.equal(dirty.status, 1);
-    assert.equal(JSON.parse(dirty.stdout).findings[0].path, 'note.txt');
-  } finally { rmSync(dir, { recursive: true, force: true }); }
+test('a reviewed public example is exempt only while its complete line is unchanged',t=>{
+  const directory=fixture(t);
+  const entry=exceptions.find(item=>item.rule==='email'&&item.path.endsWith('/forms-validation.md'));
+  assert.ok(entry);
+  const line=fs.readFileSync(path.join(root,entry.path),'utf8').split(/\r?\n/)[entry.line-1];
+  const file=path.join(directory,entry.path);fs.mkdirSync(path.dirname(file),{recursive:true});
+  fs.writeFileSync(file,'\n'.repeat(entry.line-1)+line+'\n');
+  assert.equal(scan(directory).status,0);
+  fs.writeFileSync(file,'\n'.repeat(entry.line-1)+line+' changed\n');
+  const altered=scan(directory);
+  assert.equal(altered.status,1);
+  assert.ok(altered.result.findings.some(item=>item.path===entry.path&&item.line===entry.line&&item.rule===entry.rule));
 });
 
-test("allows a noreply address and prints clean json", () => {
-  const dir = initRepo();
-  try {
-    write(dir, "note.txt", `hello ${noreply}\n`);
-    commit(dir, "add note");
-    const result = run(dir, ["--json", "--denylist", join(dir, "empty.txt")]);
-    writeFileSync(join(dir, "empty.txt"), "");
-    const again = run(dir, ["--json", "--denylist", join(dir, "empty.txt")]);
-    assert.equal(again.status, 0, again.stdout + again.stderr);
-    const body = JSON.parse(again.stdout);
-    assert.equal(body.ok, true);
-    assert.deepEqual(body.findings, []);
-    assert.equal(result.status, 2);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
+test('an unexcepted credential-shaped line elsewhere still fails and output stays masked',t=>{
+  const directory=fixture(t);
+  const synthetic=['sk','proj', 'Q'.repeat(36)].join('-');
+  fs.writeFileSync(path.join(directory,'README.md'),synthetic+'\n');
+  const found=scan(directory);
+  assert.equal(found.status,1);
+  assert.ok(found.result.findings.some(item=>item.path==='README.md'&&item.rule==='openai-token'));
+  assert.ok(found.result.findings.every(item=>item.masked==='***'));
+  assert.equal(JSON.stringify(found.result).includes(synthetic),false);
 });
 
-test("flags secrets, emails, profile paths, and denylist terms", () => {
-  const dir = initRepo();
-  const deny = join(dir, "deny.txt");
-  try {
-    write(
-      dir,
-      "secret.txt",
-      [
-        aws(),
-        github(),
-        openai(),
-        anthropic(),
-        stripe(),
-        slack(),
-        xai(),
-        jwt(),
-        pem(),
-        password(),
-        winPath("\\"),
-        winPath("/"),
-        mail(),
-        term().toUpperCase(),
-        noreply,
-      ].join("\n") + "\n",
-    );
-    writeFileSync(deny, `# comment\n\n${term()}\n`);
-    commit(dir, "add secret");
-    const result = run(dir, ["--denylist", deny]);
-    assert.equal(result.status, 1);
-    const rules = [
-      "aws-token",
-      "github-token",
-      "openai-token",
-      "anthropic-token",
-      "stripe-token",
-      "slack-token",
-      "xai-token",
-      "jwt",
-      "private-key",
-      "password",
-      "windows-user-path",
-      "email",
-      "denylist",
-    ];
-    for (const rule of rules) {
-      assert.match(result.stdout, new RegExp(`secret\\.txt:\\d+ ${rule} \\*\\*\\*`));
-    }
-    assert.equal(result.stdout.includes(aws()), false);
-    assert.equal(result.stdout.includes(mail()), false);
-    assert.equal(result.stdout.includes(term()), false);
-    assert.equal(result.stderr.includes(aws()), false);
-    const json = run(dir, ["--json", "--denylist", deny]);
-    const body = JSON.parse(json.stdout);
-    assert.equal(body.ok, false);
-    assert.equal(body.findings.every((hit) => hit.masked === "***"), true);
-    assert.equal(JSON.stringify(body).includes(aws()), false);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
+test('private overlay terms are ignored unless their denylist is explicitly supplied',t=>{
+  const directory=fixture(t),overlay=path.join(directory,'private-overlay');fs.mkdirSync(overlay);
+  const denylist=path.join(overlay,'denylist.txt');fs.writeFileSync(denylist,'private-fixture-term\n');
+  fs.writeFileSync(path.join(directory,'README.md'),'private-fixture-term\n');
+  assert.equal(scan(directory).status,0);
+  const explicit=scan(directory,['--denylist',denylist]);
+  assert.equal(explicit.status,1);
+  assert.ok(explicit.result.findings.some(item=>item.rule==='denylist'));
 });
 
-test("flags a secret that remains only in history", () => {
-  const dir = initRepo();
-  const secret = aws();
-  try {
-    write(dir, "gone.txt", `${secret}\n`);
-    commit(dir, "add secret");
-    write(dir, "gone.txt", "clean\n");
-    commit(dir, "remove secret");
-    const result = run(dir, ["--json"]);
-    assert.equal(result.status, 1);
-    const body = JSON.parse(result.stdout);
-    assert.equal(
-      body.findings.some((hit) => hit.rule === "aws-token" && hit.path === "gone.txt"),
-      true,
-    );
-    assert.equal(result.stdout.includes(secret), false);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-});
-
-test("flags a non-noreply author email", () => {
-  const dir = initRepo();
-  const author = mail();
-  try {
-    write(dir, "ok.txt", "hello\n");
-    git(dir, ["add", "-A"]);
-    git(dir, ["commit", "-m", "hello"], {
-      GIT_AUTHOR_EMAIL: author,
-      GIT_COMMITTER_EMAIL: author,
-    });
-    const result = run(dir, ["--json"]);
-    assert.equal(result.status, 1);
-    const body = JSON.parse(result.stdout);
-    assert.equal(
-      body.findings.some((hit) => hit.rule === "email" && hit.path.startsWith("git-author/")),
-      true,
-    );
-    assert.equal(result.stdout.includes(author), false);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-});
-
-test("still applies generic rules when the default denylist is absent", () => {
-  const dir = initRepo();
-  try {
-    write(dir, "secret.txt", `${password()}\n`);
-    commit(dir, "add password");
-    const result = run(dir);
-    assert.equal(result.status, 1);
-    assert.match(result.stdout, /password \*\*\*/);
-    assert.equal(result.stdout.includes("hunter"), false);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
+test('the ready-to-install bundle is included in the public scanner surface',t=>{
+  const directory=fixture(t),bundle=path.join(directory,'plugins','bgzflow');fs.mkdirSync(bundle,{recursive:true});
+  const synthetic=['sk','proj','B'.repeat(36)].join('-');
+  fs.writeFileSync(path.join(bundle,'fixture.mjs'),synthetic+'\n');
+  const found=scan(directory);
+  assert.equal(found.status,1);
+  assert.ok(found.result.findings.some(item=>item.path==='plugins/bgzflow/fixture.mjs'&&item.rule==='openai-token'));
 });

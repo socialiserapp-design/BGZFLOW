@@ -16,7 +16,7 @@ const productName = product => {
 const hashContext = value => digest(JSON.stringify({ schema: value.schema, product: value.product, requestSha256: value.requestSha256, policy: value.policy, methods: value.methods, ...(value.vocabulary ? { vocabulary: value.vocabulary } : {}) }));
 
 /** Local assets only. No model call, request logging, keyword classifier or ambient project lookup. */
-export async function prepareRequest({ text = '', product = 'bgzflow', vocabulary } = {}) {
+export async function prepareRequest({ text = '', product = 'bgzflow', vocabulary, selectedMethods } = {}) {
   if (typeof text !== 'string') throw new Error('Request text must be a string.');
   const label = productName(product);
   const [policyBody, common, efficiency] = await Promise.all([
@@ -25,7 +25,7 @@ export async function prepareRequest({ text = '', product = 'bgzflow', vocabular
     fs.readFile(new URL('./method-assets/efficiency.md', import.meta.url), 'utf8'),
   ]);
   const sections = new Map([...common.matchAll(/^## (.+)\r?\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)].map(match => [match[1], match[2].trim()]));
-  const methods = entries.map(([id, title, description]) => {
+  const methods = selectedMethods ? selectedMethods.map(item => ({ id: item.id, name: item.name, title: item.name, description: item.description || '', revision: 1, sha256: digest(item.body), body: item.body })) : entries.map(([id, title, description]) => {
     const body = id === 'efficiency' ? efficiency.trim() : sections.get(title);
     if (!body) throw new Error(`Missing bundled method: ${id}`);
     return { id, name: `${product === 'lucian' ? 'lucian' : 'bgz'}-${id}`, title: `${label} ${title}`, description, revision: ['understand-and-plan', 'continue-and-recover'].includes(id) ? 2 : 1, sha256: digest(body), body };
@@ -39,7 +39,7 @@ export function validateMethodContext(context) {
   if (context.vocabulary) validateVocabulary(context.vocabulary);
   if (typeof context.policy?.body !== 'string' || digest(context.policy.body) !== context.policy.sha256) throw new Error('Saved default policy bytes changed.');
   // Saved work owns its method snapshot. The installed catalogue may evolve independently.
-  if (!Array.isArray(context.methods) || context.methods.length === 0 || new Set(context.methods.map(item => item?.id)).size !== context.methods.length) throw new Error('Invalid saved method inventory.');
+  if (!Array.isArray(context.methods) || new Set(context.methods.map(item => item?.id)).size !== context.methods.length) throw new Error('Invalid saved method inventory.');
   for (const item of context.methods) {
     if (typeof item?.id !== 'string' || !item.id.trim() || typeof item.body !== 'string' || digest(item.body) !== item.sha256 || !Number.isSafeInteger(item.revision) || item.revision < 1) throw new Error('Saved method bytes changed.');
   }

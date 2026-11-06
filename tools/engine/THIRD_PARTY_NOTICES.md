@@ -49,7 +49,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Cursor Plugins & pstack MIT Skills (`skills/`) and Execution Graph (`execution-graph.mjs`)
+## Skill provenance and graph helpers
 
-- Bundled skills in `skills/` (`advisor`, `how`, `architect`, `statechart`, `interrogate`, `exhaust-the-design-space-and-deslop`, `deslop`, `grok-voice`, `create-verification-skill`, `maintain-verification-skill`, `control-ui`, `control-cli`, `verify-this`, `principle-prove-it-works`) are adapted from `cursor/plugins` (`advisor`, `pstack`, `cursor-team-kit`, `grok-voice`), MIT License.
-- `execution-graph.mjs` implements the BGZFLOW & Lucian Google Graph Engineering specification (cyclic execution graphs with bounded retry edges, deterministic join gates, node-scoped context projections with stripped builder reasoning for independent verifiers, and Context Graph precedent traces).
+- See the package's top-level attribution and individual skill notices for verified sources and local adaptations. This engine notice does not establish blanket Cursor provenance for every retained or rewritten skill.
+- `execution-graph.mjs` contains local graph-validation, projection and transition helpers. It is not an implementation or validation of Google's full research systems and is not the active engine scheduler. Explicit command execution and FoundationSession integration have their own documented boundaries.

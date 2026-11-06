@@ -1,0 +1,14 @@
+LicenseRef-Taste-Assets identifies the collection of asset-specific terms retained
+in skills/design-taste-assets/asset-rights.json, THIRD_PARTY_NOTICES.md and LICENSES/.
+It is an aggregate identifier, not a new copyright licence or a replacement for
+the original terms. The original author/source, licence URL and modification
+information are mapped per asset and preserved by the export helper.
+
+The collection contains public-domain/CC0 material, CC BY 2.0/3.0/4.0,
+CC BY-SA 2.0/3.0/3.0 Austria/4.0 and Unsplash photographs, plus CC0, MIT and ISC
+icon sets and retained Feather notices. Public Domain Mark denotes a stated
+public-domain status, not the CC0 dedication. Original Taste code is separately
+MIT-licensed. Trademark, privacy and other asset-specific rights are separate.
+
+See the complete retained notices and original legal texts for the applicable
+asset. No blanket MIT relicensing of those assets is asserted.

@@ -61,12 +61,17 @@ function install(dir) {
 export async function loadRenderer() {
   const dir = cacheDir();
   const entry = path.join(dir, "entry.mjs");
-  if (!fs.existsSync(entry)) install(dir);
+  if (!fs.existsSync(entry)) {
+    if (process.env.STATECHART_ALLOW_INSTALL !== "1") {
+      throw new Error(`Optional renderer unavailable at ${dir}. Reuse an existing renderer or, when setup is authorised, set STATECHART_ALLOW_INSTALL=1 to install ${PACKAGES.join(" and ")} in the private cache.`);
+    }
+    install(dir);
+  }
   try {
     return await import(pathToFileURL(entry).href);
   } catch (e) {
     throw new Error(
-      `cannot load Pele and resvg from ${dir}: ${e.message}\nDelete that folder to install them again.`,
+      `cannot load Pele and resvg from ${dir}: ${e.message}\nInspect the cached dependency and preserve unrelated files before any repair.`,
     );
   }
 }

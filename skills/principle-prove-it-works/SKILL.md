@@ -1,7 +1,6 @@
 ---
 name: principle-prove-it-works
 description: "Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'"
-disable-model-invocation: true
 ---
 
 # Prove It Works
@@ -13,10 +12,10 @@ Verify every task output by checking the real thing directly. Do not infer from 
 Check the real thing, not a proxy:
 - Check process liveness directly, not indirectly through derived state
 - Read the actual value, not a cached or derived representation
-- When verification fails, suspect the observation method before suspecting the system
+- When verification fails, distinguish a broken observation from a broken system using independent evidence; preserve the first failure and do not presume either explanation
 
 ## Script the check when you can
 
-The strongest proof is a deterministic script that re-runs the same comparison, not a one-time eyeball. Write the script, run it, and keep its output as an artifact a reviewer can re-run instead of trusting your word.
+Use a repeatable check when it improves confidence. Prefer an existing test or supported tool; write a focused script only when needed. Scripts, real-device observation and source inspection prove different things; choose the combination that demonstrates the requested outcome.
 
-Keep the artifact visible for the human. Commit it only for large or complex work where the trail has to be auditable later, like a big port or migration (the **show-me-your-work** skill).
+Retain relevant evidence in authorised private storage. Report the useful result concisely, with details available when needed. Do not commit private logs or create a new artifact for every trivial action.

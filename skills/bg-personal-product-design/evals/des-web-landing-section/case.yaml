@@ -2,7 +2,7 @@ schema_version: "1.1"
 name: des-web-landing-section
 description: 'A web landing section is explored across genuinely different looks from the looks library, with real craft, not one template.'
 tags: [quality, range]
-expected_outcome: 'Eight or more rendered directions drawn from clearly different looks (for example editorial, Swiss minimal, brutalist, high-end agency, cinematic), each with its own type, colour, spacing, shape, material and motion recipe; concrete craft details; no default house style.'
+expected_outcome: 'A proportionate comparison resolving the open design choice, grounded in the freelancer audience and actual content; concrete type, colour, layout and interaction decisions without a mandatory style count or house look.'
 execution:
   max_turns: 8
   allowed_tools: [Read, Glob, Grep, Skill]
@@ -12,12 +12,12 @@ graders:
   - name: range-of-looks
     type: llm
     criteria: |
-      PASS if the plan offers at least eight rendered directions for the founder to pick from, and at least four of them come from clearly different named looks (for example editorial, Swiss minimal, brutalist, high-end agency, warm tactile, data-dense, cinematic), each differing in layout, typography, shape, material and motion, not just colour.
-      FAIL if it proposes one design, recolours one layout, or treats any single look (dark glass, bento grid, one font) as the default.
+      PASS if it first uses relevant existing brand decisions or clarifies the unresolved audience/taste choice, then compares enough meaningful alternatives to inform that choice. A focused recommendation with a contrasting option can suffice; a larger comparison is useful only when it answers a real uncertainty. The differences should affect composition, readability or feeling, not just colour.
+      FAIL if it imposes a house look or requires a fixed number of directions or named families without a user reason. Do not penalise a single implementation when an applicable visual choice is already settled.
   - name: craft-detail
     type: llm
     criteria: |
-      PASS if the directions carry concrete craft: named typefaces with a type scale, a colour method with contrast checked, a spacing rhythm, corner and material choices, a motion recipe with a reduced-motion fallback, real copy instead of filler, and responsive behaviour at phone width.
+      PASS if the directions carry concrete craft: named typefaces with a type scale, a colour method with contrast checked, a spacing rhythm, corner and material choices, motion choices and reduced-motion behaviour where relevant, real copy instead of filler, and adaptive behaviour on the intended web sizes.
       FAIL if the answer stays generic ("modern, clean, bold") with no concrete values or techniques.
   - name: skill-fired
     type: tool_used

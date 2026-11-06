@@ -11,7 +11,7 @@ export function inside(root, file) {
 // Walk from the canonical project root without following a link in any owned component.
 export function ownedPath(projectDir, relative, { directory = false, create = false } = {}) {
   try {
-    const root = fs.realpathSync(projectDir), parts = relative.split(/[/\\]/);
+    const root = fs.realpathSync.native(projectDir), parts = relative.split(/[/\\]/);
     if (parts.some(p => !p || p === '.' || p === '..') || path.isAbsolute(relative)) return undefined;
     let current = root;
     for (let i = 0; i < parts.length; i++) {
@@ -25,7 +25,7 @@ export function ownedPath(projectDir, relative, { directory = false, create = fa
         else return mustBeDirectory ? undefined : current;
       }
       if (isLinked(stat) || (stat.isFile() && stat.nlink > 1) || (mustBeDirectory && !stat.isDirectory())) return undefined;
-      if (!inside(root, fs.realpathSync(current))) return undefined;
+      if (!inside(root, fs.realpathSync.native(current))) return undefined;
     }
     return current;
   } catch { return undefined; }

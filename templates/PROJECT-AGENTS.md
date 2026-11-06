@@ -1,49 +1,50 @@
-<!-- The project's own start-up file (AGENTS.md, or a CLAUDE.md that imports it). Keep it short: project facts
-     and pointers only; the pack's AGENTS.md carries the shared rules. Compulsory reading stays within
-     BGZFLOW_STARTUP_WORDS, every pointer must resolve, and no compulsory file is a log or chat history. -->
 # <Project>
 
-<Product, intended users, and live or pre-launch state.>
-Canonical repository: <repo path and private remote alias>.
-Start or resume: read <map> and `.bgzflow/CHECKPOINT.md` for the owners, exact candidate, pending work and next action.
+Optional project-specific instructions. Keep stable project facts and useful
+pointers here; the installed BGZFLOW contract supplies the shared workflow.
+Reuse existing records and commands instead of creating these names mechanically.
 
-## Authority and holds
+## Product and current decisions
 
-- Protect: <customer data, money, entitlements, campaigns and uncertain effects>.
-- Current authority: <decision ID in DECISIONS.md>; remaining holds: <exact holds and who can change them>.
-- Follow the founder's latest explicit in-scope direction; keep unaffected holds and host security. Add no technical unlock that only the founder can operate.
-- Reconcile an unknown external outcome by its durable operation ID before retrying. Keep secrets out of prompts, logs and source control.
+- Intended users and requested result: <actual objective>.
+- Repository and running entry points: <actual locations>.
+- Current user decisions and task brief: <existing sources>.
+- Sensitive boundaries: <relevant data, accounts, money and uncertain effects>.
 
-## Delivery
+The user's latest applicable instruction governs. Preserve original decisions
+and distinguish them from agent proposals. Confirm consequential ambiguity before
+dependent work. Do not invent a product feature, spending limit or new permission.
 
-- Roles follow the pack's worker route: the lead plans, dispatches, reads short results and decides; workers build and test; a fresh independent checker checks. One integration writer: <who>.
-- Approved plan and usage ceiling: <reference>. Continue ready authorised work within it. Show one early working skeleton, then the whole integrated result; report findings still open after two repair rounds.
-- Shared-resource owners: <worktrees, deployments, devices, schema>. Keep job, thread, session and launch-directory evidence in the checkpoint.
-- Approved design: <tokens, reference, decision ID>. Keep the required customer and platform checks.
+## Work and ownership
 
-## Commands and done conditions
+The lead may work alone or delegate independent contributions according to actual
+capability, capacity and the task's priorities. Keep one writer per shared change.
+Use existing native assignments, results and automatic records. Preserve original
+operation identities across interrupted work; reconcile unknown outcomes before retry.
 
-- Setup: <command>
-- Fast affected check: <command and expected result>
-- Whole-candidate checks: <commands and customer journeys>
-- Release and recovery: <runbook, authority and rollback>; a passing record is not release authority.
-- Handback: <evidence path> with candidate, base, configuration, environment, outputs and hashes, findings and owners, limits, live or staged state and next action.
+Use native compaction and resume. Recover current decisions and pending effects
+from the existing brief and original records; do not require a new chat.
+
+## Useful commands and proof
+
+- Setup and current runtime: <verified commands when needed>.
+- Affected checks: <commands or real actions and expected effects>.
+- Required user journeys: <applicable browser, device, document or service checks>.
+- Release and recovery: <existing authority, runbook and rollback>.
+- Result evidence: <existing location; distinguish observed, failed and unverified>.
+
+Choose checks by consequence and scope. A successful build or an updated record
+does not prove the intended result. Keep unrelated running services and user data intact.
 
 ## Customer-outcome checks
 
-A scheduled job or handler reporting "success" is not health. List what proves customers are being served, and who looks:
-
-- Due items completed on time: <what is due, where to count it, expected rate>
-- Freshness of the newest customer output: <what to read, how old is too old>
-- Money in and out balance: <charges, settlements, refunds and the gap that must stay at zero>
-- Canary: <company-owned test account, golden journey, schedule, where its result lands>
-- Live manifest and engineering decisions: <where the release manifest is kept>; <docs/adr/ in the code repo>
+Include checks appropriate to this project's actual work: delivered outputs,
+saved state, due work, data integrity or correct settlement. Name the observation
+source and owner. Use a company test account and provider test mode where relevant.
+A recurring canary requires the service's existing authority; this template does
+not create a schedule, new customer gate or extra approval step.
 
 ## Read when needed
 
-| Trigger | Read |
-|---|---|
-| Product or design decision | `DECISIONS.md`; <approved design> |
-| Area implementation | <area instructions or contracts> |
-| Account or machine-off continuation | <continuation packet and route card> |
-| Release or customer incident | <release or live-service runbook and current holds> |
+Point to the relevant implementation contracts, current decisions and recovery
+instructions. Avoid making every reference compulsory at every start.

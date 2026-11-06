@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Systems"
+  short_description: "Maintain coherent tokens and reusable components"
+  default_prompt: "Use $design-system for the current design task, preserving approved choices and verifying the affected experience."
+policy:
+  allow_implicit_invocation: true

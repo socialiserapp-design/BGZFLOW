@@ -1,11 +1,7 @@
 # Efficiency
 
-Keep scope and meaningful checks while reducing repeated work. Start from the intended result and existing project state; use a map or targeted search before broad reading. Retrieve the smallest useful records and passages. Load only the relevant method body into the primary-model turn, while preserving the frozen available-method context for recovery.
+Optimise the useful result within the user's task-specific time and usage priorities. Use targeted reads and relevant sources, retain settled decisions, and reuse unchanged evidence. Load detailed skills only when they help. Reconsider routing on material task or capability changes, not every ordinary tool result.
 
-Reuse decisions, artifacts and evidence whose relevant bytes, environment and assumptions have not changed. Recheck the affected boundary after a change. Save repeatable scripts as files, batch independent read-only actions, and keep dependent mutations and retries sequential. Reconcile an uncertain external effect before trying it again.
+Use real available models and tools. Extra workers should contribute independent useful work or checking. Account for routing, retries and verification in usage. Keep independent work parallel and uncertain external retries sequential after reconciliation.
 
-Choose the least costly available role that can perform the work properly within existing authority and allowance. Use configured Jev for small bounded judgements; its uncertainty is advice, not proof. Do not launch another model just to rediscover the request already understood by the primary model. Do not expose private request content to an additional service without authority.
-
-Research automatically where the answer depends on uncertain, current or consequential facts. Prefer useful primary evidence and permitted structured or private records over repeated broad web searches. Stop when more searching is unlikely to affect the decision; explain remaining uncertainty. Keep simple tasks direct.
-
-Count preparation, routing, tool calls, retries, checking and improvement experiments in cost comparisons. A shorter prompt or a cheaper model is not a measured saving unless the same useful outcome is achieved. Improve existing methods from observed failures and fair trials; do not invent new skills or silently start background learning work.
+Use native compaction and factual continuity records. Keep private lessons scoped to their user or team. Test candidate improvements against real requirements and unfamiliar cases; an apparent token reduction that loses the requested outcome is not an improvement.

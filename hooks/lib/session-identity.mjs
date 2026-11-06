@@ -1,5 +1,5 @@
 // Session identity map (BGZFLOW 0.9.8+20261020.3, fix round 2)
-// Many chats share one folder (Lucian has 6+), so a folder alone cannot say which role a chat plays.
+// Many chats share one folder (6+ parallel workers in multi-agent swarms), so a folder alone cannot say which role a chat plays.
 //
 // How a chat learns its own role (pending-claim design, fix round 1):
 // 1. A SUCCESSFUL `bg-mail post` (or `bg-mail register --project P --role R`) writes only a PENDING claim

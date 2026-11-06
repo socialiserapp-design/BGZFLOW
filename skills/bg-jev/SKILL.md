@@ -1,38 +1,68 @@
 ---
 name: bg-jev
-description: Use before dispatching, routing, reading files, checking a build or judging a worker: ask Jev (a fast, cheap judge) one scored question instead of reasoning it out; recipes for test failures, diff risk, skills, grades and unasked changes.
+description: "Use any relevant Jev capability for the current goal: typed judgments, scoring, research, evidence checks, context, risk, routing or composed workflows. Invoke as the general Jev entry point; select only the methods the task needs. Also diagnose BGZFLOW's existing skill/model selector."
 ---
 
-# BG Jev
+# Use Jev for this
 
-Jev answers many small questions about a situation in about one second for a fraction of a cent. Use it for judgements; code keeps every limit and every weight. Run `node "${CLAUDE_PLUGIN_ROOT}/tools/bgz.mjs" jev <command>` (`bgz jev` where installed). No key, or any error, prints `{"ok":false}`: carry on with the main model once. Never print the key. Calls are logged (ids and answers only) to `~/.bgzflow/jev-ledger.jsonl`.
+Apply Jev where understanding supplied material can help this goal. It can answer
+yes/no probabilities, choose among actual candidates, score described situations,
+and experimentally locate objects in images. The main agent reasons, asks the user
+and does the work. Ordinary code handles arithmetic, exact matches and permissions.
+Use one shared task brief, the user's latest decisions and existing records.
 
-## Ten rules (from Simeon Kontogeorges, MIT)
-1. Ask about a situation, never for an essay. 2. Fan many questions into one call. 3. Use the confidence, not just the answer. 4. Put weights and thresholds in code. 5. Describe each score level as a situation. 6. Give it the real state, not your summary. 7. Fail open: a Jev error never blocks work. 8. Let Jev guard actions (hooks) and read files (`jev file`). 9. Let it open files and run one gated command (`jev ask --cmd`). 10. Keep a ledger and grade the results.
+An invocation means choose useful capabilities, not run everything. Explain-only
+requests get an explanation. An obvious choice, short reply or deterministic lookup
+needs no remote call. Do not install new hooks, start workers, scan unrelated files
+or add a parallel tracker because this skill was selected.
 
-## Question types
-- **noul**: yes/no with a probability. **choice**: one of named options. **score**: a level from `--levels "l0|l1|l2"`, each level a described situation.
+## Choose and compose
 
-## Confidence
-Below 0.5: send to the lead or a person. 0.9 or above: act. In between: confirm with one cheap check. These bands are in code (`bgz jev` prints `band`).
+Recover the intended result and observable evidence. Ask only about consequential
+unknown user choices; investigate discoverable facts. Reuse relevant answers and
+the task's quality/time/usage preference. Select the smallest useful combination:
 
-## Everyday commands
-- `jev score --preset goal-clarity --state @brief.md`: weighted clarity of a goal before building (`outcome` 0.35, `constraints` 0.25, `verification` 0.25, `authority` 0.15). Interrogate the user on `missing_dimensions` until `value >= 0.88` (`ready_to_execute: true`), then stop asking and build.
-- `jev score --preset diff-risk --diff <ref>`: weighted risk of a diff (money/data 0.35, security 0.25, customer stop 0.2, scope 0.1, proof 0.1).
-- `jev route --job @brief.md`: one choice before dispatch. Pick a role from STATUS section 1, then a model and effort score; code still applies STATUS allowance and job limits.
-- `jev file <path> --q "..."` / `jev files <globs> --q "..."`: ask a file, never open it. Skips node_modules, .git, binaries, files over 200 KB; at most 255 files.
-- `jev skills --brief brief.md --write`: liberal list of skills (keeps score 0.35 or more, anything the brief names, the BG skills for the stage) written into the brief as "Skills to load".
-- `jev grade <output> --brief <brief> --role <role> --worker <model/tool>`: rubric score (met checks with evidence, stayed in scope, claims backed by proof, cost). Run it on every finished job. `jev league` shows the average by role and worker; reorder STATUS fallbacks from it.
-- `jev arch --base <ref>`: logic and architecture leads per file and for the whole diff. `jev unasked --base <ref> --asks DECISIONS.md,brief.md`: changes nobody asked for (customer stops, new rules). Leads for the lead and the reviewer, not verdicts. Run both when a builder finishes.
-- `jev plan --plan <plan file> --asks DECISIONS.md,brief.md`: the same unasked check on a plan, before the first dispatch, so an extra is caught while it is still one line of text. Advice for the handback only: it never blocks dispatch and adds no review round. No asks text, or any Jev error, prints `{"ok":false}`: carry on once without it.
+- **Choose, rank or score:** use the question patterns and existing selector in
+  [the shared guide](references/methods.md). Keep candidate identities and math in code.
+- **Find sources, check claims or copy exact values:** load [Jev research](../jev-research/SKILL.md).
+- **Prioritise testing, triage failures or evaluate judgments:** load [Jev quality](../jev-quality/SKILL.md).
+- **Choose context or examine a proposed memory update:** load [Jev context](../jev-context/SKILL.md).
+- **Check scope drift, risk or missing questions:** load [Jev risk](../jev-risk/SKILL.md).
+- **Combine several decisions, a reasoning model and tool feedback:** load
+  [Jev workflows](../jev-workflows/SKILL.md).
+- **Add Jev to an application:** load [Jev build](../jev-build/SKILL.md).
 
-## Recipes (level 10)
-- **Test failure type**: `jev ask --cmd "npm test" --q "Is this failure flaky, real or environment?" --type choice --options flaky,real,environment`. Real: fix. Flaky: rerun once. Environment: report the missing piece.
-- **Risk before the paid review**: `jev score --preset diff-risk --diff <base>`. High: look at the named parts first.
-- **Do the fix's tests pass**: `jev ask --cmd "<the test command>" --q "Did every test pass and did none get skipped or deleted?"`. Confirm with the exit code too.
+Read only the needed specialist and guide sections. Independent questions sharing
+the same evidence can use one request. A question that needs an earlier answer,
+new evidence or new candidates belongs in a subsequent request. Review the result
+against the originals before consequential action. Missing evidence remains missing.
 
-## Guards (hooks)
-Gates judge risky Bash, Write/Edit content with credentials and injected text in tool output; block only at 0.9 or more and only for irreversible or protected targets. `BGZFLOW_JEV_GATES=off` turns all of it off. A blocked command says "blocked: final; ask the lead, rule 8".
+## Shared execution
 
-## Fixed test set
-`jev bench` runs frozen job cards. Only before promoting a skill or changing which model fills a role; never routinely.
+Use the packaged SDK-backed judgment helper described in [execution](references/methods.md#execution).
+It supports all four question types, preserves distributions, returned model and
+usage, and reports service failures separately from answers. BYO Jev credentials
+use the same protected mechanism as routing. Do not put a key in a skill, prompt,
+browser bundle or command argument. Existing authority covers its dependent steps;
+ask only before new spending, access or a materially different data disclosure.
+
+If Jev is unavailable or not useful, continue with the main agent and available
+evidence. Do not fabricate a Jev result. A high score, agreement between models,
+or a selected method never proves truth, permission, testing or completion.
+
+## Existing automatic selection
+
+The automatic selector uses the current request, relevant settled decisions, stage, available capabilities and catalogue descriptions. It first assesses relevant options, then checks richer candidate descriptions before selected bodies are supplied. An explicit skill request remains explicit; the router must not silently discard it.
+
+Keep the library broad. Do not exclude a skill because the user omitted a supplier name, force a fixed set for every stage, or invent a new skill when no existing one fits. Investigate a missing capability, use the main agent's judgment or explain the gap.
+
+Reuse routes while inputs remain applicable. Reconsider when the user changes the task, a stage changes, a tool is unavailable or a failed method needs diagnosis. Include actual provider availability and the task's quality/time/usage priorities when choosing workers.
+
+Public users supply their own Jev key through a supported credential mechanism. Never display or embed it in a skill, browser bundle or command argument. If Jev is unavailable, use the current main agent and the same catalogue; identify the fallback without blocking ordinary replies.
+
+For diagnosis, inspect the request scope, candidate descriptions, selected and effective options, provider error and actual body delivery. Confidence and selected-option probability are different quantities. Do not lower thresholds or manufacture a passing result to conceal a routing error.
+
+The ten-level mapping, examples, adaptation decisions and primary sources are in
+[the shared guide](references/methods.md) and [source notes](references/sources.md).
+
+A selected skill supplies a method, not extra permission. Follow the user's latest request, existing decisions and host permissions. Use the shared task context and native tools; do not create a parallel tracker or demand paperwork. A method being selected or loaded does not prove its result.

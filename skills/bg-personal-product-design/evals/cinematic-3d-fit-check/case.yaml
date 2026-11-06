@@ -2,7 +2,7 @@ schema_version: "1.1"
 name: cinematic-3d-fit-check
 description: 'Heavy 3D is matched to the surface: offered where it explains something, kept off the frequent task path.'
 tags: [quality, cinematic]
-expected_outcome: 'No continuously animated 3D scene or scroll-jacking on the all-day invoice-entry task path; motion there is feedback and state only; a cinematic level is offered for the marketing page, onboarding or a rare moment, or as one direction for the founder to choose.'
+expected_outcome: 'An informed response to the requested cinematic task interface: explain distraction, input and performance trade-offs, preserve usable immediate form actions, and resolve consequential ambiguity without a blanket 3D ban or inventing other pages.'
 execution:
   max_turns: 8
   allowed_tools: [Read, Glob, Grep, Skill]
@@ -12,9 +12,8 @@ graders:
   - name: fit-to-surface
     type: llm
     criteria: |
-      PASS if it keeps heavy 3D and scroll-jacking off the frequently used invoice-entry task path (an Operate surface), keeps entry and save immediate, and offers a constructive cinematic route: polish on that surface through feedback, state and spatial-continuity motion, and/or a cinematic hero on the marketing page, onboarding or a rare success moment, or the heavier option presented as one of several rendered directions for the founder to choose.
-      It should not simply refuse; it gives a clear recommendation and a path to the cinematic feel.
-      FAIL if it puts a continuously animated 3D scene behind the all-day form or adds big scroll animations between form sections without question, or if it flatly refuses with no alternative.
+      PASS if it recognises the request, explains concrete distraction and performance trade-offs, and recommends a prototype or bounded effect that preserves reading, typing, navigation and immediate save. If the impact or intended motion is consequentially unclear, ask a focused question with a recommendation; do not repeat a choice already settled. Retain the agreed visual ambition while checking real performance and accessible alternatives.
+      FAIL if it imposes a categorical ban on 3D in task interfaces, moves the requested work to a new marketing/onboarding feature without authority, hides form controls or delays save for a flourish, or claims performance without evidence.
   - name: skill-fired
     type: tool_used
     tool: 'Skill'

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "property-based-testing",
+    "repository": "https://github.com/trailofbits/skills",
+    "revision": "470419e16f97e112d01fc32f4898aea1755015d9",
+    "path": "plugins/property-based-testing/skills/property-based-testing",
+    "license": "CC-BY-SA-4.0",
+    "changes": "Added BGZFLOW integration; removed duplicate approval/fixed-count requirements where present. Original method and references retained."
+  },
+  {
+    "name": "mutation-testing",
+    "repository": "https://github.com/trailofbits/skills",
+    "revision": "470419e16f97e112d01fc32f4898aea1755015d9",
+    "path": "plugins/mutation-testing/skills/mutation-testing",
+    "license": "CC-BY-SA-4.0",
+    "changes": "Added BGZFLOW integration; removed duplicate approval/fixed-count requirements where present. Original method and references retained."
+  },
+  {
+    "name": "sharp-edges",
+    "repository": "https://github.com/trailofbits/skills",
+    "revision": "470419e16f97e112d01fc32f4898aea1755015d9",
+    "path": "plugins/sharp-edges/skills/sharp-edges",
+    "license": "CC-BY-SA-4.0",
+    "changes": "Added BGZFLOW integration; removed duplicate approval/fixed-count requirements where present. Original method and references retained."
+  },
+  {
+    "name": "diagnosing-bugs",
+    "repository": "https://github.com/mattpocock/skills",
+    "revision": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
+    "path": "skills/engineering/diagnosing-bugs",
+    "license": "MIT",
+    "changes": "Added BGZFLOW integration; removed duplicate approval/fixed-count requirements where present. Original method and references retained."
+  }
+]

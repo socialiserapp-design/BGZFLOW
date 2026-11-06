@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Web Colour"
+  short_description: "Use detailed source-adapted web craft recipes"
+  default_prompt: "Use this skill for the affected design task and preserve current user decisions."

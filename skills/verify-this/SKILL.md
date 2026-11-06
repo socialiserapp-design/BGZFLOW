@@ -14,13 +14,13 @@ Verification is not a recap. It proves or disproves a specific claim with repeat
 - A UI, CLI, API, performance, or memory claim needs measurement.
 - A test passes but the user-visible behavior still needs confirmation.
 
-Do not use this for vague claims like "the code is cleaner". Ask for a measurable claim first.
+Translate a vague claim into observable criteria using the actual request and sources. Ask only if an unresolved preference materially changes the assessment; do not require the user to invent engineering metrics.
 
 ## Workflow
 
 1. Restate the claim in falsifiable form: condition, metric, and threshold.
-2. Pick the smallest local surface that can disprove it.
-3. Capture a baseline from the old state: merge base, parent commit, failing branch, or current broken repro.
+2. Pick the smallest valid surface that can disprove it; use the actual intended device/service when the claim depends on it.
+3. For a comparative claim, capture a baseline from an isolated old state or retained valid evidence. Do not roll back a live service merely for comparison. A direct present-state claim may instead use an independently known expected result.
 4. Capture treatment from the changed state with the same command, data, warmup, and environment.
 5. Compare raw artifacts: numbers, screenshots, terminal transcripts, HTTP responses, profiles, heap snapshots, or test output.
 6. Return exactly one verdict: `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE`.
@@ -52,9 +52,9 @@ If artifacts may contain sensitive code, prompts, screenshots, HTTP bodies, or h
 
 ## Verdict Rules
 
-- `VERIFIED`: baseline and treatment differ in the predicted direction, by the claimed threshold, with no obvious confound.
+- `VERIFIED`: direct observations meet the stated criteria; for a comparative claim, baseline and treatment differ as predicted without a material confound.
 - `NOT VERIFIED`: the behavior is unchanged, moves the wrong way, or misses the threshold.
-- `INCONCLUSIVE`: no valid baseline, noisy signal, failed measurement, or an environment difference invalidates the comparison.
+- `INCONCLUSIVE`: required evidence is missing, a comparative claim lacks a valid baseline, or noise/environment differences invalidate the measurement.
 
 ## Output
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Product Flows"
+  short_description: "Improve task journeys and interrupted work"
+  default_prompt: "Use $design-product-flows for the current design task, preserving approved choices and verifying the affected experience."
+policy:
+  allow_implicit_invocation: true

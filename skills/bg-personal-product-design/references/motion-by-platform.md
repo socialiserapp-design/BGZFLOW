@@ -1,19 +1,19 @@
 # Motion by platform
 
-Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion-and-3d.md) recipes. Each section gives the library, a starter recipe and the limits. The product's approved look, motion tokens and exclusions win; values below are starting points, never universal values. Every effect still fills the [effect contract](motion-and-effects.md#required-effect-contract). Versions as checked in October 2026; follow the project's installed versions and verify before any install.
+Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion-and-3d.md) recipes. Each section gives a library, starter recipe and limits. Current user decisions, approved motion tokens and exclusions govern; values below are starting points, never universal values. Use the relevant [effect design questions](motion-and-effects.md#relevant-effect-design-questions) for requested effects, without adding a separate form. Versions as checked in October 2026; follow the project's installed versions and verify before any install.
 
 ## Shared rules on every native platform
 
 1. **Use the cheapest tool that does the job:** platform component (native sheet, tab bar, context menu, large-title header, pull-to-refresh) → declarative transition → layout animation → animated value on the UI thread → vector animation (Lottie/Rive) → GPU drawing (Skia, Metal, AGSL) → real-time 3D. Rebuilt JS versions of platform components are a last resort.
-2. **Frequency gate.** Hundreds of times a day (tab switches, typing, settings toggles): no decorative animation. Tens a day: under 150 ms or nothing. Occasional (sheets, modals, toasts): standard. Rare (first success, empty state, milestone): the delight budget lives here. Name one purpose per effect: feedback, spatial continuity, state, smoothing a jarring change, explanation or delight.
+2. **Frequency and purpose.** Repeated interactions should remain quick and unobtrusive; occasional moments can support more expression when the approved experience calls for it. Judge the actual duration and interruption behaviour, rather than imposing a frequency threshold. An effect can communicate feedback, continuity, state, explanation or delight.
 3. **Press feedback.** Scale to the product's press token (often 0.96-0.98) in 100-150 ms on press-in; commit on release. List rows highlight instead of scaling.
-4. **Curves and springs.** Interactive UI eases out (for example `cubic-bezier(0.23, 1, 0.32, 1)`); on-screen moves ease in-out; never ease-in on something the user waits for. Specify springs by duration and damping ratio (for example settle 400 ms / 1.0, snap-back 400 ms / 0.8 carrying gesture velocity, sheet 300 ms / 0.8). UI animations stay under about 300 ms; navigation uses platform defaults; tabs never slide.
-5. **Entrances** start from scale 0.95 and opacity 0, never scale 0.
+4. **Curves and springs.** Interactive UI eases out (for example `cubic-bezier(0.23, 1, 0.32, 1)`); on-screen moves ease in-out; never ease-in on something the user waits for. Specify springs by duration and damping ratio (for example settle 400 ms / 1.0, snap-back 400 ms / 0.8 carrying gesture velocity, sheet 300 ms / 0.8). About 300 ms is a useful starting point for many UI transitions, not a ceiling. Prefer existing platform navigation unless the requested experience justifies a custom transition; a sliding tab transition is an option when readable and responsive.
+5. **Entrances** may use a small scale change and opacity, a native transition or no animation. Choose what explains the change without distracting or obscuring content; 0.95 is a sample scale, not a rule.
 6. **Gestures.** Interruptible: grabbing mid-animation continues from the current position. Commit on velocity *or* distance (project the rest position: `velocity / 1000 * 0.998 / (1 - 0.998)`). Boundaries rubber-band (`(1 - 1 / (x * 0.55 / d + 1)) * d`) instead of stopping dead. Declare the gesture axis so it doesn't fight scrolling.
-7. **Haptics** fire on the same frame as the visual, one per action, after the action actually succeeded; never the only feedback.
+7. **Haptics**, when part of the experience, reinforce the relevant event and respect device support and preferences. Selection feedback can accompany input; success feedback follows confirmed success. Keep visual or accessible feedback sufficient without haptics.
 8. **Ambient motion** (aurora, shimmer, mesh) runs only where the approved look has it, pauses off-screen and in the background, and stops under reduced motion.
-9. **Reduced motion** means fewer and gentler, not zero: keep opacity and colour changes that explain state; drop travel, scale, parallax, overshoot and loops; screen transitions become fades. **Reduced transparency** swaps blur and glass for opaque surfaces.
-10. **Proof** comes from the release build on the slowest supported device plus a flagship, with rapid interruption, reverse and background/resume tested ([device evidence](motion-and-effects.md#device-evidence-and-qa)).
+9. **Reduced motion** respects the system preference and the user's needs. Remove nonessential travel, scale, parallax, overshoot and loops; use instant changes or restrained fades where appropriate, including no animation when required. Preserve clear state information. **Reduced transparency** uses readable opaque alternatives to blur and glass.
+10. **Proof** matches the claimed behaviour and intended platforms. Use a representative release build and available constrained hardware for performance claims, with relevant interruption and lifecycle checks. State untested devices plainly; no fixed pair of devices is required ([device evidence](motion-and-effects.md#device-evidence-and-qa)).
 
 ## React Native and Expo
 
@@ -24,7 +24,7 @@ Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion
 | Shaders, mesh gradients, blur, particles, path morphs | React Native Skia | Runtime shaders (SkSL) with uniforms from shared values |
 | Vector animation | lottie-react-native or dotLottie RN; Rive RN runtime | Rive for state machines |
 | Apple materials | `expo-glass-effect` | iOS 26+; opaque fallback elsewhere |
-| Real-time 3D | React Three Fiber native with `expo-gl` | Check the expo-gl version per SDK; heavy, so reserve for product viewers |
+| Real-time 3D | React Three Fiber native with `expo-gl` | Check the expo-gl version per SDK and measure its cost; use when the requested task benefits from interactive 3D |
 | Implementation how-to | `expo-animation`, `animating-react-native-expo`, `reanimated-skia-performance` skills where available | Route to them; do not copy them |
 
 **Starter recipe: a polished list-to-detail flow**
@@ -36,7 +36,7 @@ Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion
 6. Success moment (rare): stillness 0.3-0.5 s, then a Lottie or Skia check with one success haptic after the server confirms.
 7. Optional atmosphere on the hero: a Skia shader background whose `uTime` comes from `useClock`, uniforms passed as shared values (not `.value`), effect compiled once with `useMemo`, paused when the screen blurs.
 
-**Limits.** Never `setState` per frame; cross back to JS only at the end or at a threshold (`useAnimatedReaction`, `scheduleOnRN`). Build animation builders at module scope. Prefer `.get()`/`.set()` on shared values. Do not animate `BlurView` intensity on Android; crossfade static layers. Expo Go, simulators and dev builds hide jank; check the release build. For 120 Hz on ProMotion iPhones set `CADisableMinimumFrameDurationOnPhone` to true in Info.plist; the budget becomes 8.3 ms. Read `AccessibilityInfo.isReduceMotionEnabled()` (or Reanimated's `useReducedMotion`) and `isReduceTransparencyEnabled()`.
+**Limits.** Never `setState` per frame; cross back to JS only at the end or at a threshold (`useAnimatedReaction`, `scheduleOnRN`). Build animation builders at module scope. Prefer `.get()`/`.set()` on shared values. Do not animate `BlurView` intensity on Android; crossfade static layers. Expo Go, simulators and dev builds hide jank; check the release build. When the requested experience benefits from 120 Hz on supported ProMotion iPhones, verify the current platform configuration (including `CADisableMinimumFrameDurationOnPhone`) and measure the result; 120 Hz permits about 8.3 ms per frame. Do not change refresh-rate policy merely to follow a recipe. Read `AccessibilityInfo.isReduceMotionEnabled()` (or Reanimated's `useReducedMotion`) and `isReduceTransparencyEnabled()`.
 
 ## SwiftUI (iOS, iPadOS, macOS)
 
@@ -73,7 +73,7 @@ Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion
 | Shaders | AGSL `RuntimeShader` via `ShaderBrush` or `graphicsLayer { renderEffect = ... }` | Android 13+ (API 33); static fallback below |
 | Blur | `Modifier.blur` / `RenderEffect` | Android 12+ (API 31) |
 | Vector animation | Lottie Compose, Rive Android | |
-| 3D | Filament, or SceneView on top of it | Reserve for product viewers |
+| 3D | Filament, or SceneView on top of it | Use for a requested spatial task with measured performance |
 | Haptics | `LocalHapticFeedback`, `View.performHapticFeedback(HapticFeedbackConstants.CONFIRM)` | Device quality varies; visual stays sufficient |
 
 **Starter recipe: list to detail with a shared hero**
@@ -83,7 +83,7 @@ Native and desktop equivalents of the [cinematic motion and 3D](cinematic-motion
 4. Hero atmosphere on API 33+: an AGSL gradient shader with `uTime` from `withFrameNanos`, colours from tokens; below API 33 a static gradient brush.
 5. Success: `HapticFeedbackConstants.CONFIRM` (API 30+) with the visual check.
 
-**Limits.** Respect the system animator duration scale and the accessibility "Remove animations" setting (`Settings.Global.ANIMATOR_DURATION_SCALE` 0 means no animation); Compose follows the scale automatically for most APIs, but custom frame loops must check it. Defer reads of animated state to the draw or layout phase (`graphicsLayer { }`, `offset { }`) to avoid recomposition every frame. Test on the slowest supported device; emulators cannot prove frame behaviour. Touch targets stay at least 48 dp.
+**Limits.** Respect the system animator duration scale and the accessibility "Remove animations" setting (`Settings.Global.ANIMATOR_DURATION_SCALE` 0 means no animation); Compose follows the scale automatically for most APIs, but custom frame loops must check it. Defer reads of animated state to the draw or layout phase (`graphicsLayer { }`, `offset { }`) to avoid recomposition every frame. Use representative constrained hardware for performance claims. An emulator can expose functional defects but does not establish physical-device frame behaviour. Touch targets stay at least 48 dp.
 
 ## Flutter (when the product is built in it)
 

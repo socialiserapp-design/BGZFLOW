@@ -1,5 +1,7 @@
 export { createEngine } from './runtime.mjs';
 export { createLocalHostAdapter } from './local-host.mjs';
+export { createFoundationSession, createProjectPathReservations, renderFoundationBrief } from '../foundation/session.mjs';
+export { createExecutableChecks } from '../foundation/executable-checks.mjs';
 export { createScopedContextStore } from './scoped-context.mjs';
 export { prepareRequest, methodGuidance, readMethod, validateMethodContext } from './method-policy.mjs';
 export { createVocabulary, validateVocabulary } from './vocabulary.mjs';

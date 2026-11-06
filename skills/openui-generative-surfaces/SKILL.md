@@ -1,17 +1,14 @@
 ---
 name: openui-generative-surfaces
-description: Route UI work across the 2x2 Generative UI & Interactive Surface Matrix (deterministic app chrome vs schema-driven OpenUI generative cards, comparison tables, approval gates, and interactive artifacts).
+description: "Choose and implement a useful interactive surface for structured AI results or a product interface, using existing components and the actual user brief."
 ---
 
-# OpenUI & Generative Surfaces
+# Choose the useful surface
 
-Use the 2x2 UI surface routing matrix so every user-facing response uses the highest-leverage visual surface without sacrificing deterministic layout or design taste.
+Start with the user's activity and the host's available display tools. Short answers usually need plain language. Comparisons may suit a table; relationships a diagram; exploration an interactive widget. A visual should help the user make a decision or perform the requested task.
 
-## 2x2 Surface Routing Matrix
-1. **Core App Chrome & Persistent Workspaces:** Deterministic React/HTML components governed by `LOCKED_IDENTITY` and `bgz taste`.
-2. **Structured Dynamic Agent Outputs (Comparisons, Plans, Cost/Risk Previews, Approvals):** Schema-validated generative UI blocks (OpenUI Lang / structured component schemas) rendered inside the conversation stream.
-3. **Interactive Explorers & Visual Walkthroughs:** Self-contained interactive widgets or sidecars when the user benefits from direct manipulation.
-4. **Short Status Replies:** Concise plain English (<=5 lines, zero internal IDs, paths, hashes, or raw logs).
+For persistent product interfaces, reuse the approved design and existing components. For structured generated content, compare supported schema-driven renderers such as OpenUI with the project's existing solution. Check the actual version and capabilities before choosing. Do not introduce a framework solely to display one small result.
 
-## Verification
-- Always verify rendered UI on the real browser surface (`control-ui`) and run `bgz taste anti-slop` before handing back a UI slice.
+Keep permissions and business rules in the application's trusted code. Generated UI does not grant authority. Do not expose implementation details, provider names or extra approval gates unless the user's product brief calls for them.
+
+Drive the rendered result in the intended browser or device. Check interaction, accessibility, loading/error states and the real resulting action. A screenshot alone does not prove that controls work.

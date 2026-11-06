@@ -1,0 +1,6 @@
+interface:
+  display_name: "Visual Direction"
+  short_description: "Shape visual direction for the actual audience"
+  default_prompt: "Use $design-direction for the current design task, preserving approved choices and verifying the affected experience."
+policy:
+  allow_implicit_invocation: true

@@ -1,21 +1,29 @@
-<!-- The decisions index for this project. Two lists, both with stable IDs: never renumber, reuse or delete.
-     A later decision supersedes an earlier one by ID; keep both rows.
-     Verify accepted IDs against the candidate at integration (composition) and again at the independent check.
-     Never re-ask a settled decision. Take dates from the system clock.
-     The founder's own words stay in the founder's decisions file; this file indexes those decisions and the engineering records.
-     Cross-project decisions live in the private overlay's FOUNDER.md. -->
-# Decisions: <project>
+# Current decisions
 
-## Founder decisions
+Optional structure for a project that needs a concise decision record. Reuse its
+existing authoritative location. Do not create a second ledger or demand a record
+command before ordinary work.
 
-| ID | Date | Decision | Scope | Status | Source |
-|---|---|---|---|---|---|
-| DEC-001 | <yyyy-mm-dd> | <what was decided, in one sentence> | <screens, modules, all> | proposed / accepted / superseded by DEC-00n | <who, where: chat, question round, prototype> |
+## User decisions
 
-## Engineering decisions (ADRs)
+Preserve the actual choice, its scope and its original conversation or document
+source. Keep unanswered questions and agent suggestions separate from confirmed
+decisions. A recommendation, silence or elapsed time is not consent.
 
-One file each in the code repo at `docs/adr/NNNN-title.md` ([template](ADR.md)). This table is the index; the file holds the reasoning. Supersede an old record with a new one, never delete it.
+A later instruction may replace an earlier decision in its affected scope.
+Retain the earlier source and mark what changed; preserve unaffected choices.
+Reuse existing identifiers where the project has them, without inventing manual
+identifiers merely to satisfy this example.
 
-| ADR | Date | Decision | Owner | Status | Supersedes / superseded by |
-|---|---|---|---|---|---|
-| ADR-0001 | <yyyy-mm-dd> | <one sentence> | <role or lane> | Proposed / Accepted / Superseded | <ADR-NNNN or none> |
+## Engineering choices
+
+Record a significant choice when its reasoning will help future work: the problem,
+credible alternatives, why this approach fits, relevant evidence and remaining
+uncertainty. Link an existing architecture decision if useful; a separate file
+for every routine implementation choice is unnecessary.
+
+## Open choices
+
+State the consequential unresolved question, affected work and next owner/action.
+Continue independent authorised work. The record itself neither approves a design
+nor proves that an implemented decision works.

@@ -24,7 +24,7 @@ Use a repeatable local harness to exercise an interactive CLI instead of poking 
 5. Send one action at a time: text, Enter, arrows, Escape, Ctrl-C, resize.
 6. Wait for a concrete screen pattern or prompt before the next action.
 7. Save the transcript and any profile artifacts.
-8. Kill the session cleanly.
+8. Close only the temporary session this verification owns; preserve the user’s running services and useful evidence.
 
 ## Harness Options
 
@@ -104,6 +104,6 @@ If the CLI needs richer terminal control, use `pty.fork()` or an existing PTY li
 
 - Prefer deterministic waits over sleeps. If you must sleep, explain why.
 - Do not send credentials or destructive commands into a controlled session.
-- Keep the harness in `/tmp` unless the repo already has a testing/demo harness.
+- Use the host’s temporary or authorised scratch directory unless the repo already has a testing/demo harness. The Python `pty` example is POSIX-specific; on Windows use the existing host PTY or a supported ConPTY library.
 - Do not hard-code paths from another repository. Adapt commands to the current repo's scripts and runtime.
-- Clean up tmux sessions, temp dirs, inspector processes, and demo artifacts unless the user asks to keep them.
+- Clean up only scratch sessions and processes this run owns. Retain failed and successful evidence needed to assess the result; never delete unrelated work or close a shared service.

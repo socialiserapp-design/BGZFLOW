@@ -13,11 +13,11 @@ Use when a customer outcome takes several steps, providers or waits (quote, char
 
 ## One adapter per provider
 
-Each provider's quirks live in one tested adapter that turns its replies into a plain outcome the rest of the system understands: done, not done, unknown, or needs attention. "Accepted" is not "published": the adapter reports "accepted" until the result is confirmed in the provider's own published state, and nothing downstream treats accepted as delivered. Tests for the adapter use the provider's documented or recorded responses in test mode (see the [testing ladder](../../../docs/testing-ladder.md#tests-prove-customer-outcomes)). Other code never reads raw provider fields.
+Each provider's quirks live in one tested adapter that turns its replies into a plain outcome the rest of the system understands: done, not done, unknown, or needs attention. "Accepted" is not "published": the adapter reports "accepted" until the result is confirmed in the provider's own published state, and nothing downstream treats accepted as delivered. Tests for the adapter use the provider's documented or recorded responses in test mode (see the [testing ladder](../../../docs/testing-ladder.md#test-behavior-and-compatibility)). Other code never reads raw provider fields.
 
-## Rebuild beside the old (only for `TRIAGE: evolve` on live shared backend paths)
+## Replace a live path safely
 
-When `TRIAGE: rebuild` is chosen to replace a rejected UI or broken user flow, replace the broken components cleanly from the approved spec instead of keeping or wrapping the rejected path. Use the "strangler fig" pattern below **only** when `TRIAGE: evolve` replaces a live, revenue-bearing backend path that active customers still depend on:
+Choose replacement or incremental change from the actual failure and current user decision. A working live path may need a compatible side-by-side transition; a rejected prototype may simply need replacement. Do not require a TRIAGE label or keep duplicate systems without a reason. The following pattern is useful when live users depend on the old path:
 
 1. **Build beside.** The new path lives next to the old one and starts doing nothing customers can see.
 2. **Compare without side effects.** Run the new path on the same real inputs in a read-only way (no charge, no message, no write to live data) and compare its answers with the old path's. Differences are findings to explain.

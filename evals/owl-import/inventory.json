@@ -1,0 +1,170 @@
+[
+  {
+    "name": "research-owl-affinity-diagram",
+    "source": "design-research/skills/affinity-diagram/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-behavioural-analytics",
+    "source": "design-research/skills/behavioural-analytics/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-card-sort-analysis",
+    "source": "design-research/skills/card-sort-analysis/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-diary-study-plan",
+    "source": "design-research/skills/diary-study-plan/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-empathy-map",
+    "source": "design-research/skills/empathy-map/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-interview-script",
+    "source": "design-research/skills/interview-script/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-jobs-to-be-done",
+    "source": "design-research/skills/jobs-to-be-done/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-journey-map",
+    "source": "design-research/skills/journey-map/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-qual-quant-triangulation",
+    "source": "design-research/skills/qual-quant-triangulation/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-research-repository",
+    "source": "design-research/skills/research-repository/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-summarize-interview",
+    "source": "design-research/skills/summarize-interview/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-survey-design",
+    "source": "design-research/skills/survey-design/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-usability-test-plan",
+    "source": "design-research/skills/usability-test-plan/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-user-persona",
+    "source": "design-research/skills/user-persona/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-competitive-analysis",
+    "source": "ux-strategy/skills/competitive-analysis/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-metrics-definition",
+    "source": "ux-strategy/skills/metrics-definition/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-experience-map",
+    "source": "ux-strategy/skills/experience-map/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-information-architecture",
+    "source": "ux-strategy/skills/information-architecture/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-opportunity-framework",
+    "source": "ux-strategy/skills/opportunity-framework/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-service-blueprint",
+    "source": "ux-strategy/skills/service-blueprint/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-a-b-test-design",
+    "source": "prototyping-testing/skills/a-b-test-design/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-accessibility-test-plan",
+    "source": "prototyping-testing/skills/accessibility-test-plan/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-click-test-plan",
+    "source": "prototyping-testing/skills/click-test-plan/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-concept-selection",
+    "source": "prototyping-testing/skills/concept-selection/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-heuristic-evaluation",
+    "source": "prototyping-testing/skills/heuristic-evaluation/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-parallel-concepts",
+    "source": "prototyping-testing/skills/parallel-concepts/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-prototype-strategy",
+    "source": "prototyping-testing/skills/prototype-strategy/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  },
+  {
+    "name": "research-owl-test-scenario",
+    "source": "prototyping-testing/skills/test-scenario/SKILL.md",
+    "sourceRevision": "9a6930cf84a822eb458624bd11c61aac5bbdf224",
+    "runtime": "text-only; existing authorised evidence/tools"
+  }
+]

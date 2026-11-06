@@ -63,7 +63,7 @@ Part of the [looks library](../looks-library.md). Every value is a starting poin
 - **Space and shape:** centred conversation column, side artifact panel, composer as the anchor.
 - **Material:** minimal; a subtle glow or gradient only for "thinking" states.
 - **Motion:** streaming text, truthful progress for tool steps, artifacts that slide in beside the chat.
-- **Signature:** visible reasoning steps and sources as tidy collapsible blocks.
+- **Signature:** truthful activity summaries, results and sources in concise collapsible blocks when useful. Do not expose private internal reasoning or fabricate a rationale or tool action.
 
 ### Cinematic looks (brief; full recipes in the cinematic file)
 

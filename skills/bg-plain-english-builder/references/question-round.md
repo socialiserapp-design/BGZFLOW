@@ -1,61 +1,111 @@
-# Thorough discovery in ordinary language
+# Shared questioning procedure
 
-Run one interview, coordinated by this skill. Fold in useful techniques from other interview methods (if installed, e.g. `grill-me` or BGZFLOW `brainstorming`); run no competing interviews and apply no conflicting question-count defaults.
+This is the single procedure used by `bg-plain-english-builder`, `grill-me` and
+`4x4`. Combine their useful perspectives in one conversation; selecting several
+skills never starts several interviews. Use the user's language and current task.
 
 ## Procedure
 
-1. Read recorded decisions and inspect facts first; skip any question those facts already answer. Make a row for each relevant category in the [coverage table](planning-loop.md#coverage-and-stopping-rule), and mark an irrelevant category with a reason instead of asking about it. List settled decisions under "Known already" and never ask them again.
-2. For a substantial new product, offer a manageable numbered round, normally 8-15 relevant independent questions. Ask fewer when that fits the remaining choices or the founder's needs. Put dependent questions in a later round, after their prerequisite is answered; never guess a branch to fill the first round. Thoroughness means covering the decision tree, not filling a quota.
-3. Give each question 2-4 concrete options, a recommendation and one sentence on its impact. Allow a free answer. State the cost of guessing wrong when it is material. Ask for product, experience and business choices; determine technical details yourself.
-4. Accept shorthand such as "yes to your recommendations except Q3". Record exactly what the founder accepted. A default option, silence or elapsed time is not an answer. Follow each correction into its affected branches.
-5. While answers arrive, research unknown facts and sketch or prototype the experience. Apply relevant specialists as the domain becomes clearer. Keep settled independent work moving; hold only the work that waits on an open answer.
-6. Stop discovery when every coverage row has evidence, an actual answer, an inapplicable reason, or an explicit deferral by the founder with the affected scope named. A deferred prerequisite stays held and visible in the plan. Keep unanswered evidence gaps open. Reflect the complete experience and the outstanding branches back, then record the decisions in the [plan](plan-template.md#copyable-plan).
+### Recover, then open the right question
+
+Read current decisions, original answers and relevant evidence first. Preserve
+what is still settled. Investigate facts available from authorised files, tools
+and primary sources instead of asking the user to guess them. Distinguish the
+user's preference, an observed fact and the agent's proposal.
+
+When the goal, taste or reason for the work is unknown, start open-ended: ask what
+the person wants to happen or what they want the experience to feel like. Do not
+seed their answer with a menu of the agent's preferred goals. After understanding
+that intent, use concrete examples and fair options for decisions with meaningful
+alternatives. A narrow request whose intent is clear can go straight to its actual
+unsettled choice; no ritual opening question is needed.
+
+## Four areas of coverage
+
+Use these lenses to find consequential missing decisions, not as a questionnaire
+that must be filled. Adapt them to code, research, marketing, legal or other work.
+
+- **Product or outcome:** who benefits, what they need to do or understand, intended
+  experience, included/excluded scope and what useful completion would look like.
+- **Approach:** credible ways to achieve it, existing work and reusable tools,
+  assumptions, boundaries and material trade-offs. Own ordinary engineering choices
+  unless the user wants to choose them or they alter the product, cost or authority.
+- **Practical delivery:** actual environment, dependencies, priorities, time and
+  usage trade-offs, responsibilities, allowed actions and delivery/release needs.
+- **Failure and consequences:** likely mistakes, misunderstood or false premises,
+  privacy/money risks, exceptions, recovery and observable evidence that it works.
+
+Ask the question that most changes the next decisions. Work through dependencies:
+questions whose prerequisites are unresolved wait; unrelated useful investigation
+or authorised work continues. Use digestible groups of related independent
+questions, or one question when that helps. There is no required number per group,
+no sixteen-question ceiling and no reason to manufacture irrelevant questions.
+More than sixteen is appropriate when important decisions remain unresolved.
+
+## Make material choices understandable and fair
+
+Explain enough in the main message for an informed choice. Keep the opening brief,
+and offer deeper detail when useful; do not hide a material downside in optional
+reading. For each credible option, use the same relevant comparison criteria:
+
+- What would actually happen, with a concrete outcome, example or small sketch.
+- The useful upside and the cost, limitation or risk, including effort or usage
+  when meaningful. State when an amount is uncertain rather than inventing one.
+- What can be reversed later and what creates a difficult commitment.
+- Relevant facts still uncertain, how they could change the choice and whether a
+  focused lookup or prototype can resolve them.
+
+Then identify the recommendation as the agent's advice: why it fits the user's
+stated priorities and when another option would win. Offer a reasonable alternative
+on its strongest case, not as a straw man. Do not bundle separate consequential
+choices into one yes, preselect consent, or word every question so that an
+unqualified yes accepts an entire plan. The user can describe another option,
+reject the premise, or say they are unsure.
+
+Example: 'A local-only notebook works offline and avoids sending notes to a server;
+it cannot sync across your devices without another mechanism. A hosted notebook
+syncs across devices, but introduces hosting cost and an account/data boundary.
+Starting local is easy to change if we keep export simple. You said phone-to-laptop
+continuation is essential, so I recommend sync; local wins if keeping notes on one
+device matters more. I still need to verify your existing service's storage terms.'
+
+## Use the answer and keep asking when it matters
+
+Preserve the user's wording and source through native automatic records where
+supported; maintain the existing concise project view only when a decision changes
+it. No separate questionnaire, receipt, decision ledger or manual API call is
+required. Restate an ambiguous answer only as far as needed to avoid acting on the
+wrong choice. Explicit shorthand applies only to the options actually understood;
+keep exceptions open. Silence, elapsed time and 'not sure' grant no permission.
+
+If the user is unsure, find the missing fact or use a proportionate authorised
+example/prototype. Explain what it establishes and what remains their preference.
+If a premise is false, show the relevant evidence and reframe the question rather
+than making the user choose among misleading options. A direction to use your
+judgment permits ordinary decisions within scope; it does not invent spending,
+access, disclosure or release authority.
+
+Apply each answer to the actual plan, artifact or action. Revisit affected choices
+when new evidence, a prototype, a failure, changed constraints or a user correction
+makes them consequential again. Do not re-ask unchanged settled questions. Test
+understanding against a concrete journey or result, not a question count or score.
+
+Proceed with the next action when its material uncertainties are resolved and it
+is authorised. Keep remaining important questions visible and continue unrelated
+work; never declare the entire discovery complete while a consequential unknown
+still changes the promised result. An explicit deferral keeps the affected work
+unresolved rather than silently deleting it. Interview-only work ends with the
+useful conclusions and open decisions; an existing build authorisation continues
+without an extra approval of a summary. No fresh chat is required.
+
+See [research and adaptations](../../../docs/questioning-method.md). These are
+methods to apply and evaluate, not a trained clarification model or a guarantee
+that recommendations are unbiased.
 
 ## Copyable question round
 
-```text
-Round [n]: [what this round settles, in plain words]
-Known already: [recorded answers and their source; not asked again]
-Facts inspected: [source/version and finding; code-derived answers listed apart]
-Open independent choices: [coverage rows this round addresses]
-Held for a later round: [dependent question | prerequisite | work it holds]
-Continuing meanwhile: [independent work that does not wait on this round]
-
-Q1. [One product choice in ordinary language]
-A. [Recommended outcome] (recommended) — [why it fits]
-B. [Meaningful alternative] — [trade-off]
-C. [Only if useful]
-Why it matters: [one consequence the founder understands]
-Cost of guessing wrong: [material consequence, or not material and why]
-Depends on: [none, or the prerequisite answer; ask only after it arrives]
-
-Answer in your own words, or say "your recommendations except Q...".
-Record the round number, version and options shown. Keep each exception open
-until the founder chooses or explicitly defers it; a preselected option is
-never consent.
-```
-
-```text
-Coverage: category | requirement IDs | answered/evidenced/inapplicable/deferred/open
-  | answer or evidence + source | decision owner | open choice | affected work
-Decision: ID | the founder's actual choice | source/time | accepted example
-  | rejected alternative + reason
-Deferral: choice | actual deferring source | owner | affected task/requirement kept
-  | revisit trigger
-Research: question | primary source/version/date | finding | effect on the plan
-```
-
-## Worked example
-
-Illustrative, not a live run. Prompt: "Students keep messaging me to book classes. I want them to book on their phones." Infer no online payments, paid text messages or access to the studio's accounts. First inspect the studio's website and how bookings arrive today. Then ask who books, how people sign in, what happens when a class is full, the cancellation rule, reminders and payment, and research email-sending limits and costs. Use [BG Personal Product Design](../../bg-personal-product-design/SKILL.md) for different visual directions and a clickable prototype of the main flow. Derive identity, permissions, offline and failure behavior and acceptance tests as engineering work. The plan links the chosen outcomes to contracts and worker tasks, never substituting "a contact form" for the booking system the founder asked for.
-
-The [filled question round](plan-template.md#illustrative-question-round) shows coverage and dependent branches. Its answers are hypothetical, not anyone's product decisions.
-
-## Red flags
-
-| Temptation | Required action |
-| --- | --- |
-| "They named three skills, so that is the whole scope." | Treat examples as clues; select further relevant expertise. |
-| "Ask for every database and deployment choice." | Investigate and recommend engineering decisions; ask only for consequential product or business trade-offs. |
-| "They said yes once, so all future designs are approved." | Bind the yes to what was actually shown and asked. |
-| "A deferred question means we can omit that feature." | Keep its requirement and affected dependency explicitly unresolved. |
+Optional presentation example, not a required form: name the decision, ask the
+open question or explain the credible choices, give the balanced trade-off and
+recommendation when grounded, then wait for the relevant answer. Use the user's
+wording in the next action. Several independent questions may share one concise
+message; no round number, ledger entry or boilerplate is needed.

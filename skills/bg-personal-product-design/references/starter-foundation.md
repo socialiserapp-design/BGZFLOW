@@ -1,6 +1,6 @@
 # Starter foundation: proposed tokens and one resolved palette
 
-These values are proposals for a new direction. They are not approved product tokens and never a house default. Use them only inside an explicitly proposed direction or a newly approved identity. A product's recorded decisions and approved tokens always win ([identity authority](design-contract.md#identity-authority)). Record the values you adopt in the [token and source template](design-contract.md#token-and-source-template) with `classification: proposal`.
+These values are proposals for a new direction, not approved product tokens or a house default. Use them only when relevant to an open design choice. Current user decisions and approved tokens govern ([identity authority](design-contract.md#identity-authority)). Distinguish proposed and adopted [tokens and components](design-contract.md#tokens-and-components) in the existing design record; no extra template is required.
 
 ## Proposed scales
 
@@ -31,9 +31,9 @@ Resolve values in this order: quality policy → identity and mode → component
 
 ## Craft notes
 
-- **Measure contrast on the real composite.** Check colour against the actual rendered background and context, including transparent glass over its worst-case backdrop. Apply the thresholds in the [surface checklists](design-contract.md#surface-checklists). Measure afresh and record the tool and result; never copy a source's approximate contrast comment as a new measurement.
+- **Measure contrast on the real composite.** Check colour against the actual rendered background, including transparent glass over representative difficult backdrops. [Match checks to the actual surface](design-contract.md#match-checks-to-the-actual-surface), using current applicable accessibility guidance. Retain the tool and result when measured; never present a source's approximate comment as a fresh measurement. Reuse unchanged valid evidence.
 - **A failing source pair is evidence, not a recipe.** For example, white text on a mid-teal brand colour measuring about 3.0:1 stays source evidence, not an accessible normal-text recipe. When a contrast correction changes locked values, route it through the approved-look change decision.
 - **Never transplant another product's skin.** Values extracted from another product are source facts, not permission to reuse them. Start each product from its own directions and decisions.
 - **Bind typography to shipped assets.** Check actual component imports and bundled font files before asserting a running screen's typography. A theme's system-font aliases and a design file's font roles are not universal font approvals.
 - **Supplement instead of rewriting.** When a source lacks a layer (for example elevation), supplement it from a named, recorded source and leave the original unchanged.
-- **Treat sources as read-only inputs.** Read the exact source (path and hash) before adapting it. A reference kit's proposals carry no product approval, and references are research inputs, not runtime dependencies to install.
+- **Inspect sources before adapting them.** Preserve the source and relevant version for a material design decision; automatic integrity metadata can help without demanding manual hashes. A reference kit's proposals carry no product approval and do not require installing its runtime dependencies.

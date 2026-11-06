@@ -4,3 +4,8 @@ context/ export-ignore
 CLOUD-BRIEF.md export-ignore
 .bgzflow/ export-ignore
 overlay/ export-ignore
+
+# Preserve verified ready-package and pinned third-party source bytes across checkout.
+plugins/bgzflow/** -text
+skills/** -text
+tools/engine/improvement/harness2-example/** -text

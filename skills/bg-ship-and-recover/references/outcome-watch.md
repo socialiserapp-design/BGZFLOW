@@ -1,6 +1,6 @@
 # Watch customer outcomes, not machinery
 
-A job that "ran" or a handler that returned success only shows the machinery turned. Health is whether customers got what they came for. Use this during the first hour after switching on, and keep the same checks running afterwards. It adds no gate or customer-facing limit: a bad reading means contain or fix forward under the existing steps.
+A job that "ran" or a handler that returned success only shows the machinery turned. Health is whether customers got what they came for. Use this during the authorised post-release observation period. Ongoing monitoring or scheduled canaries require the existing service policy or task authority. It adds no gate or customer-facing limit: a bad reading means contain or fix forward under the existing steps.
 
 ## What to watch
 
@@ -15,11 +15,11 @@ Read each from the customer's side (the stored result, the delivered output, the
 
 ## Canary
 
-Use one company-owned account, never a customer's or the founder's own. It runs one golden journey on a schedule and records pass or fail with the time, from the system clock. A canary failure is an outcome alert for the owner, handled like any live finding; it never blocks or limits customers.
+Use one company-owned account, never a customer's or the founder's own. When a recurring canary is authorised, it runs a representative golden journey and records the observed result and time from the system clock. A canary failure is an outcome alert for the owner, handled like any live finding; it never blocks or limits customers.
 
 ## Each project lists its own
 
-The project's `AGENTS.md` names its outcome checks (see the "Customer-outcome checks" section of the [project template](../../../templates/PROJECT-AGENTS.md)): what is counted, where it is read, how old is too old, and who looks. If the project has no list yet, write one from its golden journeys before the first switch-on, and note any check that cannot be read yet as a gap rather than leaving it out.
+Use the project's existing release or operating record for its outcome checks: what is observed, where, when a result needs attention, and who owns the response. The optional [project template](../../../templates/PROJECT-AGENTS.md) gives examples. For an authorised release, derive missing relevant checks from its golden journeys and record unavailable evidence plainly. Do not require editing an authority-controlled instruction file, create a duplicate tracker or start recurring monitoring merely to fill this section.
 
 ## Record
 

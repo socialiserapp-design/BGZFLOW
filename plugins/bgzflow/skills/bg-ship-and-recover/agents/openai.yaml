@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Ship and Recover"
+  short_description: "Release within authority and verify the real outcome"
+  default_prompt: "Use $bg-ship-and-recover for the exact lead-accepted candidate after an independent ready check, within existing authority and holds; verify the customer result and recover observed failures."
+policy:
+  allow_implicit_invocation: true

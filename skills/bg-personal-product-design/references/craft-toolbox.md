@@ -1,19 +1,19 @@
 # Craft toolbox
 
-Concrete actions to apply **inside the chosen look**. Nothing here sets a look or overrides approved tokens. Items already covered elsewhere are linked, not repeated: polish principles and optical craft in [techniques](techniques.md), the effect contract in [motion and effects](motion-and-effects.md), cinematic recipes in [cinematic motion and 3D](cinematic-motion-and-3d.md), native motion in [motion by platform](motion-by-platform.md). Naming a tool, font or library grants no install or spending authority; anything paid needs the founder's OK first.
+Concrete actions to apply **inside the chosen look**. Nothing here sets a look or overrides approved tokens. Items already covered elsewhere are linked, not repeated: polish principles and optical craft in [techniques](techniques.md), the effect contract in [motion and effects](motion-and-effects.md), cinematic recipes in [cinematic motion and 3D](cinematic-motion-and-3d.md), native motion in [motion by platform](motion-by-platform.md). Naming a tool, font or library grants no install or spending authority. Use existing applicable approval; ask before new spending or access outside it.
 
 ## Typography
 
 - **Set roles before sizes.** Name the roles the screen needs (display, title, body, label, data, code) and use the fewest families that make the hierarchy unmistakable; combine size, weight, space and tone instead of size alone.
 - **Use fluid type on the web.** Size display text with `clamp(min, preferred vw, max)`; keep body fixed in rem so user zoom works.
-- **Use variable fonts.** Load one variable file per family instead of many weights; tune `wght`, `opsz` (optical size: tighter, higher-contrast for display, sturdier for small text) and `wdth` where the font offers them; set `font-optical-sizing: auto`.
-- **Keep headlines to two or three lines** at real viewport sizes: widen the container or reduce the clamp rather than accept a tall wrapped wall. Use `text-wrap: balance` on headings and `text-wrap: pretty` on paragraphs.
-- **Measure body text** at 60-75 characters (`max-width: 65ch`), line height 1.5-1.7; tighten display leading to 0.9-1.1.
+- **Consider variable fonts where useful.** Compare a variable file with the required static weights for actual size, rendering and platform support. Where supported, tune `wght`, `opsz` (optical size: display versus small text) and `wdth`; test `font-optical-sizing: auto` against the approved design.
+- **Compose headline wrapping at real viewport sizes.** Two or three lines can suit a compact hero, while editorial layouts or translated content may need more. Adjust the measure and type without shrinking readable text to meet a line quota. Consider `text-wrap: balance` for headings and `text-wrap: pretty` for paragraphs where supported.
+- **Set a readable text measure.** For long web prose, try 60-75 characters (`max-width: 65ch`) and line height 1.5-1.7, then test the actual font, language, zoom and available space. Tighter display leading such as 0.9-1.1 is an option only when glyphs remain unclipped; do not impose it on body text or native controls.
 - **Use tabular numerals** (`font-variant-numeric: tabular-nums`) for any number that changes or lines up in columns; lining figures in tables, old-style figures only in prose if the look wants it.
 - **Clear italic descenders.** Display italics with y, g, j, p, q need leading of at least 1.1 and a small bottom reserve, or they clip.
 - **Emphasise within one family.** Italic or bold of the same family for a highlighted word; mixing a stray serif into a sans headline is a look choice, not a default.
 - **Hang punctuation and set real quotes** (curly quotes, true apostrophes, en dashes for ranges, non-breaking space before units).
-- **Source fonts with licences in mind.** Free for commercial use: Google Fonts (OFL), Fontshare (free licence; Satoshi, General Sans, Cabinet Grotesk, Clash Display, Switzer), Geist, IBM Plex, Inter, JetBrains Mono, Manrope, Outfit. Paid families (for example Neue Haas, GT, PP, Söhne, Lyon) need the founder's OK; give a free alternative beside each. Record the licence in the design notes.
+- **Source fonts with licences in mind.** Free for commercial use: Google Fonts (OFL), Fontshare (free licence; Satoshi, General Sans, Cabinet Grotesk, Clash Display, Switzer), Geist, IBM Plex, Inter, JetBrains Mono, Manrope, Outfit. For paid families (for example Neue Haas, GT, PP, Söhne, Lyon), check existing licence and spending authority and compare a suitable free alternative before any new purchase. Record the licence in the design notes.
 - **Self-host and subset** web fonts (WOFF2, `font-display: swap`, preload the one above-the-fold face, size-adjusted fallback to avoid layout shift). On native, bundle the files and map them to platform text styles so Dynamic Type or font scale still works.
 - **Check pairing fit** with a specimen line in the real UI sizes, not a poster. Data sets of tested pairings exist in public style catalogues; treat them as candidates.
 
@@ -21,10 +21,10 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 
 - **Build roles, not swatches:** canvas, raised surfaces, primary and secondary text, action, focus, selection, border, success, warning, error, info, and a separate data palette when charts exist.
 - **Generate ramps in OKLCH** for new web palettes so lightness steps are even; keep the project's existing colour space when one exists.
-- **Lock the accent.** One accent used consistently across the page or app; a second accent only with a documented role.
-- **Never pure black or pure white text on large areas**; use off-black and off-white; tint shadows toward the ground hue.
-- **Rotate palette families across products.** When a premium or craft brief pulls toward warm cream plus brass, offer other families in the same round: cold luxury (silver, chrome, smoke), forest (deep green, bone, amber), black and tan, cobalt and cream, terracotta and slate, olive and brick on paper, monochrome plus one saturated pop.
-- **Choose the colour dosage deliberately.** Restrained (colour for action and status only) for Operate and Read; immersive (colour owns large regions) for Persuade and Experience when the look calls for it.
+- **Give accents clear roles.** Reuse the approved palette consistently; one accent can simplify hierarchy, while multiple brand or semantic accents may be appropriate. Explain a meaningful new role in the existing design context rather than demanding a separate record.
+- **Choose contrast and tone for the approved look.** Off-black and off-white may soften large areas; pure black or white may be right for branding, high contrast or OLED. Measure the actual pair and preserve user preferences. Tinting shadows toward the ground hue is an optional material technique.
+- **Explore palette families when the choice is open.** Alternatives to warm cream and brass include silver/chrome/smoke, forest/bone/amber, black and tan, cobalt and cream, terracotta and slate, or monochrome with a saturated accent. Compare only useful alternatives; a shared brand or an already chosen palette need not change between products.
+- **Choose colour dosage deliberately.** Restrained colour often supports reading and dense tasks; immersive colour can support a campaign or experience. These are starting points, not restrictions on an approved expressive task interface.
 - **Measure contrast on the real composite** (see [starter foundation](starter-foundation.md#craft-notes)); add an APCA reading for large display and thin type where the tool supports it.
 
 ## Dark mode
@@ -33,35 +33,35 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 - **Use tonal elevation:** higher surfaces get lighter, not shadowed; keep 3-4 surface steps.
 - **Desaturate and lighten accents** for dark grounds so they do not vibrate; recheck every pair.
 - **Keep separate tokens** for light and dark with the same role names; switch with a class or `prefers-color-scheme`, and suppress transitions during the switch so colours do not animate.
-- **Test both modes** on every changed screen, including images, charts, shadows and focus rings; give logos and illustrations a dark variant.
+- **Test the supported modes** on affected screens, including images, charts, shadows and focus rings. Adapt assets where needed for a supported dark mode; do not introduce a new theme or duplicate assets simply to complete this list.
 
 ## Layout and responsive or adaptive
 
-- **Design the phone first and the large screen deliberately.** Asymmetric layouts collapse to a single column below about 768 px; overlaps and rotations are removed on touch screens.
-- **Use container queries** for components that live in different widths; use `min-height: 100dvh`, never `100vh`, for full-height sections.
-- **Adapt, not just stretch.** Tablet and desktop get extra panes (list plus detail, inspector), foldables respect the hinge, and large text sizes reflow rather than truncate.
-- **Fill bento grids** with `grid-auto-flow: dense` and check for empty cells at every breakpoint.
+- **Design for the intended devices and tasks.** Start with the primary surface, then adapt to the other supported sizes, input methods and orientations. A narrow layout may need one column; determine its breakpoint from content fit rather than a universal 768 px rule. Preserve useful overlaps or rotation if they remain readable and operable on touch.
+- **Choose layout primitives for the actual runtime.** Container queries help components reused at different widths. For full-height web sections, compare dynamic, small and large viewport units with a compatible fallback; test browser chrome and the keyboard rather than universally replacing `100vh`.
+- **Adapt, not just stretch.** Extra panes can benefit a supported tablet or desktop task, but are not new feature requirements. Respect foldable hinges where relevant and let large text reflow rather than truncate.
+- **Check a chosen grid at relevant breakpoints.** `grid-auto-flow: dense` can fill gaps but must not create a confusing visual order relative to reading and keyboard order. Intentional whitespace is valid; do not add content to fill a cell.
 - **Draw hairline grids** with `gap: 1px` on a contrasting parent instead of many borders.
 - **Prevent horizontal scroll** caused by off-screen animation: fix the overflowing element; `overflow-x: clip` on the root is a last resort that must not hide real content.
 - **Vary the hero architecture** across directions: cinematic centre, editorial split, asymmetric with overlapping image, manifesto poster, media mask, pinned hero.
-- **Vary the section layout** too: asymmetric bento (mixed spans), z-axis cascade (overlapping cards at slight -2 to 3 degree rotations), editorial split with horizontally scrolling pills, plain long-form column. Remove rotations and overlaps below about 768 px.
+- **Compare section layouts where useful:** asymmetric bento, a z-axis cascade with slight rotations, an editorial split, or a plain long-form column. Adapt rotations, overlaps and horizontal controls when content fit or input testing shows a problem; no universal breakpoint is required.
 
 ## Surfaces and materials
 
 - **Separate structure, focus and elevation:** borders for structure, rings for focus, shadows for elevation; never one doing another's job.
 - **Nest radii concentrically** (see [optical craft](techniques.md#optical-craft-and-anti-generic-checks)); the double-bezel shell is one look's signature, not a rule for all.
-- **Put grain and noise on one fixed, pointer-events-none overlay**, never on scrolling containers.
-- **Blur only fixed or sticky layers** (nav, sheet, modal); give a solid fallback for reduced transparency and for low-end devices.
-- **Use halftone, dithering or scanlines** through pre-processed images or one overlay, keeping text crisp above them.
+- **If the approved look uses grain or noise,** a single `pointer-events-none` overlay can reduce duplicated work. Choose fixed, local or pre-rendered placement by the intended material and measured paint cost; keep content and controls unobstructed.
+- **Use blur where its measured cost and readability are acceptable.** Fixed or sticky chrome is one common placement, not the only permitted one. Provide an appropriate opaque or static treatment for reduced transparency and unsupported or constrained devices.
+- **For a chosen halftone, dither or scanline treatment,** compare a pre-processed image with a bounded overlay and keep text crisp. Do not add a texture solely because this recipe exists.
 - **Outline images subtly** (1 px at about 10% alpha, inside) so pale images keep their edge on pale grounds.
 
 ## Micro-interactions
 
 - **Press:** scale to the product's press token (sources range 0.95-0.98); pair with a colour or shadow change so the state is visible without motion.
 - **Hover (pointer devices only):** use `@media (hover: hover)`; directional fill from the entry side, spotlight borders, magnetic pull of 4-8 px, or a nested icon that nudges diagonally, chosen by look.
-- **Animate icon swaps** (copy to check, play to pause) with a short scale, opacity and blur cross-change instead of a hard swap; one SVG recoloured per state.
-- **Morph menus and dialogs:** the menu icon turns into a close icon; a button expands into its own dialog (shared element); menu items enter with a short stagger.
-- **Skip entry animation on first page load** and on back navigation; animate only what changed.
+- **Choose feedback for icon swaps** such as copy-to-check or play-to-pause. A short opacity or scale change may help; a hard swap is appropriate for reduced motion or an intentionally immediate interface. Keep the accessible name and actual state correct.
+- **Optional menu and dialog continuity:** a menu icon can become a close icon, or a button can carry into a dialog through a shared element. Use stagger only when it improves comprehension without delaying interaction; preserve an existing simpler transition when it fits.
+- **Avoid repetitive entry animation.** Preserve context on back navigation and animate a first load only when the approved experience benefits; reveal useful content promptly and honour reduced motion.
 - **Make exits subtler than entries** (shorter, smaller distance, about 75-80% of entry time).
 - **Keep animations interruptible** and use `will-change` only while something animates.
 - **Optimistic toggles** only for safe, reversible preferences (see polish principle 3 in [techniques](techniques.md#eight-polish-principles)).
@@ -69,22 +69,22 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 ## Sound and haptics
 
 - **Haptics map to meaning:** selection tick for pickers and snaps, light or medium impact for a drag landing, success, warning or error notification only after the outcome is confirmed. Use the platform API: SwiftUI `.sensoryFeedback`, UIKit feedback generators, Android `performHapticFeedback` with `HapticFeedbackConstants`, Expo `expo-haptics`. Respect system settings; never vibrate on the web as a substitute.
-- **Sound is opt-in by default** on the web and respects silent mode on phones. Keep UI sounds short (under about 200 ms), quiet and in one family; pair each with a visual and, on phones, a haptic.
+- **Honour the approved audio experience,** browser autoplay requirements and system sound preferences. Do not add sound or a new consent control merely to follow a recipe. For requested UI sound, short cues (often under 200 ms) can work; keep essential feedback available visually or accessibly, with haptics only where appropriate.
 - **Choose sounds by look:** soft wood or felt clicks for calm looks, chiptune for pixel looks, glassy tones for glass looks, none for document looks.
-- **Source sounds** from CC0 or royalty-free libraries, or synthesise them with the Web Audio API or a tiny tone generator; record the licence. Paid packs need the founder's OK.
+- **Source sounds** from CC0 or royalty-free libraries, or synthesise them with the Web Audio API or a tiny tone generator; record the licence. Use existing licence and spending authority; new paid packs need approval when not already covered.
 - **Never use sound for errors alone** and never autoplay audio on page load.
 
 ## Icons and illustration
 
-- **One icon family per product,** matched to the look: thin line sets (Phosphor Light, Remix Line) for refined looks, bolder sets (Phosphor Bold or Fill, Tabler, Radix) for technical or friendly looks, SF Symbols on Apple platforms, Material Symbols on Android (use its weight, fill and grade axes).
+- **Use coherent icons matched to the product and platform.** A single family often helps; platform symbols, brand marks or a justified specialist set can coexist with consistent optical size, stroke and meaning. Candidates include Phosphor, Remix, Tabler, Radix, SF Symbols and Material Symbols.
 - **Match icon stroke to text weight** and size icons on a 16/20/24 grid; centre asymmetric glyphs optically.
-- **Pick one illustration style** per product and keep stroke, palette and perspective consistent: continuous line with one pastel shape, flat geometric, isometric, clay 3D render, editorial collage, hand-drawn, pixel sprite.
+- **Give illustrations a coherent art direction.** Line art, geometric, isometric, clay, collage, hand-drawn and pixel work are options. Preserve an approved mixed-media identity where it has a purpose; do not force every asset into one style.
 - **Use spot illustrations** for empty states, onboarding and success; never as filler on task screens.
 - **Avoid emoji as icons** unless the look is deliberately playful and the platform renders them consistently.
 
 ## Asset generation
 
-- **Generate comps before code** when exploring: whole sections or screens as images, not cropped fragments; three compositional options, then one approval point; the approved comp becomes the spec.
+- **Use visual alternatives when they resolve an open design choice.** Show enough of the real screen and content to compare plausible directions; the number and medium depend on the decision. Reuse an already agreed look for ordinary changes. Ask when a material choice remains unresolved, without adding a routine approval step or treating an illustrative image as approval of every detail.
 - **Write art-direction prompts** with subject, light, lens or viewpoint, palette, texture, composition and a text-safe area; keep a short design bible (palette, type character, materials) and reuse it so a set of screens stays consistent.
 - **Record provenance** for every generated or sourced image: tool, prompt or source link, licence. Never present generated people as real customers or testimonials.
 - **Prefer real product imagery** over generic stock; when stock is needed, grade it to the palette (desaturate, warm or cool, grain).
@@ -96,7 +96,7 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 - **Pick the chart by the question:** change over time (line), comparison (bar), part of whole (stacked bar, rarely pie), distribution (histogram, box), relationship (scatter), geography (map) and a plain table when exact values matter.
 - **Label directly** on lines and bars instead of legends; highlight the one series that matters and grey the rest.
 - **Use a dedicated data palette** that is colour-blind safe, with sequential and diverging scales separate from UI colours.
-- **Morph between states** (filters, time ranges) instead of redrawing; animate numbers only on first load.
+- **Make data changes understandable.** A short transition can reveal a filter or time-range change; an immediate redraw may be clearer for frequent or live updates and reduced motion. Do not animate numbers in a way that obscures their current value.
 - **Show the chart's shape while loading** and give an accessible table or summary sentence beside every chart.
 - **Render large datasets** on canvas or WebGL; keep SVG for small, interactive charts.
 
@@ -104,7 +104,7 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 
 - **Name the empty kind and design each:** first use (value plus a template or sample), user cleared (light touch, easy to recreate), no results (suggest a new query, clear filters), no permission (why and how to get access), failed to load (what happened, retry).
 - **Choose the loading form by wait:** under about 300 ms show nothing, short waits a skeleton in the real layout shape, longer known work a progress bar with truthful steps, unknown blocking work a labelled activity indicator.
-- **Write errors as cause plus fix** in plain words; keep the user's input; never show raw error text or supplier names to customers.
+- **Write errors as cause plus fix** in plain words and keep the user's input. Hide raw internal errors; use provider names only where the product and user's current decisions call for them, preserving approved provider-selection labels.
 
 ## Onboarding
 
@@ -113,11 +113,11 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 - **Keep every tour skippable and resumable;** onboarding never becomes a new gate in front of the product.
 - **Ask for permissions in context,** just before the feature that needs them, with a sentence on why.
 - **Use contextual tips and a short checklist** for feature discovery instead of a long upfront tour.
-- **Make the first screen clean:** one message, one action, one supporting image.
+- **Keep the first screen focused on its actual job.** A single message and action can suit onboarding; dashboards and returning users may need several actions and no image. Preserve essential content and approved navigation.
 
 ## Delightful details
 
-- **Write one delight thesis** per product (what feeling, where it appears) and spend it at meaningful moments: first success, milestones, recovery, mastery.
+- **Choose purposeful delight where it fits.** Agree the intended feeling when consequential and use it at meaningful moments such as success or mastery; a separate thesis document is unnecessary.
 - **Match the response to the effort:** routine saves feel certain and quiet; big milestones may celebrate.
 - **Keep delight honest:** no fake waiting, no delayed completion for a flourish, no jokes about money, privacy or lost work.
 - **Make repeated interactions satisfying after the hundredth use;** surprise only where it cannot confuse.
@@ -132,9 +132,9 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 
 ## Design QA with screenshots
 
-- **Capture every changed screen** at phone (about 375), tablet (about 768) and desktop (about 1280 and 1440) widths, in light and dark if both exist, at the largest text size, and with reduced motion.
+- **Capture representative affected screens and states on their supported surfaces.** Choose sizes around actual content-fit boundaries, relevant text scaling and supported themes or accessibility preferences. Phone, tablet and desktop widths are examples, not a required matrix for every change.
 - **Freeze moving parts** (clocks, prices, animations, random seeds) before capture so comparisons are fair.
-- **Compare side by side** with the approved picture or baseline and list every difference; zoom crops for alignment, radius and icon checks.
+- **Compare with the approved reference or baseline** under equivalent conditions. Record meaningful differences and inspect alignment, radius and icons where affected; do not turn intended or irrelevant differences into a new approval gate.
 - **Run the silhouette test:** remove colour and compare directions or before and after; hierarchy must still read.
 - **Check overflow, focus order and contrast** on the rendered result, not the design file; record tool and dimensions.
 - **On phones, check the real device or simulator build;** web screenshots are not proof of native rendering.
@@ -142,9 +142,9 @@ Concrete actions to apply **inside the chosen look**. Nothing here sets a look o
 
 ## Reference gathering
 
-- **Pull 6-8 real references per surface** before drawing directions, from screen and site galleries (for example Mobbin, Page Flows, Refero, Godly, Awwwards, Land-book, Siteinspire, Fonts In Use, Dribbble for illustration). Record each link.
-- **Spread references across looks and sources** so directions do not converge; use them for layout, flow and detail ideas, never as templates to copy.
-- **Note access cost:** a gallery that needs a paid plan needs the founder's OK; free tiers first.
+- **Gather references when they inform an open choice.** Use enough varied, relevant examples to understand the approach, stopping when the decision is supported. Existing approved references may suffice. Possible sources include screen galleries, actual products and typography collections; retain the source links without a quota.
+- **Seek different relevant approaches when comparing directions.** Use references for layout, flow and detail ideas without copying protected assets or imposing variation on an already agreed identity.
+- **Check access cost:** use existing authorised access where available. A new paid plan needs the relevant approval; do not buy it merely to fill a reference quota.
 - **Capture what makes each reference good** in one line (for example "pinned title with scrolling proof"), so the idea transfers without the skin.
 
 ## Native craft pointers

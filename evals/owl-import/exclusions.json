@@ -1,0 +1,334 @@
+[
+  {
+    "source": "design-ops/skills/design-critique/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/design-debt-audit/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/design-impact-reporting/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/design-qa-checklist/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/design-review-process/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/design-sprint-plan/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/handoff-spec/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/team-workflow/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-ops/skills/version-control-strategy/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "design-systems/skills/accessibility-audit/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/component-spec/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/design-system-governance/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/design-token/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/documentation-template/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/icon-system/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/localization-design/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/motion-system/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/naming-convention/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/pattern-library/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "design-systems/skills/theming-system/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "designer-toolkit/skills/case-study/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/design-negotiation/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/design-rationale/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/design-system-adoption/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/design-token-audit/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/presentation-deck/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "designer-toolkit/skills/ux-writing/SKILL.md",
+    "reason": "Team operations, handoff, presentation or career/process deliverable; not the participant/evidence research methods requested here."
+  },
+  {
+    "source": "interaction-design/skills/animation-principles/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/conversational-ux/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/doherty-threshold/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/error-handling-ux/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/feedback-patterns/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/fitts-law/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/form-design/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/gesture-patterns/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/hicks-law/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/interfaces-that-feel/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/jakobs-law/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/loading-states/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/micro-interaction-spec/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/millers-law/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/navigation-patterns/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/onboarding-design/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/peak-end-rule/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/search-ux/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/serial-position-effect/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/state-machine/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/teslers-law/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "interaction-design/skills/zeigarnik-effect/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "prototyping-testing/skills/user-flow-diagram/SKILL.md",
+    "reason": "Wireframe production or screen-flow diagramming; current design-flow and prototype methods already cover this output. The surrounding research/testing methods are imported."
+  },
+  {
+    "source": "prototyping-testing/skills/wireframe-spec/SKILL.md",
+    "reason": "Wireframe production or screen-flow diagramming; current design-flow and prototype methods already cover this output. The surrounding research/testing methods are imported."
+  },
+  {
+    "source": "ui-design/skills/aesthetic-usability/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/color-system/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/dark-mode-design/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/data-visualization/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/illustration-style/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-closure/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-common-region/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-continuity/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-figure-ground/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-proximity/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/law-of-similarity/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/layout-grid/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/platform-conventions/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/readable-measure/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/responsive-design/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/spacing-system/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/typography-scale/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/visual-hierarchy/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ui-design/skills/von-restorff-effect/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "ux-strategy/skills/business-design/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "ux-strategy/skills/content-strategy/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "ux-strategy/skills/design-brief/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "ux-strategy/skills/design-principles/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "ux-strategy/skills/north-star-vision/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "ux-strategy/skills/stakeholder-alignment/SKILL.md",
+    "reason": "Product-strategy framing or content/vision/alignment deliverable, rather than a distinct evidence-gathering/analysis method in this import. Existing product/research masters retain that responsibility."
+  },
+  {
+    "source": "visual-critique/skills/critique-affordance/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-brand-consistency/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-color/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-composition/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-information-density/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-typography/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  },
+  {
+    "source": "visual-critique/skills/critique-visual-hierarchy/SKILL.md",
+    "reason": "Design implementation, visual theory or critique; outside this research-method import and handled by current design specialists/reference library. Not assessed as an inferior method."
+  }
+]

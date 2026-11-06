@@ -17,9 +17,9 @@ Named skills are optional suggestions. Check each third-party skill's and librar
 
 Use available reviewed guidance. A named route never installs a skill or grants spending authority. Host-only tools are optional, where the host has them; the shared rules and the worker handoff stay usable on every host.
 
-## Required effect contract
+## Relevant effect design questions
 
-For every effect, put one row or record in the existing screen or component specification before implementation:
+For a consequential effect, resolve the relevant questions below in existing code, design or task context. Ordinary effects do not require a separate record:
 
 | Field | Required decision |
 |---|---|
@@ -47,11 +47,11 @@ Pair one haptic with a visual at a meaningful moment, such as a deliberate actio
 
 ## Device evidence and QA
 
-Before accepting an app effect, require the exact candidate's release build on the slowest supported Android device plus an iPhone. Record build identity, device and OS, the selected tier, observed frame behaviour and evidence. Provide a forced-tier switch for QA and exercise every tier, including the static fallback; the switch never overrides accessibility preferences. Check rapid interruption, tab and off-screen and background/resume lifecycle, video coexistence, and Reduce Motion and Reduce Transparency independently and together. Visibly test, repair and retest failures. Label emulator, prototype and source evidence as such; missing hardware evidence stays an open gap, never a performance pass.
+Verify the exact candidate on its intended supported platforms. For cross-platform performance claims, include representative constrained hardware where available; do not require an unrelated Android or iPhone for a single-platform product. Record build identity, device and OS, the selected tier, observed frame behaviour and evidence. Use an existing test seam to exercise relevant tiers and fallback behaviour. If a private test override is needed, keep it out of customer controls and never override accessibility preferences. Do not add a tier system when the requested effect does not need one. Check rapid interruption, tab and off-screen and background/resume lifecycle, video coexistence, and Reduce Motion and Reduce Transparency independently and together. Visibly test, repair and retest failures. Label emulator, prototype and source evidence as such; missing hardware evidence stays an open gap, never a performance pass.
 
 ## References and optional specialists
 
-A screen-reference library (for example Mobbin through a host connector, where the host has one) is for screen and flow references, not motion. The lead exports the selected references with their source links into a file so workers on any host can use them. Design files (for example Figma) may supply authored timing; skills supply instructions; libraries render effects. None of them proves the final product's performance or accessibility.
+A screen-reference library (for example Mobbin through a host connector, where the host has one) is for screen and flow references, not motion. Give workers the relevant references and source links through their existing supported handoff. Export a file only when needed for access or preservation; a second reference pack is not required. Design files (for example Figma) may supply authored timing; skills supply instructions; libraries render effects. None of them proves the final product's performance or accessibility.
 
 Load these optional specialist skills where they are available and relevant. Check each licence before use; naming one grants no installation or release authority.
 

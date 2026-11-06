@@ -9,7 +9,11 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -19,20 +23,24 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
-          node-version: 20
+          node-version: 24
 
-      - name: Tests (every Node and Python suite)
-        run: node scripts/test-all.mjs
-        env:
-          BGZFLOW_SKIP_TIMING: "1"
+      - name: Install locked development dependencies
+        run: npm ci
 
-      - name: Manifest drift
-        run: node scripts/build-manifests.mjs --check
+      - name: Current foundation, skill, evaluation and packaging checks
+        run: npm test
+
+      - name: Build and validate the native plugin packages
+        run: |
+          npm run build
+          npm run build:antigravity
 
       - name: Leak check
         run: node scripts/leak-check.mjs
 
       - name: Gitleaks
+        if: runner.os == 'Linux'
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

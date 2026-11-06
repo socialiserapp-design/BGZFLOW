@@ -1,14 +1,13 @@
 ---
 name: tdd
-description: "Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested."
-disable-model-invocation: true
+description: "Build a requested behaviour or repair a bug through a failing behavioural test followed by the implementation, using the real public interface and the project's existing test tools."
 ---
 
 # TDD Bug Fix
 
-When fixing a bug with a clear, cheap test path, make the broken behavior executable before changing production code. The goal is a focused regression test that fails before the fix and passes after it.
+Make the intended behaviour executable before implementing the relevant slice. For a bug, demonstrate the actual failure first; for a feature, express the agreed observable result. Use one behavioural test and implementation slice at a time. Expected values come from the requirement or independent calculation, not a copy of the implementation.
 
-Do not force a test when it would be impractical. If the available test would require broad harness setup, brittle mocks, slow end-to-end infrastructure, production-only state, vague reproduction steps, or large unrelated fixture churn, skip adding a new test and use the closest useful verification instead.
+Choose a test boundary that reaches the real behaviour. An integration or journey test may be the correct boundary; do not replace it with a shallow unit test just because that is cheaper. Avoid brittle mocks and unrelated setup. If an important failure cannot be reproduced with current access, state that gap and pursue the closest useful investigation without claiming the repair verified.
 
 ## Workflow
 

@@ -1,17 +1,16 @@
 {
   "name": "bgzflow",
-  "description": "A free plugin that lets one founder run AI worker swarms from idea to launch.",
+  "description": "Adaptive AI workflow: relevant skills, preserved intent, real outcome checks and optional multi-agent coordination.",
   "owner": {
     "name": "socialiserapp-design"
   },
   "plugins": [
     {
       "name": "bgzflow",
-      "source": {
-        "source": "url",
-        "url": "https://github.com/socialiserapp-design/BGZFLOW"
-      },
-      "description": "A free plugin that lets one founder run AI worker swarms from idea to launch."
+      "license": "MIT AND Apache-2.0 AND ISC AND BSD-3-Clause AND CC-BY-SA-4.0 AND LicenseRef-Taste-Assets",
+      "description": "Adaptive AI workflow: relevant skills, preserved intent, real outcome checks and optional multi-agent coordination.",
+      "source": "./plugins/bgzflow",
+      "version": "2.7.4"
     }
   ]
 }

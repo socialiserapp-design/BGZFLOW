@@ -1,16 +1,14 @@
 ---
 name: add-voice
 description: >-
-  Use when the user runs /add-voice, types Voice Mode, or asks to add Grok
-  realtime voice to an app, including replacing an STT-LLM-TTS cascade or
-  OpenAI Realtime.   Wire speech-to-speech, safe auth, and app mic. Composer: waveform button,
-  mic icon reserved for dictation. For mic-to-text only use /add-dictation; to speak text replies use
-  /add-read-aloud. To add debug logging and fix from logs use /debug-voice.
+  Add Grok realtime voice when that provider is requested or selected through an
+  authorised comparison. Wire speech-to-speech, safe authentication and the app
+  microphone while preserving the product's approved interface and capabilities.
 ---
 
 # Add Voice
 
-Add Grok Speech to Speech to an existing app. Run on `/add-voice`, typed **Voice Mode**, or clear “add Grok voice” intent.
+Add Grok Speech to Speech when the user explicitly requests Grok or an authorised provider comparison selects it. A generic “Voice Mode” request identifies a feature, not a provider choice: recover the existing product decision or clarify that choice before a dependent integration. `/add-voice` selects this method but does not itself authorise replacing another working provider.
 
 ## Goal
 
@@ -24,14 +22,14 @@ Language-agnostic event loop. **TypeScript samples default.** Short Python twins
 
 - https://docs.x.ai/developers/model-capabilities/audio/speech-to-speech
 - https://docs.x.ai/developers/model-capabilities/audio/ephemeral-tokens
-- Pricing (cite docs only): https://docs.x.ai/developers/pricing (~$0.08/min STS + $0.004/text item; max session 120 min)
+- Pricing and limits: https://docs.x.ai/developers/pricing - verify applicable current rates and limits; no price is pinned by this skill.
 
 ## Steps
 
 1. **Map the app**
    - Stack: none, OpenAI Realtime, STT→LLM→TTS cascade, TTS/STT only.
    - Client: web / Node / iOS / Android / server.
-   - If a cascade or OpenAI Realtime exists: replace it with the single duplex loop below (URL, model, voice, event diffs); keep standalone `/v1/stt` or `/v1/tts` only if the product still needs one-shot listen or speak outside the agent.
+   - If another voice path exists, inspect why it is used. Replace it only within the requested migration scope; otherwise integrate the requested option without removing working features. Compare supported SDKs and reusable audio components before custom transport or playback code.
 
 2. **Auth**
    - Server: Bearer `XAI_API_KEY`.
@@ -51,11 +49,10 @@ Language-agnostic event loop. **TypeScript samples default.** Short Python twins
    - Transcript rows: create the user row on `input_audio_buffer.committed` (`item_id`), fill it on `…transcription.updated`; assistant text from `response.output_audio_transcript.delta` / `.done`, close the turn on `response.done`.
    - On function tools: `function_call_output`, finish playback, then `response.create`.
 
-5. **Composer UI convention**
-   - One primary button, right side of the composer. Empty composer → **waveform** icon (stroked, e.g. Phosphor `WaveformIcon weight="bold"`; never the `fill` weight, which renders as a blob at 16 px), starts voice mode. Any text present → classic **send** arrow; in voice mode that text goes into the live session (`conversation.item.create` + `response.create`). Text reply streaming → stop square.
-   - While voice is live the same button shows an **animated waveform** (4 bars, ~3 px wide, 2 px gap, ~16 px tall, min scale 0.4 so they stay legible in a 28 px button) and ends the session on click. Phase drives the animation: listening slow, speaking fast, connecting/thinking slower and slightly dimmed (opacity ≥ 0.75). Honor `prefers-reduced-motion`. No X button, no pulsing ring.
-   - Status lives **in the composer, not around it**: the placeholder reads `Connecting…` / `Listening…` / `Thinking…` / `Speaking…`, plus an `sr-only` `role="status"`. No separate status row.
-   - The **microphone icon is reserved for dictation** (`/add-dictation`). Never use it for voice mode.
+5. **Application interface**
+   - Preserve approved controls, icons and layout. Make voice start/stop, connecting, listening, speaking and failure states accessible and understandable.
+   - Distinguish dictation from a live conversation with clear labels; no particular waveform, icon, animation or composer arrangement is mandatory.
+   - Respect reduced motion, keyboard access, screen-reader announcements and microphone permissions. Ask about an unresolved product choice before changing it.
 
 6. **TS skeleton (default)**
 
@@ -106,15 +103,15 @@ async with websockets.connect(url, additional_headers=headers) as ws:
             pass  # decode and play
 ```
 
-8. **Instrument (before the first human test)**
-   - Run `/debug-voice`: it proposes a plan, then installs a dev-only log sink (`POST /api/voice/log` → `.voice-logs/<sessionId>.ndjson`, gitignored), a client logger with audio reduced to byte counts, and the session id in the UI, in the app's own language.
-   - The same skill carries the fix loop and the symptom → log signature → fix table.
+8. **Observe the real voice path**
+   - Reuse existing private diagnostics. Record necessary lifecycle, latency and error facts; redact tokens and avoid recording speech/transcripts without authority.
+   - No `/debug-voice`, `/add-dictation` or `/add-read-aloud` command is bundled here. Discover available tools before invoking another skill.
 
-9. **Smoke**
-   - Text turn via `conversation.item.create` + `response.create`; confirm audio or transcript events.
-   - Confirm no long-lived key in client (grep the built client bundle for the env name and `client_secrets`).
-   - Hand the app to the user with **headphones**. On speakers the mic hears the reply and the model answers itself; that is echo, not a bug in the loop.
-   - Iterate with `/debug-voice`.
+9. **Verify**
+   - Test real microphone input, streamed output, interruption, reconnect and session end in the intended browser/device. A text-only turn proves transport, not working voice.
+   - Inspect the built client for leaked long-lived credentials; searching an environment-variable name alone is insufficient.
+   - Check token minting and permitted actions. Voice-triggered tools keep the user's scope and host permissions.
+   - Test speaker echo handling and headphones when relevant. Do not dismiss feedback as user error or claim success from a mock audio stream.
 
 ## Out of scope
 

@@ -1,80 +1,99 @@
 ---
 name: bg-personal-product-design
-description: Use when designing, redesigning or polishing screens, flows or a new look for web, desktop, native or chat products, including rendering several distinct directions, locking the approved look and verifying the real customer journey on devices.
+description: "Coordinate product and visual design, relevant user research and asset reuse. Select focused design methods, the reference graph, sound/SVG tools or the Taste library for the actual task; preserve approved identity and verify the affected experience."
 ---
 
-# BG Personal Product Design
+# Design for the intended user
 
-## When to use
+Recover the requested experience, audience, existing design and current user choices. Treat product-specific taste as project context, not a universal house style. Preserve approved typography, colour, layout and interaction choices unless the request changes them.
 
-Use for a new product, major screen, interaction, redesign or visual refinement. Load or retain [BG Efficiency](../bg-efficiency/SKILL.md). Use the [glossary](../bg-build-with-me/references/glossary.md), requirement IDs, C4 identifiers and the [delivery contract](../bg-build-with-me/references/decision-and-delivery-contract.md); create no parallel names.
+Map the real journey: entry, main action, result and recovery. Consider loading, empty, error, cancellation, offline and permission states where applicable. Prefer a working end-to-end journey over a decorative shell.
 
-The lead plans, dispatches directly, reads short results and decides; workers do the substantial reading, design, coding and testing; a fresh independent checker checks, all through the [worker route](../bg-build-with-me/references/worker-route.md). Keep the actual job, thread and worktree identity. Use one background wait and a short result: no default worker board, forwarding agent, polling loop or mandatory second-vendor checker. Return consolidated repairs to the exact owned job, at most two repair rounds, then report open findings. Never blindly resume the last task from a shared parent directory.
+When a new visual direction is unresolved, show a proportionate range of genuinely different examples or clickable prototypes. Follow any explicit user preference for how many directions to explore. Explain trade-offs and obtain the consequential design choice before depending on it.
 
-"Personal" means the founder's own recorded choices: the project's `DECISIONS.md` and, when present, the overlay's `FOUNDER.md` (taste and preferences) and `PROJECTS.md` (each product's approved identity and exclusions).
+## Select the useful specialists
 
-## Numbered checklist
+Use the existing foundation selection and Jev where available; the current agent
+can make the same choice locally. Select for the actual deliverable, not the mere
+presence of a UI file. An explicit specialist request remains explicit. This is a
+menu, not a sequence, a separate remote routing call or seven required reviews.
 
-1. **Read the product's design page first.** If the company design folder has `products/<product>.md`, read it before any other design file; it names the locked colours, fonts, motion, materials and the longer sources it comes from.
-2. **Admit the task. Output: admission section in the existing task packet.** Verify worktree, branch, admitted base, dirty paths, owner, phase and holds. Read the checkpoint and the product's recorded identity. Load current/next [coverage](../bg-build-with-me/references/capability-coverage.md): this skill, efficiency, accessibility, a design-critique pass, UI craft and the matching platform and testing capabilities. Apply one bounded [selection](../bg-build-with-me/references/skill-selection.md) or its recorded one-pass fallback. Record actual reads separately from tools; keep mandatory coverage.
-3. **Recover authority and check identity lock (`bgz taste status`). Output: source and decision ledger in the [design contract](references/design-contract.md).** Run `bgz taste status --dir <project>` first: if the project has an existing `DECISIONS.md`, `FOUNDER.md` or `.bgzflow/taste-lock.json`, it defaults to **`LOCKED_IDENTITY`** so workers cannot trigger unrequested full redesigns and may only apply micro-craft polish within the locked palette, typography and layout anatomy unless the founder explicitly unlocks exploration (`bgz taste unlock --explore`). Read the exact token and component sources and the approved and rejected artifacts; pin hashes; distinguish current code, approved target, illustrative concept and functional acceptance. Use the founder's recorded preferences for concrete recipes, and the [starter foundation](references/starter-foundation.md) only as proposals. The latest direct instruction and recorded approval govern; a source comment alone never approves a running build. Assign unknown facts to their owner.
-4. **Choose each surface's job. Output: surface brief and screen/state rows.** Choose Persuade for a decision or action, Operate for completing a task, Read for understanding, or Experience for the artifact itself. Map entry → core action → result → recovery, including loading, empty, error, retry, offline, cancellation, permission, draft, pending and unknown outcomes. Keep existing API and operation identities and semantics.
-5. **Pick candidate looks and effects. Output: the looks and effect levels chosen for the direction matrix, with a reason each.** When a new look, redesign or polish is in scope, pick from the [looks library](references/looks-library.md): choose looks whose "suits" line fits this product's audience, job and surface mode, and draw from several families, never one house style. When the surface calls for depth or motion (launch page, product story, onboarding, a rare moment), add options from [cinematic motion and 3D](references/cinematic-motion-and-3d.md) and its native equivalents in [motion by platform](references/motion-by-platform.md); keep heavy effects off frequent task paths. Each product keeps its own look; no look is a default for all products.
-6. **Explore a genuinely new look (`EXPLORE_NEW` mode only). Output: direction matrix, rendered contact sheets and clickable prototypes.** Apply [the variation procedure](references/techniques.md#eight-or-more-rendered-directions) and verify candidate diversity with `bgz taste verify-round --candidates <file.json>` where available. Start with at least eight materially different rendered options; offer more on request. Vary composition, type, shape, density, material, theme and motion, not just palette. A fixed house style from any preset or polish skill may be one direction; it is never the rule for the others. Never repeat the previous project's direction unless the founder asks for that continuity. There is no universal dark or glass default. New products and major screens get a clickable prototype by default; small changes reuse the approved design. A text table of options does not count as a rendered round. Explore and compare new looks in Claude Design (or the project's design canvas) and get the founder's pick there before any code, then hand the picked target to the builder; never run its sync step automatically.
-7. **Lock what the founder actually chose (`bgz taste lock`). Output: approval record and approved-token manifest.** Run `bgz taste lock --project <name> --palette "<hex,...>" --fonts "<H,B>" --layout "<anatomy>" --axes "<k=v,...>"` to persist `.bgzflow/taste-lock.json`. Bind the decision ID, system-clock timestamp, exact shown prototype and token hashes to the colour, font, corner, material and composition choices, supported and default modes, and permitted effect fallbacks. When the founder combines attributes, render the combined whole before recording approval. An approved look stays locked until the founder's new decision changes it; ask before changing it and never re-ask a settled decision. Technical fixes inside the lock continue under existing authority.
-8. **Apply craft as actions. Output: token/component specification and, when assigned, the implemented candidate.** Resolve semantic roles into the chosen identity and platform units. Keep setting cards, switches, result boxes, glass and backgrounds available without forcing them onto every surface. Set a nested inner radius to `max(0, outer radius − inset)`; optically align visible glyphs without shrinking hit targets. Apply the [eight polish principles](references/techniques.md#eight-polish-principles) and the rendered-option workflow. Reject generic repeated layouts and invented values.
-   - Apply the [motion and effects contract](references/motion-and-effects.md) to every effect; keep device and accessibility evidence.
-   - Use the [craft toolbox](references/craft-toolbox.md) for type, colour, layout, micro-interactions, sound and haptics, icons, assets, data visuals, states, onboarding and screenshot QA, inside the chosen look. [Sources](references/sources.md) records where each part came from.
-9. **Build, polish every screen, see and repair (`bgz taste anti-slop`). Output: candidate-bound visual, interaction and device evidence plus one final-polish record per screen.** Run `bgz taste anti-slop --file <changed-ui-file>` on every changed screen/component plus the [surface checklists](references/design-contract.md#surface-checklists) on the actual supported app, browser or device. Keep full approved effects on capable devices; reduce only the measured offending effect and respect reduced motion and transparency. Judge the full look on a named judging device and test a constrained device separately. For Android, visibly test → repair → retest in development and in integrated acceptance; record emulator limits. Keep each product's recorded material exclusions. As the last design step on **every** app and web screen, run the [final polish pass](references/techniques.md#final-polish) (with a polish skill if one is installed): keep the chosen direction's or approved look's fonts, layout and tokens, and apply everything else it asks. If it calls for randomisation or code, actually run it and record the seed and output; never claim a run that did not happen. Rerun this step's checks on anything the polish changed. On chat-message surfaces, run only its wording, contrast and layout checks.
-   - **Real-phone check after any screen change.** Under the one-driver phone hold, on a test build or the production app signed into a company test account (never an emulator, never the founder's own apps or data): build the candidate, open each changed screen on the real phone, take the phone's own screenshot, and put it next to the approved picture. Fail on clipped text, a wrong font or colour drift; fix, then capture again. Capture only the screens that changed.
-10. **Hand back for independent inspection. Output: exact candidate, checks, findings and next owner.** Supply the approved-token guard and decision ID, overflow and clipping result, approved-reference/running-app screenshot pair, real customer flow and exact device and environment. Separate planning and prototype evidence from runtime evidence under [UI acceptance](references/design-contract.md#ui-acceptance-artifacts). Apply the [evidence reference](../bg-check-it-before-release/references/enforcement.md) with `intent-and-profile`, `design-decisions`, `states-and-flows`, `accessibility`, `platform-and-performance`, `visual-evidence`, `next-action`. Pass to [BG Check It Before Release](../bg-check-it-before-release/SKILL.md): a fresh independent checker assesses the exact candidate; the builder never approves it.
+| Work needed | Method |
+| --- | --- |
+| Visual direction, typography, composition, responsive web craft or a focused visual critique | [design-direction](../design-direction/SKILL.md) |
+| Navigation, dashboards, onboarding, task flow, forms or interrupted work | [design-product-flows](../design-product-flows/SKILL.md) |
+| Tokens, reusable components, theme consistency or design-to-code handoff | [design-system](../design-system/SKILL.md) |
+| Keyboard, assistive technology, contrast, zoom, target size or an accessibility defect | [design-accessibility](../design-accessibility/SKILL.md) |
+| Labels, instructions, errors, honest status, terminology or localization | [design-content](../design-content/SKILL.md) |
+| Animation, gestures, transitions, 3D or measured effects performance | [design-motion](../design-motion/SKILL.md) |
+| iOS, Android, desktop, adaptive windows or platform-specific interaction | [design-native](../design-native/SKILL.md) |
 
-## Copyable templates
+Read only the relevant bodies and linked reference sections. A clear label edit
+can go straight to the content method; a dashboard repair may combine flow and
+accessibility. Keep ordinary status replies and backend-only work lightweight.
+Use existing specialist libraries for the actual stack, Figma or media tools when
+they fit and are available; do not install or load them all merely to design.
 
-Use the [design plan, token, component, screen/state and approval templates](references/design-contract.md#copyable-design-plan). Keep one existing task and graph; use the shared [worker packet](../bg-finish-the-whole-job/references/worker-packet.md), [work graph](../bg-finish-the-whole-job/references/work-graph.md) and [question round](../bg-plain-english-builder/references/question-round.md#copyable-question-round). Ask only genuinely unresolved product questions.
+When the unresolved choice depends on users, use the
+[research-method map](references/imported-research-map.md) to select the relevant
+Owl method. Reuse supplied evidence and existing answers; study planning and
+prototype comparison each address a specific uncertainty, not another compulsory
+interview or permission to invent research findings.
 
-```text
-UI worker brief
-GOAL / requirement IDs / phase:
-PROJECT: exact worktree, branch, admitted base, owner, job/thread:
-READ (pointers): checkpoint; source hashes; decision IDs; selected current/next skill bodies:
-DO: owned paths; screen/state rows; direction or approved-look boundary:
-PERMISSIONS: job-level grants (override shared boilerplate); holds; excluded effects; other-owner files; live operations:
-CAPS: time and size limits:
-DONE WHEN: exact acceptance cases and candidate/device; required outputs:
-PROVE: guard; overflow; screenshot pair; flow; accessibility/performance; final-polish record:
-RETURN: short result + full evidence path; repairs stay with this owner:
-```
+## Detailed imported toolkits
 
-```text
-UI handback
-Status / phase / original outcome:
-Candidate/base + file/artifact/config hashes; job/thread + owner + executor:
-Sources/approval IDs; selected bodies actually read; tools run or unavailable:
-Changed screens/files; token changes and decision coverage:
-Checks: command, exit, actual result, evidence path/hash, native/fixture/manual:
-Final polish: each screen covered, what changed, seed/output if it ran code:
-Open finding IDs + owner + next action:
-Next: independent checker and exact candidate; remaining holds:
-```
+These methods add substantial source recipes and executable tools. Select them
+when their specific capability fits, alongside the relevant general method:
 
-## Red-flag thought → required action
+| Needed detail or tool | Method |
+| --- | --- |
+| Reuse actual effects, UI fragments, layouts, icons and their support files | [design-taste-assets](../design-taste-assets/SKILL.md) |
+| Follow cross-topic design-engineering reference links | [design-engineering-graph](../design-engineering-graph/SKILL.md) |
+| Design or generate an authorised family of interface/film sounds | [design-sound](../design-sound/SKILL.md) |
+| Create SVG artwork or assemble authored frames into SVG animation | [design-svg](../design-svg/SKILL.md) |
+| Component anatomy, interaction states, ARIA and optional keyboard/RTL probes | [design-component-library](../design-component-library/SKILL.md) |
+| Compile compatible DTCG tokens into actual CSS variables | [design-token-build](../design-token-build/SKILL.md) |
+| Font loading, metric fallbacks, fluid scales, OpenType and variable-font recipes | [design-web-typography](../design-web-typography/SKILL.md) |
+| Perceptual colour scales, gamut, theme mappings and contrast recipes | [design-web-colour](../design-web-colour/SKILL.md) |
+| Detailed animation implementation and review recipes | [design-animation-review](../design-animation-review/SKILL.md) |
+| Interactive prototype variants and comparison | [design-prototype-lab](../design-prototype-lab/SKILL.md) |
+| Google Stitch extraction and configured-service workflows | [design-stitch](../design-stitch/SKILL.md) |
 
-| Thought | Required action |
-|---|---|
-| "Eight recolours should count." | Replace them with distinct layout, type, material, density and shape directions rendered on equivalent content. |
-| "The founder likes dark glass everywhere." | Recover this product's recorded choice; propose real variety for new work. |
-| "Reuse the last product's look so everything feels consistent." | Each product keeps its own look; pick fresh candidates from the looks library and offer continuity only as one option. |
-| "Make it cinematic everywhere." | Match the effect level to the surface: full range on launch and story pages, feedback and continuity motion on task paths. |
-| "This screenshot proves it works." | Exercise the customer flow and recovery; separate illustrative from functional evidence. |
-| "The kit is approved, so its new font is approved." | Find the exact product decision and hash; otherwise keep it proposed. |
-| "Make every device flat to be safe." | Profile full effects, reduce only the offending effect, keep approved exclusions. |
-| "The polish pass is only a style preset; skip it." | Run it in full as the final step on this screen; only its fixed fonts and layouts are optional. |
-| "The polish skill says use its font, so change the approved one." | Keep the approved look; its fonts and layouts are one style option, not the rule. |
-| "Hide the overflow and call it fixed." | Inspect clipped content, repair the layout, rerun long-text and zoom cases. |
-| "The source says 60 fps, so it passes." | Measure the exact candidate on the device; report unrun hardware checks. |
-| "A record pass approves my candidate." | Return to the independent checker; keep phase and verdict distinct. |
+The master remains the shared entry point; imported toolkits do not start another
+interview or record system. Read the relevant detailed references before applying
+a recipe. A library being bundled does not establish a browser dependency,
+connected service, account or execution permission. Preserve actual prerequisites
+and evidence; do not treat a static preview as a functioning product.
 
-## One filled worked example
+For asset reuse, inspect the actual catalogue entry, dependency closure and source
+attribution before copying. Preserve approved colours, typography and behaviour;
+illustrative demo data or progress stays clearly illustrative. For cross-topic
+questions, let the graph supply only the relevant nodes, with sound/SVG execution
+owned by their specific methods. A visual task does not automatically need audio,
+an effect, a study or a graph traversal. Use each when it contributes to the actual
+requested outcome, and reuse the current selection while the task stays unchanged.
 
-For a fully filled screen specification, use the [filled example](references/design-contract.md#filled-example): a fictional screen with its approved recipe, states, exclusions and a later superseding decision. Planned runtime checks stay `unrun`; only the source and saved preview were inspected. The lead receives the candidate per the assignment, then owns commit, integration and the fresh independent check. Illustrative; no look is approved and no app is built by this example.
+## Keep the methods coherent
+
+All specialists share the existing task brief, current decisions and
+[design contract](references/design-contract.md). Keep one account of what is
+approved, proposed, implemented and actually checked. Reuse the user's answers;
+when a real choice changes, preserve the correction in the existing project
+record, with its source, rather than creating a per-skill tracker. Native capture
+helps retain evidence but does not turn an agent proposal into user approval.
+
+Reconsider methods when a prototype exposes a new choice, the supported platform
+changes or a check fails. Explain material trade-offs in terms of the user's task
+before depending on an unresolved choice. Ordinary engineering fixes within the
+approved design do not require another design approval.
+
+Apply craft to the approved direction. Use meaningful spacing and type hierarchy, appropriate hit targets, keyboard and screen-reader behaviour, long-text/zoom cases, reduced-motion preferences and device-appropriate effects. Avoid defaulting every product to the same visual style.
+
+Inspect the implemented result on the intended browser or device, including actual interactions and resulting state. Compare with the approved reference where one exists. Fix clipping, broken navigation and performance issues rather than hiding them. A screenshot alone does not establish a working journey.
+
+Return the usable result, what was checked and any unavailable device or unresolved choice. The user's requested release authority governs activation.
+
+The user's current request and host permissions govern. This skill adds expertise, not authority or a mandatory separate workflow.
+
+Adaptation sources and deliberately removed upstream conflicts:
+[design source notes](../../docs/design-skill-sources.md).

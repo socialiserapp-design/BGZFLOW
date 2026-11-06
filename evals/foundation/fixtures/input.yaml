@@ -1,0 +1,9 @@
+defaults: &defaults
+  mode: offline
+  colours: [blue, green]
+calendar:
+  <<: *defaults
+  title: |
+    Community
+    calendar
+  enabled: true

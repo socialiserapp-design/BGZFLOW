@@ -32,8 +32,5 @@
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "current-truth.mjs"
-  ],
-  "scripts": {
-    "test": "node --test test/*.test.mjs"
-  }
+  ]
 }

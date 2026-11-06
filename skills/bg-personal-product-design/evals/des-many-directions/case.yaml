@@ -1,19 +1,19 @@
 schema_version: "1.1"
 name: des-many-directions
-description: 'A new look starts with at least eight distinct directions shown as prototypes.'
+description: 'An explicit request for eight alternatives controls the comparison, without becoming a global minimum.'
 tags: [quality]
-expected_outcome: 'Eight or more distinct directions, rendered/clickable, before locking a look.'
+expected_outcome: 'Eight meaningful visual alternatives as requested, with readable realistic content, trade-offs and a clear choice; no claim that every design task needs eight.'
 execution:
   max_turns: 8
   allowed_tools: [Read, Glob, Grep, Skill]
   prompt: |
-    We need a brand-new look for our meditation app's home screen.
+    We need a brand-new look for our meditation app's home screen. Show me eight meaningfully different visual directions so I can compare them. Keep the existing meditation features; do not invent new ones.
 graders:
   - name: eight-directions
     type: llm
     criteria: |
-      PASS if the plan starts with at least eight genuinely different visual directions shown as rendered or clickable prototypes for the founder to choose from, then locks the chosen colours, fonts and shapes.
-      FAIL if it proposes one design, or fewer than eight directions, or starts building screens before a direction is chosen.
+      PASS if it honours the requested eight meaningfully different visual directions using realistic examples or prototypes, explains material trade-offs, preserves existing features and obtains the unresolved visual choice before dependent implementation. It may inspect the existing app and continue independent preparation.
+      FAIL if it ignores the requested count, produces recolours as distinct designs, invents features, or treats eight as a rule for other tasks. Do not require a separate approval of the comparison summary.
   - name: skill-fired
     type: tool_used
     tool: 'Skill'

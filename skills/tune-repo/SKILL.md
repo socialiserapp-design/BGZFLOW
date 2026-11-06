@@ -1,9 +1,14 @@
-﻿---
+---
 name: tune-repo
-description: Audit and optimize repository build, lint, typecheck, and hook scripts so deterministic gates run fast and reliably.
+description: "Improve a repository’s development feedback and navigation when setup or tooling improvements are requested."
 ---
 
-# tune-repo
+# Improve repository feedback
 
-Audit and optimize repository build, lint, typecheck, and hook scripts so deterministic gates run fast and reliably.
+Inspect existing scripts, conventions, build/test tools and contributor instructions. Identify the friction relevant to the request before adding tooling.
 
+Reuse the established formatter, test runner and package manager. Make the smallest complete setup improvement and verify the actual developer command. Keep documentation as a short map to authoritative references; avoid generated walls of instructions.
+
+Do not rewrite architecture, install a parallel toolchain or change release policy as incidental cleanup. Explain any material dependency or workflow change before committing to it.
+
+The user's current request and host permissions govern. This skill adds expertise, not authority or a mandatory separate workflow.

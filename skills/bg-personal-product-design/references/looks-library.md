@@ -7,11 +7,11 @@ The V01–V16 seeds and S01–S08 starter slots in [techniques](techniques.md#ei
 ## How to pick looks for a round
 
 1. **Read the product first.** Audience, job, surface mode (Persuade, Operate, Read, Experience), platform, and any approved look. If a look is approved and locked, do not run a new look round; apply craft inside it.
-2. **Shortlist by the "Suits" line.** Keep only looks whose Suits line fits this product and whose Avoid line does not.
-3. **Spread across families.** A round of eight or more directions draws from at least four families below, plus at least one platform-native option for apps. Vary the motion level too (static, motion, 2.5D, 3D) for launch and story pages.
-4. **Adapt, then name it.** Change at least type, palette or signature so the direction belongs to this product, and give it this product's own name. Never copy another product's tokens or skin.
-5. **Flag common AI defaults.** Warm cream with serif and terracotta, near-black with one acid accent, broadsheet hairlines, identical-card bento and purple-blue glass glow are fine when chosen for a reason. Mark them in the round so the founder knows, and include at least one direction that is clearly not one of them.
-6. **Record the choice.** For each direction note the look ID it started from and what you changed, so the [sources](sources.md) trail stays honest.
+2. **Use the audience notes as hypotheses.** The Suits and Avoid lines describe common trade-offs, not bans. Test the actual audience, task and user priorities before excluding an approach.
+3. **Spread across families.** Compare a proportionate set of genuinely different families; include a platform-native option when it informs an app’s design choice. Vary the motion level too (static, motion, 2.5D, 3D) for launch and story pages.
+4. **Adapt what the product needs.** A recipe may already fit; do not change type, palette or signature merely to make it different. Preserve a requested shared brand across products. Distinguish legitimate reuse from copying another owner's protected assets or identity.
+5. **Question unexamined defaults.** Warm cream and serif, acid accents, hairlines, bento grids and purple-blue glow can all fit a real brief. Compare an alternative when it would inform an unresolved choice; do not add a direction solely to avoid a popular style.
+6. **Retain useful provenance.** Keep adopted references and the actual user decision in the existing record. A look ID can help find a recipe again; a separate per-direction form is not required.
 
 ## Families
 
@@ -28,7 +28,7 @@ The V01–V16 seeds and S01–S08 starter slots in [techniques](techniques.md#ei
 
 ## Quick match by product type
 
-These are shortlists to start from, not answers. Always include at least one direction from outside the shortlist.
+These are shortlists to start from, not answers. Consider an alternative outside the shortlist when it could improve the decision.
 
 | Product type | Try first | Also consider |
 |---|---|---|

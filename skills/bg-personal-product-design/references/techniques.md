@@ -1,6 +1,6 @@
 # Techniques: explicit actions and reusable components
 
-Apply these methods under the chosen product identity ([identity authority](design-contract.md#identity-authority)). Keep the [shared glossary](../../bg-build-with-me/references/glossary.md) and existing contracts. Pin each source's path and hash in the [token and source template](design-contract.md#token-and-source-template). Every value here is a proposal until a recorded decision approves it.
+Apply relevant methods under the chosen product identity ([identity authority](design-contract.md#identity-authority)). Keep the [shared glossary](../../bg-build-with-me/references/glossary.md) and existing contracts. Retain sources for adopted [tokens and components](design-contract.md#tokens-and-components) in the existing design record; no manual hash receipt is required. Values here are proposals, not user preferences or permission to change an approved design.
 
 ## Choose the surface mode
 
@@ -15,14 +15,18 @@ Assign modes by surface, not by company or product. In a notes app the editor co
 
 ## Eight or more rendered directions
 
-Use the seed families V01–V16 and the starter slots S01–S08 below as seeds, not a finite theme picker. Add families as briefs change. Reuse the previous project's direction only when the founder explicitly asks for that continuity.
+The historic heading names this reference for existing links; eight is not a required
+count. Use the families and starter examples below as options, not a fixed theme picker.
+Recover the intended audience, actual content, platforms and approved decisions first.
+Compare a proportionate range of meaningfully different composition, typography,
+material and interaction choices when a consequential design decision is unresolved.
+Use sketches, rendered examples or a clickable prototype according to what resolves it.
+Check readability, accessibility and core states. Explain the trade-off of each viable
+option. Respect an explicit requested number; do not fill a quota with recolours.
+For a mixed choice, show the combined result when needed to establish its meaning.
+Retain the actual decision and its scope in the existing project record; missing old
+fingerprints do not prevent ordinary design work. Preserve already approved choices.
 
-1. Record product purpose, audience, platform, real content and states, the previous project's selected direction and the last ten available direction fingerprints. Mark missing history and retrieve it from its owner before claiming novelty.
-2. Assemble at least sixteen viable combinations. Remove platform-incompatible materials and layouts that cannot carry the real job. Select at least eight, varying seven axes (theme, density, material, typography, temperature, shape, motion) plus layout and background. If you break ties randomly, run a real seeded shuffle and save the seed and output; a simulated run is not evidence.
-3. Require at least three different axis values between every pair and at least four distinct layout anatomies (a proposed mechanical floor). Unless the product brief constrains modes, include at least three light-led and three dark-led options. A light and dark version of one concept is one option. Count differences with colour excluded to catch recolour-only variety; artistic review still decides quality.
-4. Render every selected direction with equivalent real-shaped content at the same comparison viewports. Include a setting card or switch, the core work surface, a result or detail view and a failure state. Make contact sheets and clickable desktop or native prototypes as relevant; preview chat's actual supported formatting separately. A named matrix without rendered artifacts does not count as a round.
-5. Inspect every option for hierarchy, typography, accessible contrast, clipped text and full and fallback effect states. Replace weak or duplicate options so eight or more remain. Present clear names, one real trade-off each and links to the interactive scenes; offer more on request.
-6. Capture selected and rejected attributes with their exact artifacts. For "type from B, boxes from E", render the combined whole and record its actual approval. If unresolved, the next round holds at least eight substantive refinements or recombinations. Never re-ask a question already answered in DECISIONS.md. Lock the approved colour, font, corner, material and composition choices with the [approval template](design-contract.md#approval-template).
 
 ### Eight starter slots
 
@@ -60,7 +64,7 @@ These C01–C10 values are concrete proposals; product-locked values override th
 
 ## Eight polish principles
 
-Adapted from a product team's polish playbook, without accepting its unverified numerical or causal claims. Also apply intent-led grouping, visible failures, discoverable not-yet-connected capabilities, one consistent global vocabulary and controls near the job. A product's later recorded decisions supersede an older spec's scope.
+Adapted from a product team's polish playbook, without accepting its unverified numerical or causal claims. Also apply intent-led grouping, visible failures, one consistent global vocabulary and controls near the job. Expose a not-yet-connected capability only when the requested product scope includes it and its actual status is clear. A product's later recorded decisions supersede an older spec's scope.
 
 1. **Native spring motion:** bind transitions to the product's actual spring tokens: snappy for controls, gentle for sheets, bouncy only where purposeful. Keep static and reduced-motion alternatives. Hard cuts are fine where they read better; animation is not mandatory everywhere. Output: transition/token map.
 2. **Interruptible gestures:** test reversing a drag and handing release velocity to the existing supported animation implementation; keep focus and scroll. Output: the actual interruption scenario and result.
@@ -80,7 +84,7 @@ Adapted from a product team's polish playbook, without accepting its unverified 
 - Keep rich material available where approved; one product's selected material look stays specific to that product.
 - Apply coherent tokens across neighbouring screens; keep accepted buttons, labels and behaviour intact during polish.
 - Extend the repertoire, avoid prior-project repeats and match identity across platforms without imposing dark mode.
-- Make an existing but not-yet-connected capability discoverable and label it; never show an affordance that promises a capability the product lacks.
+- Make capabilities discoverable within the agreed scope. Do not add preview controls for unfinished or unrequested features during polish; a displayed action must accurately communicate what it can do.
 
 ## Optical craft and anti-generic checks
 
@@ -90,8 +94,8 @@ Before showing a round, compare silhouettes with the palette removed: navigation
 
 ## Final polish
 
-Run a final polish pass on every app and web screen after the direction is chosen and before handback. Apply every step: CTA and button-label contrast in all states; deliberate hero composition; heading wrapping checked at real viewport sizes (widen the measure or resize type rather than accept a tall wrapped wall); grid occupancy with no dead cells; real, observed motion within the reduced-motion rules; background craft within the approved look; and anti-repetition checks (no cheap meta-labels, repeated section layouts or prior-project motifs).
+Check the screens and states affected by the requested change. Relevant checks include button-label contrast, heading wrapping at actual viewport sizes, coherent grid occupancy, observed motion and reduced motion, and consistency with the approved background and composition. Hero composition and variety matter only where the actual design calls for them. Do not expand a small change into polishing every screen or add effects simply to satisfy this list.
 
-Where a step asks for randomisation or code, run it for real and record the seed and output; a simulated run is not evidence. Repair the real cause of overflow instead of hiding it, and keep reduced motion and reading order working. Rerun the overflow and token checks on anything the polish changed. Record one pass per screen in the handback. On chat-message surfaces (e.g. WhatsApp or Telegram messages), run only the wording, contrast and layout checks; hero, scroll-animation and grid steps do not apply.
+If relevant authorised work uses randomisation or code, run it for real and retain the useful result; an invented run is not evidence. Repair the cause of overflow and keep reading order and reduced motion working. Recheck behaviour affected by the polish, reusing valid evidence for unchanged work. Preserve actual observations through the existing evidence route rather than requiring one manual form per screen. On chat-message surfaces, check the applicable wording, actions and rendering instead of website effects.
 
-If an optional polish preset is used during this pass, read its whole body, record its hash and apply every step under the rules above. Any preset's fixed fonts and layouts (wide editorial type, AIDA page order, gapless bento, scroll effects, large section spacing) count as one style option among the variation families: use them only when that direction was chosen; otherwise keep the chosen or approved look's fonts, layout and tokens (`bgz taste status` / `LOCKED_IDENTITY`). It never overrides an approved look. Where any preset conflicts with this section (simulated randomisation, hidden overflow, mandatory motion, font bans), this section wins. Other aesthetic presets need an explicit, relevant choice; never load conflicting presets to "cover" UI.
+If a polish preset is relevant, read its body and adapt its applicable steps to the current request. Its fonts, layouts, page order and effects are style options, not mandatory replacements. Current user decisions and the approved design govern; a preset never supplies permission to change them. Discard conflicting demands for simulated results, hidden overflow, compulsory motion or universal font bans. Select compatible methods for the actual task instead of loading conflicting presets for coverage.

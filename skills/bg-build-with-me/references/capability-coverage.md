@@ -1,90 +1,156 @@
-# Capability coverage before optional selection
+# Match expertise and checks to the actual task
 
-Read this at admission and whenever the current or next stage changes. Decide coverage from the project's actual facts (surface, platform, domain, risk and approved task), for the current stage and the next stage separately. Optional search or selection adds candidates; it never sets or lowers the minimum.
+Use this reference when the current work needs additional expertise. Its rows
+are prompts for relevant risks, not a required bundle, a fixed skill floor or
+a current/next-stage form. Choose useful methods through the catalogue and
+[selection guidance](skill-selection.md), with the main agent as fallback.
 
-Each row names a **capability**, not a particular skill. If an installed skill provides it, read that skill's full body and use it. Otherwise apply the pack's own short method below and label the record `pack method`. Well-known public skills are listed only as optional suggestions.
+A method can change how well the work is done; it cannot authorize a different
+product, new spending, customer restrictions or broader tool access. Preserve
+explicit user requirements even when the selector misses relevant expertise.
 
 ## Coverage table
 
-Each applicable row adds coverage. Carry unchanged reads across stages.
+| Task or risk | Expertise and observable checks to consider |
+|---|---|
+| Unclear product outcome | Recover the current request; resolve consequential choices; define what the user will be able to do and how to observe it. |
+| Software design and shared interfaces | Existing callers, useful packages, ownership, compatibility, failure behavior and realistic consumer examples. |
+| Changed behavior or reproduced failure | Meaningful behavioral checks; a failing-before/passing-after regression where practical; isolate the cause instead of patching symptoms. |
+| Independent work | Disjoint ownership, real capacity, current instructions and a combined-candidate check. |
+| Substantial or consequential result | Independent scrutiny appropriate to the consequence, plus direct evidence of the requested outcome. |
+| UI, web, mobile or chat surface | Approved direction, interaction states, accessibility and actual rendering on the relevant supported surface. |
+| Native integration or performance | Runtime/version compatibility and measured behavior on the target platform; identify any device evidence still missing. |
+| Security boundary | Authorization, isolation, secrets, untrusted inputs and failure/retry behavior at the affected boundary. |
+| Money, quotas, pricing or commercial defaults | Applicable risky-changes expertise, accurate provider facts, realistic normal/edge cases, approved customer behavior and actual spending authority. |
+| Multi-step external work | Stable operation identity, unknown-outcome reconciliation, cancellation, recovery and protection from duplicate effects. |
+| Research, legal or factual work | Applicable primary sources, dates, jurisdiction or version, supported claims and explicit uncertainty. |
+| Documents, calculations or creative work | Correct content, formulas or data; intended audience; assembled/rendered artifact, including sound or motion where relevant. |
 
-| Class | Trigger | Required capability | Observable application | Optional skills if installed |
-|---|---|---|---|---|
-| Shared baseline | Every executor | [BG Efficiency](../../bg-efficiency/SKILL.md) | Complete outcome at the lowest cost; selected reads; precise evidence; supported tool fallback | — |
-| Stage | Discovery/planning; building/debugging/integration; review; release; recovery | Respectively [discovery](../../bg-plain-english-builder/SKILL.md), [delivery](../../bg-finish-the-whole-job/SKILL.md), [checking](../../bg-check-it-before-release/SKILL.md), [release](../../bg-ship-and-recover/SKILL.md), [continuation](../../bg-continue-my-project/SKILL.md) | The stage artifact and acceptance from the [shared contract](decision-and-delivery-contract.md); the stage name grants no authority | — |
-| Software planning | Planning | Written plan method | Dependency, ownership and acceptance plan using existing requirement and contract IDs | `writing-plans` |
-| Changed behaviour | Building or debugging | [M1 test first](#m1-test-first) | A meaningful reproducer or test for the changed behaviour | `test-driven-development` |
-| Evidence boundary | Building, debugging, integration, review, release | [M2 verify before claiming](#m2-verify-before-claiming) | Exact candidate and actual relevant checks; unchanged valid evidence reused | `verification-before-completion` |
-| Reproduced failure | Debugging | [M3 systematic debugging](#m3-systematic-debugging) | Cause traced; failing-before and passing-after result; affected regression checks | `systematic-debugging` |
-| Integration and review | Integration; independent review | [M4 review](#m4-review) | Integrated candidate; consolidated findings; builder and reviewer differ | `requesting-code-review`, `code-review` |
-| Parallel execution | Two or more independently ready owned tasks | [M5 parallel work](#m5-parallel-work) | Disjoint writes, isolation, accepted dependencies, one integration owner | `dispatching-parallel-agents`, `using-git-worktrees` |
-| Every substantive UI | UI on any surface, including desktop, native and chat | [Design skill](../../bg-personal-product-design/SKILL.md), [M6 accessibility](#m6-accessibility), a design-critique pass and the [final polish pass](../../bg-personal-product-design/references/techniques.md#final-polish) on every screen | Approved direction and tokens, complete states, reachable actions, accessible contrast and input, the actual rendered flow | `accessibility`, `bg-personal-product-design` |
-| Mobile UI | Mobile screen or component work | Platform conventions for flows, density, input, failure and empty states | Native patterns under the approved visual contract | `mobile-app-ui-design` |
-| React Native / Expo | RN or Expo building or acceptance | Runtime and version match; one existing token/component authority | No automatic folder or theme replacement | `react-native-best-practices`, `expo-design-system` |
-| Native specialists | Expo planning; native motion; native integration/review | Existing project layout; reduced-motion and UI-thread behaviour; measured target-device checks | Evidence from the target device | `expo-project-structure`, `expo-animation`, `expo-react-native-performance` |
-| Android acceptance | Android building, debugging, integration, review or release | [M7 real-flow acceptance](#m7-real-flow-acceptance) on a constrained device | Visible test → repair → retest of the exact app and flows | `maestro-mobile-testing` |
-| Web UI | Web UI; React web | Coherent approved experience; version-appropriate components and performance | Rendered pages at real viewports | `frontend-design`, `vercel-react-best-practices` |
-| Web acceptance | Web or desktop-web building, debugging, integration, review or release | [M7 real-flow acceptance](#m7-real-flow-acceptance) in a visible browser | Customer flow, interactions and failure states; headless tests supplement this | `webapp-testing`, `playwright` |
-| Security boundaries | Security, APIs, authentication, authorisation, tenant isolation, secrets; payments imply this row | [M8 security review](#m8-security-review) and [M9 misuse resistance](#m9-misuse-resistance) | Boundary, abuse, retry and failure cases; no certification claim | `security-and-hardening`, `edge-audit`, `security-audit`, `differential-review` |
-| Money and commercial defaults | Pricing, payments, billing, quota, credits, subscriptions, purchases | [M10 money and risky changes](#m10-money-and-risky-changes) with the security row; multi-step paid or workflow work also follows [durable work](durable-work.md) | Approved-environment cases; taxes, fees, margin and entitlements; holds kept | `risky-changes` |
-| Subscription provider | A named payments or subscription provider | The provider's own security, state and testing guidance | Purchase, restore, expiry and failure accepted on the target platform | the provider's official skills |
-| Shared contracts and language | Shared API, data or component contracts; architecture | [M11 domain vocabulary](#m11-domain-vocabulary) and [M12 interface design](#m12-interface-design) | Existing glossary, C4 identifiers, interface/data versions and requirement IDs in every affected brief | `domain-modeling`, `api-and-interface-design`, `c4-codebase-architecture` |
-| Consequential architecture | Explicit architecture work | The row above plus recorded trade-offs (as ADRs) and observable quality and failure scenarios; a rebuild goes [beside the old](durable-work.md#rebuild-beside-the-old) | Building workers receive the accepted boundaries | `software-architecture`, `codebase-design` |
-
-Platform floor: Android work needs a verified acceptance profile (runner, device, flow checklist). iOS, desktop and chat surfaces add their own native or channel accessibility, testing, security and delivery requirements from the project contract. Chat facts alone do not imply browser testing: add channel rendering, buttons, length limits and fallbacks. Unknown or missing tooling is a named gap with an owner, an equivalent verification, or the affected acceptance blocked.
-
-UI capability never approves every aesthetic in its sources. The product's approved tokens, component semantics and references stay authoritative. There is no universal dark, glass, bento, glow, scroll-animation or font default. Do not load mutually conflicting style presets to "cover" UI.
+Use relevant existing specialists rather than loading every row. Missing required
+tools or expertise remain specific gaps; an equivalent method is acceptable only
+when it proves the same requirement. Record limitations honestly.
 
 ## Recording coverage
 
-Write two labelled records, `required-current` and `required-next`, into the existing task packet. Keep every gap with an owner and next action; a tool exiting zero is not complete coverage. If a resolver tool is configured (see [skill selection](skill-selection.md#optional-catalogue-and-judgment-route)), run it once per stage with the full known facts; otherwise apply this table once by hand and label the result `manual`.
+Keep a short current brief connecting the objective, current decisions, authority,
+owned work, selected methods, meaningful checks and unresolved gaps. Reuse existing
+task records and native events. Do not ask the model to manufacture a separate
+coverage form or full-body-read receipt.
 
-Carry the facts, required capabilities, missing coverage, contract versions and any optional selection into each brief. Each executor reads its selected bodies and records actual reads and tool use; the lead checks omissions before the affected stage. An excluded optional candidate never removes required accessibility, platform testing or security coverage. This table selects and reports only: it installs nothing, runs no tools, enforces no ceiling, accepts no candidate and grants no release or financial authority.
+The foundation can capture native messages, method selections, assignments and
+some tool outcomes. These observations do not prove complete coverage or method
+application. Check the actual result before making that claim.
 
 ## Pack methods
 
 ### M1 Test first
-Write the test for the changed behaviour and watch it fail (red); make it pass with the smallest change (green); then tidy. A regression test counts only if it fails without the fix. Test behaviour through public interfaces, not a mirror of trivial implementation.
+
+Use test-first development when requested or when a concrete regression makes
+it useful. For a bug, show that a meaningful check can detect the original fault
+before trusting its pass. Avoid tests that merely copy the implementation.
+Not every prose edit, investigation or reversible low-impact change needs a
+new automated test.
 
 ### M2 Verify before claiming
-Before any "done", "fixed" or "passing": name the command that proves it, run it fresh and complete, read the full output and exit code, then state only what the output shows. "The agent said it worked" means inspect the diff and run the check. Map requirements line by line; passing tests alone do not meet requirements.
+
+Define observable success, exercise the actual relevant candidate and inspect
+its effects. Use commands, browser/device observation, source checks or independent
+calculations as the task requires. Identify the actual instance and relevant
+server processes. Reuse unchanged valid evidence; do not rerun for ceremony.
+A successful command or model statement alone is insufficient.
 
 ### M3 Systematic debugging
-Reproduce the failure; trace it to a cause; compare working and failing cases; test one hypothesis at a time; prove the fix with failing-before and passing-after evidence; rerun affected regression checks. Two repair rounds at most, then report the open findings.
+
+Reproduce the problem, trace relevant inputs and boundaries, compare a working
+case, test a specific hypothesis and recheck affected behavior. Preserve failed
+evidence. If repeated attempts fail at the same boundary, reconsider the approach
+and surface consequential unresolved choices. Honour the task's repair limits.
 
 ### M4 Review
-Review the integrated candidate's diff against the original requirements and the brief's required outputs. Give each finding a stable ID, severity, evidence, owner and closure condition. Consolidate findings per owner. The builder never reviews its own work.
+
+Check the complete affected outcome against the original request. Consolidate
+concrete findings with reproduction, consequence and closure evidence. Builders
+check their own work; an independent assessment, when required by risk or the
+task, comes from someone who did not author the candidate. Provider names alone
+do not establish independence.
 
 ### M5 Parallel work
-Dispatch only independently ready tasks with disjoint owned paths. One worktree per writer, one integration owner, and accepted shared contracts before dependent work starts. Drain the ready queue as capacity frees; never exceed real host capacity or the agreed usage ceiling.
+
+Delegate independently ready contributions only when useful and supported by
+actual capacity. Keep one writer for shared changes and one integration owner.
+Use appropriate isolation; worktrees do not isolate credentials or services.
+Preserve the same accepted interfaces and user decisions across workers.
 
 ### M6 Accessibility
-Aim for WCAG 2.2 AA or the platform equivalent. Every action works by keyboard or switch access with a visible focus indicator. Controls expose a label, role and state through native accessibility APIs. Text contrast is at least 4.5:1 (3:1 for large text and control boundaries), measured on the real composite. Text scales to 200% (or the largest platform size) without clipping. Touch targets are at least 44 pt / 48 dp. State is never shown by colour alone. Errors and phase changes are announced. Reduced motion and reduced transparency are honoured. Reading and focus order match the visual order.
+
+For the affected surface, check keyboard or assistive input, meaningful control
+names and states, focus order, contrast, text scaling, touch targets and reduced
+motion as applicable. Use current platform guidance and the project's adopted
+accessibility standard. Measure actual rendering; do not claim certification
+from a checklist or add unrelated redesigns.
 
 ### M7 Real-flow acceptance
-Run the exact candidate on the target surface: a visible browser, a device or a release build. Exercise the complete customer journey plus loading, empty, error, retry, offline, permission and cancellation states. Test a constrained device separately from the judging device. Test, repair and retest visibly. Label emulator, headless and fixture evidence as such; missing hardware evidence stays an open gap.
+
+Exercise the intended journey on the actual relevant browser, device, service
+or final artifact. Include applicable loading, empty, error, retry, offline,
+permission and cancellation behavior. Respect local device restrictions and use
+authorized test accounts. Label simulator, headless, fixture and physical-device
+evidence accurately; missing target proof stays unverified.
 
 ### M8 Security review
-Threat-model first: map trust boundaries (requests, uploads, webhooks, third-party responses, model output, and values handed over by other processes), name the assets, run STRIDE over each boundary, and write abuse cases as the first tests. Then check:
-- input validated at the boundary; parameterised queries; output encoded; HTTPS everywhere;
-- passwords hashed with bcrypt, scrypt or argon2; httpOnly, secure, sameSite session cookies; security headers set;
-- authorisation (not only authentication) on every protected action; users reach only their own resources;
-- server-side URL fetches allowlisted (no SSRF); destructive file operations resolve links, stay under an allowlisted root, sit below that root and carry ownership evidence read beforehand;
-- secrets never in code, logs, prompts or URLs, referenced by name only, rotated if ever exposed;
-- rate limits on authentication, counted in a shared store when more than one instance runs;
-- one committed lockfile, the native audit triaged by reachability, dependency install scripts blocked unless approved, new dependencies reviewed for provenance and typosquats;
-- personal data classified, collected for a stated purpose, with retention and a working export/delete path; consent before sharing;
-- model output treated as untrusted input; tool permissions scoped; destructive actions confirmed.
-Ask before adding authentication flows, new sensitive-data classes, new integrations, CORS changes, upload handlers or elevated roles when the brief does not already authorise them.
+
+For affected security-sensitive work, identify assets and trust boundaries, then
+check the risks that apply: input validation, authorization and tenant isolation,
+secret handling, injection, unsafe fetches/uploads, configuration, dependency
+provenance, data retention and failure paths. Use current authoritative guidance
+and existing project controls. A threat-model method can help complex work but
+is not a mandatory new exercise for every task.
+
+For relevant web and service changes, inspect parameterized queries and output
+encoding, authenticated and authorized actions, tenant separation, safe session
+cookies, password storage, transport security and abuse controls. Check unsafe
+server-side fetches and file paths, untrusted provider responses, dependency
+provenance and reachable advisories. For sensitive data, check the stated purpose,
+consent, retention and working deletion/export behavior required by the product.
+Exercise the actual affected boundaries; a long security checklist is not evidence.
+
+Do not expose credentials or personal data, broaden permissions or silently
+change accounts. Confirm ownership and the user's applicable rules before
+destructive actions. New sensitive features or access outside the authorized
+scope require resolution before that work.
 
 ### M9 Misuse resistance
-For each security-relevant choice point (algorithms, modes, timeouts, flags, constructor parameters), probe zero, empty, null and negative values, defaults, swapped parameters and error paths that silently succeed. Consider the malicious, the lazy and the confused developer. Make the secure path the default, validate configuration and reject dangerous combinations. Classify severity from critical (default use is insecure) to low (needs deliberate misuse).
+
+At consequential API or configuration boundaries, test empty, missing, invalid,
+swapped and boundary values, unsafe defaults and misleading success paths.
+Prefer an interface whose ordinary correct use is safe. Do not treat an LLM
+judgment as validation of untrusted runtime input.
 
 ### M10 Money and risky changes
-Give every state-changing or paid operation a durable identity derived from the intent, not the attempt; claim it atomically with a unique constraint; reject a reused key with a different payload; treat every call as success, failure or **unknown**, recording intent before calling out and reconciling unknown outcomes before any retry; keep keys longer than the longest retry path. Release behind reversible flags or staged rollout. Prices include applicable taxes and meet the agreed margin after fees, discounts and landed costs. Test in approved sandbox environments; real charges, store submissions and live trading need the brief to name them. For work that spans several steps or providers (quote, charge, deliver, settle), follow [durable work](durable-work.md).
+
+Verify current provider semantics and real data assumptions before changing
+charges, prices, quotas, subscriptions or customer-visible defaults. Preserve
+the user's approved behavior and required risky-changes checks.
+
+Give external operations a stable identity and reconcile unknown outcomes before
+retry. Protect against duplicate charges or deliveries, mismatched retry payloads
+and concurrency. Check taxes, fees, currency, entitlements and agreed margin when
+applicable. Use authorized test modes; live charges, store submissions or trading
+need the actual task's authority. Reverting code does not reverse money or data.
+Do not add a staged rollout, cap or customer hold merely because it is suggested
+here; use the approved release and recovery policy.
 
 ### M11 Domain vocabulary
-Keep one glossary (the [shared glossary](glossary.md) plus the project's own). Challenge terms that conflict with it, sharpen fuzzy ones, stress-test relationships with concrete edge scenarios and check that the code agrees. Update the glossary the moment a term is resolved. Record a decision only when it is hard to reverse, surprising without context and the result of a real trade-off. An engineering decision becomes a numbered ADR in the code repo's `docs/adr/` ([template](../../../templates/ADR.md)), indexed in `DECISIONS.md`; supersede an old record, never delete it. The founder's own words stay in the founder's decisions file.
+
+Use the project's current names and shared definitions across owners. Resolve
+ambiguous terms with concrete examples. Keep user choices separate from engineering
+proposals and superseded decisions. Use existing records; a new glossary file or
+numbered decision form is not mandatory.
 
 ### M12 Interface design
-Define the contract (types, schemas, errors) before implementing it. Use one error shape everywhere, validate only at system boundaries, and treat third-party responses as untrusted. Change by addition: new fields optional, nothing removed or retyped without a migration. Keep naming predictable and paginate lists. Every observable behaviour becomes something a consumer relies on, so expose deliberately. State-changing endpoints honour an idempotency key or are documented as unsafe to retry.
+
+Inspect real consumers and external schemas. Make ownership, accepted inputs,
+outputs, errors, compatibility and retry behavior explicit at the affected boundary.
+Prefer suitable existing interfaces. Validate untrusted input where needed; do
+not assume every system must share one error format or identical schema strategy.
+Provide a migration or compatible change when existing consumers require one.

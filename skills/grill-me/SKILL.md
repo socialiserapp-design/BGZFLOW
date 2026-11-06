@@ -1,10 +1,31 @@
 ---
 name: grill-me
-description: Resolve new product choices before a substantial company outcome, or stress-test a plan when asked to grill me. Reuse recorded answers and leave technical decisions with the lead.
+description: "Thoroughly stress-test a plan, idea or consequential choice when the user wants questioning. Explore dependencies and important assumptions, explain alternatives fairly and keep asking beyond sixteen questions when useful."
 ---
 
-Read `~/.codex/skills/grilling/SKILL.md` using the host's supported skill or file-read tool. Do not invent a Skill tool when the host lacks one.
+# Stress-test the idea with the user
 
-Company rules apply: first read the relevant map, plan and recorded product answers. Ask one unresolved consequential product/business question at a time, with a recommendation; facts discoverable from available evidence are the agent's work. Agree prototype, defined checkpoints or final-only involvement where not already recorded. The lead derives architecture, security and test criteria; do not quiz the Founder on routine engineering or repeat settled discovery.
+Use the [shared questioning procedure](../bg-plain-english-builder/references/question-round.md),
+also used by `bg-plain-english-builder` and `4x4`. Run one conversation, not three
+interviews. Bring a challenging but respectful perspective: test the premise,
+trace decisions that depend on each answer, and expose meaningful failure cases.
 
-Finish when product intent and material choices are sufficient to act under existing authority. Then load `~/.codex/skills/company-engineering-design/SKILL.md` for the engineering handoff. Preserve holds, and do not turn this interview into implementation, automatic agent spawning or repeated approval gates.
+Recover settled answers and inspect facts yourself. Start open-ended if the user's
+purpose or taste is unclear. For a material choice, make credible alternatives
+concrete and compare their upside, costs, risks, reversibility and uncertainty on
+the same criteria. Explain why a recommendation fits stated priorities and when
+another option wins; do not turn every yes into acceptance of a bundled plan.
+
+Cover outcome, approach, delivery and failure where relevant. Do not manufacture
+questions, but do not stop at sixteen or leave an important assumption unasked.
+Wait on dependent decisions and continue independent investigation or authorised
+work. If the user is unsure, resolve the missing fact or offer a useful example;
+uncertainty is not permission.
+
+Use each answer, preserve its source in existing records, and revisit affected
+choices when new evidence or corrections arrive. Stop the current question round
+when the next action is understood and authorised; an interview-only task remains
+an interview. No extra summary approval, fixed council or fresh chat is required.
+
+[Sources and adaptations](../../docs/questioning-method.md) distinguish the
+inherited ideas from this BGZFLOW procedure.

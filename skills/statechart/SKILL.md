@@ -8,7 +8,11 @@ disable-model-invocation: true
 
 The chart shows how a system moves between states, in the words of the person who reads it. The scripts call that person the reader, as in `readerActions` and reader steps. The reader decides whether the behavior is right. The reader can be a PM who reads a product flow, an engineer who reads a protocol or a service, or a reviewer who reads a design. Label each state with what the reader can observe or cares about, such as "Paying" in an app or "Lease held, write pending" in a lock service. Label each step with the event that moves the system, such as "tap Pay" in an app, "the request reads the count" in a service, or "the lease expires" in a lock service. Keep variable and action names out of labels.
 
-Run `node <skill dir>/scripts/statechart.mjs --help` for the commands and for how to read a chart. Work in a scratch folder outside the repo. The command writes its files next to its input. The first run installs TLC and Java with mise, which downloads about 305 MB and needs the network. The help's TLC section tells how to use a TLC and Java that you have.
+Run `node <skill dir>/scripts/statechart.mjs --help` for the commands. Use an owned scratch folder outside the repository; commands write beside their input and some replace their own output directory. Never point them at unrelated files. Mapping JavaScript is executable code: inspect it and its imports before running an untrusted mapping.
+
+This optional tool needs Node plus Java 11+ and TLC for model checking. Supply existing executables through `JAVA` and `TLA2TOOLS` (the latter is a local tla2tools.jar). PNG rendering uses `pele@1.8.0` and `@resvg/resvg-js@2.6.2` in a private cache. These dependencies are not bundled. Missing dependencies produce an explicit error without downloading. When the current task authorises setup, `STATECHART_ALLOW_INSTALL=1` enables npm renderer installation and mise Java/TLC installation (potentially about 305 MB). Use `XDG_CACHE_HOME` to select the renderer cache location. Remove the environment override after setup. Do not promise a diagram or model check until the actual required tools run successfully.
+
+A request for a simple state diagram does not require TLA+ or this toolchain: use native Mermaid when sufficient. Formal model evidence is bounded by the model and must be checked against the real implementation before reporting a product bug.
 
 ## Pick the direction
 

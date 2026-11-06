@@ -1,0 +1,179 @@
+{
+  "inspectedAt": "2026-11-05T10:10:00.983847+00:00",
+  "purpose": "Sources for original BGZFLOW design method adaptations; no remote instructions execute at runtime.",
+  "repositories": [
+    {
+      "repository": "anthropics/skills",
+      "url": "https://github.com/anthropics/skills",
+      "revision": "ca45fc496a3436251f191354091d557da31c15b5",
+      "commitDate": "2026-10-28T19:20:38Z",
+      "license": "Apache-2.0 (frontend-design/LICENSE.txt)",
+      "files": [
+        {
+          "path": "skills/frontend-design/SKILL.md",
+          "sourceUrl": "https://raw.githubusercontent.com/anthropics/skills/ca45fc496a3436251f191354091d557da31c15b5/skills/frontend-design/SKILL.md",
+          "browserUrl": "https://github.com/anthropics/skills/blob/ca45fc496a3436251f191354091d557da31c15b5/skills/frontend-design/SKILL.md",
+          "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
+        },
+        {
+          "path": "skills/frontend-design/LICENSE.txt",
+          "sourceUrl": "https://raw.githubusercontent.com/anthropics/skills/ca45fc496a3436251f191354091d557da31c15b5/skills/frontend-design/LICENSE.txt",
+          "browserUrl": "https://github.com/anthropics/skills/blob/ca45fc496a3436251f191354091d557da31c15b5/skills/frontend-design/LICENSE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        }
+      ]
+    },
+    {
+      "repository": "pbakaus/impeccable",
+      "url": "https://github.com/pbakaus/impeccable",
+      "revision": "c8891a9ae865d6ee311836ae5199bfce0fe115b1",
+      "commitDate": "2026-11-05T05:59:00Z",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": ".agents/skills/impeccable/SKILL.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/SKILL.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/SKILL.md",
+          "sha256": "fab04b31f946573b00a8559db1fc070f8ea5825254d491c2b13156e5661a86d7"
+        },
+        {
+          "path": ".agents/skills/impeccable/reference/new-work.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/new-work.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/new-work.md",
+          "sha256": "4d9410bf9dfdb0890769a2f45e634be809392ac293abd91ee9553e8eabb18fe5"
+        },
+        {
+          "path": ".agents/skills/impeccable/reference/operate.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/operate.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/operate.md",
+          "sha256": "a9d2203acd45ca33a13d5c68b02b23ed512425ac15f0e8438318ed124b43729d"
+        },
+        {
+          "path": ".agents/skills/impeccable/reference/clarify.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/clarify.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/clarify.md",
+          "sha256": "173dd66abe65633910dcb04a51f40d6ff2a793f87088f022a02fc4cad24dd133"
+        },
+        {
+          "path": ".agents/skills/impeccable/reference/animate.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/animate.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/.agents/skills/impeccable/reference/animate.md",
+          "sha256": "d658c48ffbe0031e8e3b318996cad6ceafe29e40aa50d5bb25e4bf1d6839dc7c"
+        },
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/LICENSE",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/LICENSE",
+          "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812"
+        },
+        {
+          "path": "NOTICE.md",
+          "sourceUrl": "https://raw.githubusercontent.com/pbakaus/impeccable/c8891a9ae865d6ee311836ae5199bfce0fe115b1/NOTICE.md",
+          "browserUrl": "https://github.com/pbakaus/impeccable/blob/c8891a9ae865d6ee311836ae5199bfce0fe115b1/NOTICE.md",
+          "sha256": "c60a093c2845fd9fb82f9c6f742ece31f379f8190b535309d32d66c45ccffdcb"
+        }
+      ]
+    },
+    {
+      "repository": "Dammyjay93/interface-design",
+      "url": "https://github.com/Dammyjay93/interface-design",
+      "revision": "2f9be3206855bcb2d1d0af262c8bae25cba6658d",
+      "commitDate": "2026-06-20T11:32:44Z",
+      "license": "MIT",
+      "files": [
+        {
+          "path": ".claude/skills/interface-design/SKILL.md",
+          "sourceUrl": "https://raw.githubusercontent.com/Dammyjay93/interface-design/2f9be3206855bcb2d1d0af262c8bae25cba6658d/.claude/skills/interface-design/SKILL.md",
+          "browserUrl": "https://github.com/Dammyjay93/interface-design/blob/2f9be3206855bcb2d1d0af262c8bae25cba6658d/.claude/skills/interface-design/SKILL.md",
+          "sha256": "720b31a31276e899fbe3006a33cbfeaceb77a73ba4c27b80d29afd38c8b7b208"
+        },
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/Dammyjay93/interface-design/2f9be3206855bcb2d1d0af262c8bae25cba6658d/LICENSE",
+          "browserUrl": "https://github.com/Dammyjay93/interface-design/blob/2f9be3206855bcb2d1d0af262c8bae25cba6658d/LICENSE",
+          "sha256": "54c405ef24e71634b73c994133d028e7a96d1906f42615366296d6583dcaba8f"
+        }
+      ]
+    },
+    {
+      "repository": "vercel-labs/web-interface-guidelines",
+      "url": "https://github.com/vercel-labs/web-interface-guidelines",
+      "revision": "434b7f91364665f2f733b310ec54809bf8f37937",
+      "commitDate": "2026-10-05T20:49:16Z",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "command.md",
+          "sourceUrl": "https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/434b7f91364665f2f733b310ec54809bf8f37937/command.md",
+          "browserUrl": "https://github.com/vercel-labs/web-interface-guidelines/blob/434b7f91364665f2f733b310ec54809bf8f37937/command.md",
+          "sha256": "d246b026f4f29b5823a9cc857f9edf3d2507002e055e32040cadeaf3b38e0234"
+        },
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/434b7f91364665f2f733b310ec54809bf8f37937/LICENSE",
+          "browserUrl": "https://github.com/vercel-labs/web-interface-guidelines/blob/434b7f91364665f2f733b310ec54809bf8f37937/LICENSE",
+          "sha256": "6cd1609c9c12233507cdd2ce0d32e9a721e3c27494951be06b90090deeeb7af2"
+        }
+      ]
+    },
+    {
+      "repository": "AvdLee/SwiftUI-Agent-Skill",
+      "url": "https://github.com/AvdLee/SwiftUI-Agent-Skill",
+      "revision": "204dba7c67256a8b707ee3fbc5759a824191974f",
+      "commitDate": "2026-10-06T06:57:26Z",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "skills/swiftui-expert-skill/SKILL.md",
+          "sourceUrl": "https://raw.githubusercontent.com/AvdLee/SwiftUI-Agent-Skill/204dba7c67256a8b707ee3fbc5759a824191974f/skills/swiftui-expert-skill/SKILL.md",
+          "browserUrl": "https://github.com/AvdLee/SwiftUI-Agent-Skill/blob/204dba7c67256a8b707ee3fbc5759a824191974f/skills/swiftui-expert-skill/SKILL.md",
+          "sha256": "3b794f9cb46efb016eafcad2fcedce7127c74d60c50a949619e0bcd2bc38351f"
+        },
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/AvdLee/SwiftUI-Agent-Skill/204dba7c67256a8b707ee3fbc5759a824191974f/LICENSE",
+          "browserUrl": "https://github.com/AvdLee/SwiftUI-Agent-Skill/blob/204dba7c67256a8b707ee3fbc5759a824191974f/LICENSE",
+          "sha256": "8f5fd8e5cddb015b5627e45e68b256356586144288a4a0a3db87e38bcb0c9155"
+        }
+      ]
+    },
+    {
+      "repository": "ehmo/platform-design-skills",
+      "url": "https://github.com/ehmo/platform-design-skills",
+      "revision": "dc2be825d8b439caea78e9eaa8fb3ac23b0ff3e9",
+      "commitDate": "2026-03-19T05:13:29Z",
+      "license": "MIT",
+      "purpose": "License-only supporting source named in Impeccable NOTICE.md; no platform skill bodies copied.",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/ehmo/platform-design-skills/dc2be825d8b439caea78e9eaa8fb3ac23b0ff3e9/LICENSE",
+          "browserUrl": "https://github.com/ehmo/platform-design-skills/blob/dc2be825d8b439caea78e9eaa8fb3ac23b0ff3e9/LICENSE",
+          "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685"
+        }
+      ]
+    }
+  ],
+  "referenceOnly": [
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/",
+      "terms": "W3C permissive document terms; source reference only."
+    },
+    {
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/",
+      "terms": "W3C documentation and applicable example-code terms; source reference only."
+    },
+    {
+      "url": "https://design-system.service.gov.uk/patterns/validation/",
+      "terms": "Open Government Licence v3.0 except stated exceptions; source reference only."
+    },
+    {
+      "url": "https://developer.android.com/develop/ui/compose/layouts/adaptive/get-started-with-adaptive-apps",
+      "terms": "Google Developers content generally CC BY 4.0; code examples under applicable page/site terms; source reference only."
+    },
+    {
+      "url": "https://www.designtokens.org/tr/2025.10/format/",
+      "terms": "W3C Community Final Specification Agreement; Community Group report, not W3C Standard; source reference only."
+    }
+  ]
+}

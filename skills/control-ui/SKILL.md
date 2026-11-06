@@ -17,7 +17,7 @@ Use local browser automation to verify UI behavior with evidence. First reuse th
 
 ## Setup Pattern
 
-1. Start the app locally using the repo's documented dev command.
+1. Identify the intended instance and current processes. Reuse a suitable authorised instance, or start an isolated test instance using the repo’s documented command.
 2. Discover existing local harnesses: Playwright tests, Cypress specs, Storybook, browser scripts, Electron launch scripts, or snapshot tools.
 3. For a web app, connect to the local URL with the existing browser tooling.
 4. For Electron/Chromium, enable a remote debugging port when supported.
@@ -39,7 +39,7 @@ await page.screenshot({ path: "/tmp/ui-harness-after.png", fullPage: true });
 await browser.close();
 ```
 
-Do not add Playwright as a project dependency just for this probe unless the user asks. Prefer existing dev dependencies or external browser tools already available in the environment.
+Prefer existing dev dependencies or supported browser tools. If a missing harness prevents required verification, evaluate an existing package and install or adapt it within the task’s engineering authority. Ask only about unresolved cost, access or material product choices. Do not add a parallel harness without a demonstrated need.
 
 ## Generic CDP Harness
 
@@ -104,6 +104,6 @@ When multiple app windows/tabs share a debug port:
 - Do not rely on stale element references after navigation or structural changes.
 - Avoid coordinate clicks unless a fresh screenshot was captured immediately before the click.
 - Keep test data local and disposable.
-- Do not store screenshots or heap snapshots from privacy-sensitive workspaces unless the user explicitly agrees.
+- Minimise and redact screenshots, traces and heap snapshots; use authorised private storage and retention. Do not export private evidence to another service without authority.
 - Do not hard-code selectors, ports, or script paths from another repository. Discover the current repo's local app markers.
-- Clean up dev servers, debug sessions, and temp profiles when done.
+- Close only temporary servers, debug sessions and profiles this run owns. Preserve the user’s active app, retained evidence and services required by the completed task.

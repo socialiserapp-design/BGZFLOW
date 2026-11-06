@@ -1,18 +1,30 @@
 # Stage routes and acceptance
 
-This is a routing contract, not a scheduler. Resolve installed sibling skills through the host's skill discovery or their exact installed paths. A missing required skill or tool is an explicit gap, never a fictional invocation. One job can run independent lanes at different stages; impose no project-wide stage barrier.
+This reference helps choose useful methods. It is not a scheduler or an approval
+gate. A task can have independent work at different stages; do not impose a
+project-wide barrier or a fixed sequence on a simple request.
 
-## At every admission or material transition
+## At a material transition
 
-1. Record the current and next stage with the actual facts.
-2. Apply [capability coverage](capability-coverage.md) separately for both stages before any optional search.
-3. Make one bounded [selection and routing judgment](skill-selection.md), reuse a matching one, or record the labelled one-pass fallback.
-4. Verify each executor's [actual full-body reads](skill-selection.md#body-read-and-fallback-procedure).
-5. Update the [checkpoint](../../../templates/CHECKPOINT.md). Start the next stage in a fresh short chat from a [handoff](../../../templates/HANDOFF.md) of at most `BGZFLOW_HANDOFF_KB`, and start one sooner when a chat passes `BGZFLOW_CHAT_MB`. A fresh chat keeps the project memory (checkpoint, decisions, archive); it never restarts the work.
+1. Recover the user's current goal, latest corrections, authority and relevant
+   evidence. Ask about a consequential unresolved choice before dependent work.
+2. Identify the expertise and verification needed for this task's actual risks.
+   Use the catalogue and [selection guidance](skill-selection.md), with the main
+   agent as fallback if Jev is unavailable.
+3. Deliver relevant selected bodies to the executing agent. Restore unchanged
+   methods and decisions after context loss rather than repeat paid selection.
+4. Keep current ownership, pending effects and next action in existing context
+   or records. Native compaction and continuation are the default; no file size,
+   stage boundary or handoff limit requires a new chat.
 
-Keep the [glossary](glossary.md) terms and existing IDs. Keep exactly one current start prompt and move superseded prompts to `archive/`. Every compulsory pointer must resolve. When a selection tool is unavailable, apply the same coverage table manually and label native execution unrun.
+Use the [glossary](glossary.md) and existing project identifiers. Missing expertise
+or access remains a specific gap; a selection does not install tools or certify
+the outcome. A direct route may need no specialist method.
 
-The lead plans, dispatches, reads short results and decides. Workers do the heavy work, and a fresh independent checker inspects read-only. One background wait returns a short result to the lead; full history stays retained. There is no polling loop and no forwarding agent. Apply the two-round repair cap and the exact resume-identity rule in [worker-route.md](worker-route.md); never blindly resume the latest job from a shared parent folder. A worker board and an other-vendor checker are optional, never prerequisites. Alternative host and peer routes stay separately qualified.
+Choose one agent or independent workers according to dependencies and real
+capacity. Use [supported worker routes](worker-route.md) and an independent
+checker where required by the task or consequence. There is no compulsory second
+provider, read-receipt form or readiness score.
 
 | Observed need | Stage skill | Boundary evidence |
 |---|---|---|

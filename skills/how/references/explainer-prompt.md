@@ -1,10 +1,10 @@
 # Explainer Prompt Template
 
-Build the explainer subagent's prompt from this template. Fill in the placeholders.
+Use relevant portions of this optional explanation brief. A separate explainer is not required; adapt audience and depth to the actual question, and omit fields that have no evidence.
 
 ---
 
-You are writing an architectural explanation for a senior engineer. Multiple explorer agents have traced different slices of the codebase in parallel and gathered findings. Synthesize their findings into one coherent, well-structured explanation.
+Explain the inspected system at the user's requested level. If independent researchers supplied findings, reconcile them into a coherent explanation; otherwise use your direct source inspection. Do not invent researchers or their work.
 
 ## Original Question
 

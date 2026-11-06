@@ -2,7 +2,7 @@ schema_version: "1.1"
 name: peb-routine-tech-choice
 description: 'A routine technical choice is made by the agent, not handed to the founder.'
 tags: [quality, efficiency]
-expected_outcome: 'Picks a database with a short reason.'
+expected_outcome: 'Gives a concrete provisional recommendation, its useful trade-off and when the alternative fits; checks any missing material facts.'
 execution:
   max_turns: 8
   allowed_tools: [Read, Glob, Grep, Skill]
@@ -12,8 +12,8 @@ graders:
   - name: decides
     type: llm
     criteria: |
-      PASS if the reply picks one option with a short reason and treats it as a technical choice the team makes.
-      FAIL if it hands the decision back to the founder without picking, or writes a long comparison with no choice.
+      PASS if the reply recommends an option based on stated or inspected requirements, identifies a material benefit and cost, and explains when the alternative is preferable. Unknown consequential facts are checked rather than invented.
+      FAIL if it forces the user to choose routine implementation details without helping, invents requirements, or presents only the upside of its favourite. A focused clarifying question is valid when its answer changes the choice.
   - name: skill-fired
     type: tool_used
     tool: 'Skill'

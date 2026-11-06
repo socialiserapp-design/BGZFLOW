@@ -1,0 +1,49 @@
+{
+  "note": "Licence text sources; drawing versions remain recorded separately in assets/icons/index.json and asset-rights.json.",
+  "sources": [
+    {
+      "file": "logos-CC0.txt",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/d6960edc1b7309d392c76e40d3a320df7f9ff85c/LICENSE.txt"
+    },
+    {
+      "file": "simple-icons-CC0.md",
+      "url": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.30.0/LICENSE.md"
+    },
+    {
+      "file": "vscode-icons-MIT.txt",
+      "url": "https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/LICENSE"
+    },
+    {
+      "file": "lucide-ISC-and-Feather-MIT.txt",
+      "url": "https://raw.githubusercontent.com/lucide-icons/lucide/main/LICENSE"
+    },
+    {
+      "file": "CC-by-2.0.html",
+      "url": "https://creativecommons.org/licenses/by/2.0/legalcode"
+    },
+    {
+      "file": "CC-by-3.0.txt",
+      "url": "https://creativecommons.org/licenses/by/3.0/legalcode.txt"
+    },
+    {
+      "file": "CC-by-4.0.txt",
+      "url": "https://creativecommons.org/licenses/by/4.0/legalcode.txt"
+    },
+    {
+      "file": "CC-by-sa-2.0.html",
+      "url": "https://creativecommons.org/licenses/by-sa/2.0/legalcode"
+    },
+    {
+      "file": "CC-by-sa-3.0.txt",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt"
+    },
+    {
+      "file": "CC-by-sa-4.0.txt",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt"
+    },
+    {
+      "file": "CC-by-sa-3.0-at.html",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/at/legalcode"
+    }
+  ]
+}

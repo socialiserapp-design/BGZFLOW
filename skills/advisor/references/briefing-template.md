@@ -1,44 +1,34 @@
-# Advisor briefing
+# Bounded advisor briefing
 
-Fill every section. Quote evidence verbatim; summarize only narrative. Redact secrets. When resuming an earlier advisor, keep the headings but write only what changed since the last consult, plus the new questions.
+Include only sections relevant to the explicitly requested consultation. Evidence
+may be quoted briefly or referenced for read-only inspection. Keep original facts,
+user decisions and agent interpretations distinct; redact secrets and unrelated data.
 
-```markdown
-## Checkpoint
+## Question and scope
 
-<major decision | stuck | pre-completion | on request> — <one line on why now>
+What decision or claim should the advisor assess? What would make its answer useful?
+State the user's requested model or review boundary where applicable.
 
-## User's request
+## User objective and current decisions
 
-<the original request, verbatim>
+Include the original objective, relevant latest corrections, limits and unresolved
+choices. Do not substitute the builder's summary for conflicting user instructions.
 
-<later constraints or corrections from the user, verbatim, in order>
+## Candidate and observed evidence
 
-## What has happened so far
+Identify the actual artifact or proposal. Supply relevant source, direct test results,
+failure evidence and access instructions. Mark anything unrun or unavailable.
+For code, include the applicable changes and affected runtime boundaries; a full
+repository dump or every tool log is unnecessary.
 
-<chronological and compact: what you investigated, decided, changed, tried, and ruled out, with the reason for each>
+## Alternatives and uncertainty
 
-## Evidence
+Explain the options and consequential assumptions. Ask for disconfirming evidence
+and the smallest supported correction, not agreement with the main agent.
 
-<verbatim tool output relevant to this checkpoint: errors, stack traces, test output, command output, the relevant diff hunks. Trim unrelated noise and mark trims with [...]>
+## Expected response
 
-## Current state
-
-<`git status --short` and `git diff --stat` output; files touched; anything half-done>
-
-## Questions for the advisor
-
-1. <specific question>
-2. ...
-
-<For a decision: the options with the tradeoffs as you see them, and your current leaning with reasons.
-For stuck: what you expected vs. what you observed, and the hypotheses you have ruled out.
-For pre-completion: what you verified and how, and what you did not verify.>
-
-## What I need back
-
-<for example: "a verdict and the single best next step", "confirm or refute hypothesis 2", "anything I missed before I call this done">
-
-## Full transcript
-
-<`transcript_path` from `.cursor/advisor/state.json` when advisor mode is on in this conversation; otherwise "not available">
-```
+Request findings with supporting evidence, their effect on the user's objective,
+remaining uncertainty and recommended next action. The advisor is read-only and
+cannot approve spending, publication or expanded scope. Its judgment is not a
+replacement for direct verification.

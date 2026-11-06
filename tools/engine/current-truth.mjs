@@ -1,9 +1,19 @@
 import fs from 'node:fs/promises';
-import { constants } from 'node:fs';
+import { constants, existsSync } from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 
 export const truthFile = '.bgzflow/current-truth.json';
+export const OWNER_TRUTH_CANDIDATES = Object.freeze(['OWNER.md', 'SIMON.md', 'FOUNDER.md', 'DECISIONS.md']);
+
+export function resolveOwnerTruthFile(projectRoot = process.cwd()) {
+  const root = path.resolve(projectRoot);
+  for (const name of OWNER_TRUTH_CANDIDATES) {
+    const candidate = path.join(root, name);
+    if (existsSync(candidate)) return { file: candidate, relative: name };
+  }
+  return { file: path.join(root, 'OWNER.md'), relative: 'OWNER.md' };
+}
 const digest = data => createHash('sha256').update(data).digest('hex');
 const contained = (root, file) => { const relative = path.relative(root, file); return !path.isAbsolute(relative) && relative !== '..' && !relative.startsWith('..' + path.sep); };
 const canonical = value => JSON.stringify(value, (_, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b))) : item);

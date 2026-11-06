@@ -1,23 +1,23 @@
 # Cinematic motion and 3D
 
-How to build award-level websites and polished motion as concrete actions. Everything here is an **option** for a direction, never a house style. The product's approved look, tokens and exclusions win ([identity authority](design-contract.md#identity-authority)), and every effect still fills the [effect contract](motion-and-effects.md#required-effect-contract). Native and desktop equivalents are in [motion by platform](motion-by-platform.md). Naming a library, skill or paid tool grants no install, spending or release authority; check each licence first.
+Concrete options for polished websites and motion, never a house style. Current user decisions, approved tokens and exclusions govern ([identity authority](design-contract.md#identity-authority)). Consider the applicable [effect design questions](motion-and-effects.md#relevant-effect-design-questions) for an effect the task actually needs. Native and desktop equivalents are in [motion by platform](motion-by-platform.md). Naming a library, skill or paid tool grants no install, spending or release authority; check each licence first.
 
 ## 1. Decide the fit first
 
-Answer these in the design plan first:
+Resolve the relevant questions from the current brief, implementation and user decisions. Ask only about consequential gaps; no new design-plan document is required:
 
 1. **Which surface mode?** ([modes](techniques.md#choose-the-surface-mode))
-   - Persuade and Experience web pages (launch, product story, portfolio, campaign): full cinematic range allowed.
+   - Persuade and Experience web pages (launch, product story, portfolio, campaign): the cinematic range may help when it supports the requested experience; the category itself grants no authority.
    - Read pages: restrained motion; type and image reveals, no scroll-jacking.
-   - Operate surfaces (dashboards, forms, checkout, settings, money, chat): no 3D or scroll scenes on the task path. Motion is feedback, state and spatial continuity only.
-   - Native apps: platform-true motion first ([motion by platform](motion-by-platform.md)); 3D only for a product viewer, onboarding or a rare celebration.
+   - Operate surfaces (dashboards, forms, checkout, settings, money, chat): protect reading, input and immediate actions. Interactive 3D may be the task itself, such as an editor, map or model viewer. For decorative scenes, explain and resolve any material distraction or performance trade-off instead of silently refusing or moving the feature elsewhere.
+   - Native apps: compare appropriate native and reusable implementations ([motion by platform](motion-by-platform.md)); use 3D when it serves the requested task, not only for a prescribed category of screen.
 2. **Does motion explain something real?** A real object (product turntable), a journey (camera descent through chapters), data (map, chart, point cloud) or a cause and effect. Decoration with no story is just a slow page.
-3. **Does a real asset exist?** No model and no budget: choose 2.5D (shader, depth layers) or pre-rendered video, never a filler 3D blob.
-4. **Can a poster tell the same story?** If not, the fallback will fail. Design the static version first.
+3. **Does a suitable asset exist?** Check reuse, rights and available tooling. If an asset or spending authority is missing, compare an achievable alternative such as 2.5D or a still; do not invent assets, buy them or replace the requested object without resolving the affected choice.
+4. **What remains usable without the effect?** A poster may carry a decorative story; an interactive 3D task may require another operable representation, accessible controls or a truthful capability message. Design the relevant fallback alongside the feature rather than claiming a still replaces every task.
 5. **Who are the visitors?** Mostly mid-range phones on mobile data: prefer a pre-rendered video or image sequence to live 3D.
 6. **Is any core action delayed?** Send, save, pay, book and call stay immediate; no effect, preloader or pause precedes them.
 
-Record one ambition level per surface:
+These levels can help compare implementation options when needed. A surface may combine them; no per-surface record is required:
 
 | Level | What it is | Typical tools | Good for |
 |---|---|---|---|
@@ -27,7 +27,7 @@ Record one ambition level per surface:
 | L3 Real-time 3D | Lit scene, camera moves, interaction | Three.js / R3F, Spline | Product objects, journeys, data worlds |
 | L4 Pre-rendered | Video loop or image sequence of a 3D render | Blender, AV1/H.264, canvas frames | Mobile-heavy audiences, complex scenes |
 
-In a direction round, vary the motion axis across directions (for example one L0, one L1 editorial, one L2 shader, one L3 scene) so the founder sees real alternatives. Once a look is approved, the builder makes implementation calls inside it without re-asking.
+When motion is an unresolved choice, compare materially different options, such as a still, an editorial transition or an interactive scene. Do not add unrelated levels to fill a quota. Once the look is agreed, make implementation choices within it without repeating approval; new consequential changes still need resolution.
 
 ## 2. Motion grammar for any recipe
 
@@ -37,9 +37,9 @@ These make motion read as one directed film, not a stack of slides. They are the
 - **Seam vector law.** At a cut, exit and entry share axis, direction and speed; the incoming element picks up its motion mid-path. On zoom seams, scale change has the same sign on both sides. In product UI a toast or panel leaves the way it came.
 - **Carriers.** Hand a concrete element across the change: a card that docks into the next layout, a thumbnail that becomes the hero, a cursor mid-path. Web: GSAP Flip, Motion `layoutId`, View Transitions. Native: shared-element transitions.
 - **Causal chains.** Press → squash → release → flight → land → recoil → reveal. Each effect starts on the frame that causes it; big elements rebound slower, small ones snap.
-- **Stillness before the payoff.** 0.3-0.75 s of hold between action and a celebratory result. Never on time-critical actions.
-- **Sustained motion, not idle wobble** (cinematic look and video). Fill time with staged reveals, a camera with intent (establish wide → travel → arrive), counters ticking, cursor-led demos. Ambient loops stay available to looks that choose them (aurora, playful), paused off-screen and stopped under reduced motion; loading and live-status loops are always allowed.
-- **Only 2-3 transition types per product**, repeated consistently.
+- **Stillness before a cinematic payoff.** A 0.3-0.75 s hold can give a narrated scene rhythm. Do not delay an operation or hide its confirmed result for a flourish; any celebration supplements immediate truthful feedback.
+- **Sustained motion, not idle wobble** (cinematic look and video). Fill time with staged reveals, a camera with intent (establish wide → travel → arrive), counters ticking, cursor-led demos. Ambient loops stay available to looks that choose them (aurora, playful), paused off-screen and stopped under reduced motion; loading and live-status indicators should be truthful, accessible and compatible with reduced motion; their purpose does not automatically justify a loop.
+- **A coherent transition vocabulary.** Two or three types can be enough for a small experience; use the amount the product needs and preserve approved transitions.
 - **Signature curve.** A product may own one curve (GSAP `CustomEase`, cubic-bezier or spring token) used everywhere.
 - **Opaque stage ground.** When two views overlap or crossfade, paint the root with the product's canvas colour so no white flash shows, especially on dark looks.
 
@@ -70,11 +70,11 @@ Each recipe lists build steps, the budget and the fallback. Use the product's ex
 Fallback: poster stays; reduced motion shows the poster or a single still render.
 
 ### 3.2 Scroll-driven story (chapters)
-1. Write 4-7 chapters, one idea each; the static stacked version must read on its own.
+1. Use the chapters the requested story needs, with a clear idea in each. Four to seven is one sample structure, not a requirement. The static or no-script representation should preserve the content and useful navigation.
 2. GSAP ScrollTrigger: pin a stage, scrub one master timeline (`scrub: 0.5-1`); chapters are labels on that timeline. Pin only what needs pinning.
 3. For a 3D descent, drive the camera along a `CatmullRomCurve3` with scroll progress; copy blocks fade in at camera stops; depth fog and dust particles give scale.
 4. Lighter options: CSS `animation-timeline: view()` for reveals and progress bars inside `@supports (animation-timeline: scroll())`; Motion `useScroll` in React products.
-5. Optional Lenis smooth scroll on Persuade/Experience pages only: `lenis.on('scroll', ScrollTrigger.update)`; off under reduced motion; never in apps or Operate pages.
+5. Optional Lenis smooth scroll for a requested cinematic web story: `lenis.on('scroll', ScrollTrigger.update)`. Prefer the existing native scroll behaviour for frequent tasks; use custom scrolling only when justified by the experience and verified for keyboard, assistive technology and reduced motion.
 6. Refresh ScrollTrigger only on real, debounced layout change; kill triggers on route exit.
 Fallback: reduced motion or no-JS shows the chapters stacked with final states; no pinning, no scrub.
 
@@ -99,7 +99,7 @@ Fallback: instant swap or short crossfade under reduced motion; shader transitio
 1. One full-screen quad: OGL for a single effect (small bundle), Three.js TSL when the page already ships Three.js, Skia or platform shaders on native.
 2. Fill shaders: noise-warped gradients, aurora, liquid caustics, halftone, dither. Effect shaders: distortion, refraction, colour grade.
 3. Uniforms: `uTime` from an absolute clock (skipped frames never change the result), `uPointer` normalised to the layer, `uScroll` progress, colour stops from the product tokens only (2-8 stops).
-4. Expose designer knobs with bounded ranges and good defaults (intensity, speed, scale, angle); record approved values. Prototype in Figma shaders where available so the founder approves the living material before code.
+4. Keep useful internal parameters such as intensity, speed and scale bounded. Use a live prototype when it resolves an open material choice, in Figma or another available tool. Reuse agreed values; do not require a new approval or add customer-facing controls merely to implement an effect.
 5. Render at reduced resolution (0.5-0.75 of the canvas) and upscale for soft fields; no branching or unbounded loops in the shader.
 Fallback: a still frame exported from the shader at the approved values.
 
@@ -118,7 +118,7 @@ Fallback: a rendered still of the cloud.
 Fallback: turntable video or 24-36 frame image sequence scrubbed on a 2D canvas; reduced motion shows the hero still.
 
 ### 3.8 Cursor and hover
-- Gate behind `@media (hover: hover) and (pointer: fine)`; never on touch or native.
+- Enable pointer-following decoration only with a suitable hover-capable fine pointer, using the host's capability checks. Native desktop and tablet pointer modes can qualify; touch and keyboard users need equivalent content and operable controls without a cursor effect.
 - Followers and magnetic buttons: `gsap.quickTo(el, "x", {duration: 0.4, ease: "power3"})`, transforms only; magnet radius small and released on leave.
 - Hover image reveal on project titles: one image follows the pointer with lag; distort only in WebGL.
 - DOM-synced WebGL images (drei `View` or a scroll-rig pattern): one shared canvas renders planes over DOM image boxes so images ripple or bend while layout, accessibility and SEO stay in HTML.
@@ -132,7 +132,7 @@ Fallback: plain hover states; focus states mirror hover for keyboard users.
 - Editorial annotation: the real photo stays visible; data graphics fuse to its geometry (height → bar, liquid → pie) in colours sampled from it; placement measured, not eyeballed.
 
 ### 3.10 Illustrated delight
-Lottie (dotLottie) for designer-made vector moments; Rive when the animation needs a state machine (hover, press, success, error). Size budget: icon under 10 KB, UI animation under 50 KB, scene under 150 KB, hero under 300 KB. Avoid masks, blur and 3D layers in Lottie. Real UI state stays in code with an accessible label. Reduced motion: rest pose.
+Lottie (dotLottie) for designer-made vector moments; Rive when the animation needs a state machine (hover, press, success, error). Illustrative size targets are 10 KB for an icon, 50 KB for a UI animation, 150 KB for a scene and 300 KB for a hero. Measure actual loading and quality; these are not acceptance caps. Avoid masks, blur and 3D layers in Lottie. Real UI state stays in code with an accessible label. Reduced motion: rest pose.
 
 ### 3.11 Finish layer
 Cinematic feel mostly comes from post: tone mapping, restrained bloom, shallow depth of field, low-opacity grain, vignette, slight edge chromatic aberration. Merge into one pass and drop it first on lower tiers. Grain and vignette also work as static CSS overlays on L1 pages.
@@ -149,7 +149,7 @@ Versions and prices as checked in October 2026; verify before install. Use the p
 | React Three Fiber v9 + drei | Declarative 3D in React 19 | MIT | `Environment`, `ContactShadows`, `ScrollControls`, `View`, `PerformanceMonitor`, `useGLTF` |
 | pmndrs postprocessing | Merged post passes | Permissive (check) | Prefer over chained passes |
 | OGL | One shader hero or image distortion | Unlicense | Tiny; no scene graph overhead |
-| Lenis | Smooth scroll on marketing pages | MIT | Off under reduced motion; never in apps |
+| Lenis | Custom scrolling for a requested web story | MIT | Prefer native scrolling for tasks; verify input, accessibility and reduced-motion behaviour |
 | CSS scroll-driven animations | JS-free reveals and progress | Free | Chromium and Safari 26; wrap in `@supports` |
 | View Transitions API | Page and shared-element transitions | Free | Progressive enhancement |
 | Theatre.js | Authored camera keyframes | Core Apache-2.0; studio AGPL, dev only | Ship core only; pre-1.0, so GSAP timelines are the maintained alternative |
@@ -163,7 +163,7 @@ Versions and prices as checked in October 2026; verify before install. Use the p
 1. **Get or make the asset:** model in Blender (optionally agent-driven through a Blender MCP after a licence and security check), a scan, a CC0 source or an AI generator.
 2. **Clean in Blender:** real-world scale, applied transforms, merged materials, baked lighting or AO where static, UVs for textures.
 3. **Export glTF/GLB.**
-4. **Compress:** `gltf-transform` weld, simplify, meshopt (or Draco) geometry, KTX2/Basis textures (lower GPU memory than PNG/JPEG), resize textures to at most 2K for hero and 1K for others.
+4. **Compress:** `gltf-transform` weld, simplify, meshopt (or Draco) geometry, KTX2/Basis textures (lower GPU memory than PNG/JPEG), try 2K hero textures and 1K secondary textures as starting points, then choose sizes from visible quality, zoom needs and measured memory/loading cost.
 5. **Generate the component:** `gltfjsx --transform` for a typed R3F component.
 6. **Budget:** hero model aim a few MB after compression; draw calls low (instancing, merged meshes); measure triangles on the weakest target device.
 7. **Record the licence of every asset** in the product's asset list.
@@ -179,28 +179,28 @@ Versions and prices as checked in October 2026; verify before install. Use the p
 
 Never copy an award site's assets, code or identity; log the link, date and technique observed.
 
-## 6. Hard guardrails
+## 6. Relevant reliability and accessibility checks
 
-Every cinematic surface meets all of these before acceptance.
+Select the checks that can reveal failures in the requested surface. Existing release criteria and user authority govern acceptance; this reference adds no universal performance gate or device matrix. Preserve unavailable evidence rather than inventing a pass.
 
-**Frame budget.** 16.7 ms per frame at 60 Hz, 8.3 ms at 120 Hz, including the browser's own work. Keep main-thread script per frame small; no layout reads after writes in the same frame; animate transform, opacity and shader uniforms; scope `will-change` to elements that animate and remove it after.
+**Frame timing.** A 60 Hz display gives about 16.7 ms per frame and 120 Hz about 8.3 ms, including the browser's own work. Use these to interpret traces on the intended display, not as a new pass/fail threshold for every product. Keep main-thread script per frame small; no layout reads after writes in the same frame; animate transform, opacity and shader uniforms; scope `will-change` to elements that animate and remove it after.
 
-**Loading and Core Web Vitals.** LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1 at the 75th percentile on mobile. The LCP element is HTML text or the poster, never the canvas. 3D and heavy motion code load in a separate chunk after first paint. Reserve the canvas box so nothing shifts. Preload the poster and fonts, not the model. A preloader screen is allowed only on Experience pages and never on Operate or Persuade checkout paths.
+**Loading and Core Web Vitals.** For a relevant public web experience, useful reference targets are LCP ≤ 2.5 s, INP ≤ 200 ms and CLS ≤ 0.1 at the 75th percentile. Distinguish observed field data from a local run and follow the project's actual criteria. Render meaningful HTML or a poster promptly instead of waiting for a decorative canvas. 3D and heavy motion code load in a separate chunk after first paint. Reserve the canvas box so nothing shifts. Preload the poster and fonts, not the model. Do not add a blocking preloader to hide a slow decorative effect. If loading is intrinsic to the requested task, show truthful progress and preserve any actions that can already work.
 
-**Device tiers.** One module picks full, reduced or static from GPU tier, live fps (`PerformanceMonitor` or a rolling frame-time average), `navigator.connection.saveData`, low memory and user preferences. Reduce in this order: post passes, particle counts, DPR (cap at 1.5-2), shadow quality, then swap to the poster. Never flatten content, layout or identity. Provide a forced-tier switch for QA.
+**Device tiers.** Where adaptive rendering is needed, reuse a module that combines supported capability signals with measured performance and user preferences. Post passes, particle counts, DPR (for example 1.5-2) and shadow quality are candidates for reduction; choose the order by measured cost and visual purpose. A poster can replace decoration, but must not replace an interactive task that requires an operable fallback. Preserve content, layout and identity. Use an existing test seam for relevant fallbacks. Add a private test override only if needed; it must not override accessibility preferences or become an unrequested customer setting.
 
 **Lifecycle.** Pause rendering off-screen (IntersectionObserver), when the tab is hidden (`visibilitychange`) and in a background desktop window. Dispose geometries, textures and render targets on route exit. Kill GSAP triggers and timelines on unmount (`gsap.context().revert()` or `useGSAP`).
 
-**No WebGL or context loss.** Feature-detect WebGPU/WebGL before importing 3D code; on failure or `webglcontextlost`, show the poster or video and keep every call to action working.
+**No WebGL or context loss.** Check supported graphics capabilities and handle context loss. Decorative scenes can fall back to a poster or video; interactive tasks need their agreed operable fallback or an accurate limitation with a next action. Preserve working controls and any unsaved state.
 
 **Reduced motion** (`prefers-reduced-motion: reduce`, via `gsap.matchMedia` or `useReducedMotion`). Remove scroll-scrub, pinning, parallax, smooth scroll, camera travel, large zooms, overshoot and loops. Keep opacity and colour changes that explain state; screen transitions become crossfades or instant.
 
 **Reduced transparency and contrast.** Replace glass and blurred layers with opaque surfaces; text over shaders or video keeps at least 4.5:1 contrast via a scrim.
 
-**Accessibility.** All text, links and controls live in the DOM in reading order; the canvas is `aria-hidden`. Pinned sections never trap keyboard focus. Every pointer interaction has a keyboard or button equivalent. No flashing above three times per second.
+**Accessibility.** For decorative canvas scenes, keep text, links and controls in the DOM and hide the decoration from assistive technology. For an interactive canvas task, provide accessible semantics and an equivalent operable interface; do not hide the sole task interface. Pinned sections never trap keyboard focus. Every pointer interaction has a keyboard or button equivalent. Avoid flashing content; assess any requested flashing against current applicable accessibility guidance, including size, contrast and frequency, rather than assuming a frequency alone makes it safe.
 
-**Evidence.** Lighthouse and a performance trace on the built page; frame behaviour recorded on a real mid-range Android phone and an iPhone; each tier forced once; reduced motion, reduced transparency and no-WebGL checked. Label emulator and desktop results as such; missing device evidence stays an open gap, never a pass.
+**Evidence.** Use the actual built surface and inspect its resulting behaviour. Lighthouse or a performance trace can supplement relevant web checks. Exercise supported reduced-motion, transparency, graphics-loss and performance fallbacks where affected. For device performance claims, use representative available hardware for the target audience, not a mandatory Android-and-iPhone pair. Label desktop, emulator and fixture evidence accurately; missing device evidence stays a stated gap, never a performance pass.
 
 ## 7. Add to the effect contract
 
-Extend each cinematic effect's [contract](motion-and-effects.md#required-effect-contract) row with: level (L0-L4), LCP element, lazy-load trigger, compressed asset sizes, tier rules, no-WebGL and reduced-motion variants, and the measured result. Hand back the poster, fallback screenshots and trace with the candidate.
+For a requested cinematic effect, retain relevant [design and performance evidence](motion-and-effects.md#relevant-effect-design-questions) in the existing record: its purpose, loading behaviour, asset sizes, supported tiers, fallback and reduced-motion behaviour, and observed results. Include representative screenshots or traces when they prove a material claim; an effect does not require a separate contract row or unrelated tests.

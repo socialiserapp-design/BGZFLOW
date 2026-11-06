@@ -1,17 +1,21 @@
-<!-- What is live, in one page. Fill it before a release (BEFORE) and again after the switch (AFTER), then compare
-     both with what is actually serving. Names only for secrets and settings, never values. Take times from the
-     system clock. Keep one file per release in the project's handoff or release folder. -->
-# Live manifest: <project> <release ID>
+# What is actually running
 
-| Field | BEFORE (live now) | AFTER (this release) | Serving now (checked) |
+Optional release comparison for the existing release record. Use observations
+from the actual entry points; do not create a second success certificate.
+
+| Relevant fact | Before the change | Intended change | Observed after the change |
 |---|---|---|---|
-| Source commit | <sha> | <sha> | <sha read from the running service> |
-| Artifact (build, bundle, function version) | <id or hash> | <id or hash> | <id or hash seen live> |
-| Configuration and feature switches | <names and states> | <names and states> | <names and states seen live> |
-| Secret names in use (names only) | <NAME_A, NAME_B> | <NAME_A, NAME_B> | <names present in the live environment> |
-| Database schema version | <migration ID> | <migration ID> | <migration ID applied live> |
-| Oldest supported installed app version | <version> | <version> | <oldest version seen calling the server> |
-| Rollback artifact (what to put back) | <id, where it is kept> | <id, where it is kept> | <proof it still deploys> |
+| App, service and entry point | Actual running instance | Intended instance | Instance reached by the user |
+| Source and delivered build | Current version | Tested candidate | Version and assets actually served |
+| Configuration | Relevant names and states | Authorised change | Actual observed state |
+| Database or interface version | Current compatible version | Required migration, if any | Applied and compatible version |
+| Secrets | Names only when relevant | Names only | Presence checked without exposing values |
+| Recovery | Last usable version | Recovery method | Evidence it can restore the required result |
 
-Compare: <match / differs, and what differs>. A difference is a finding to explain before the hour of watching starts, not something to ignore.
-Checked at: <yyyy-mm-dd hh:mm, system clock> by <role>. Evidence: <command output or link>.
+Include only relevant rows. Identify native, fixture, staged and live observations
+accurately. Check the user journey and resulting state as well as process presence.
+A new source file or build does not establish that the running app loaded it.
+
+Preserve failures and unresolved differences with the affected action and owner.
+Use the project's actual release and observation policy. This example adds no
+fixed watch period, extra permission step, recurring monitor or customer restriction.

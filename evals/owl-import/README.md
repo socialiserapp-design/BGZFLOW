@@ -1,0 +1,9 @@
+# Owl research import checks and scenarios
+
+The import inventory records every included source path and pinned revision. The 28 full method adaptations are individually selectable. They extend the existing evidence/research master; they do not replace its user decisions, private record store or source-verification rules.
+
+`scenarios.json` contains realistic multi-method cases and a no-research negative. The first three adapt problem shapes from the upstream behavioural-analytics and qual-quant-triangulation EVALS.md at the same pinned revision. We intentionally reject their unsupported certainty that a smooth funnel proves no blocker, a step removal has a known small effect, or conflicting sources must both be correct. Other cases exercise sparse evidence, permissions, missing observations, current decisions and appropriate methods. Read the expected actions and counterexamples; they are not token-count or repeated-boilerplate tests.
+
+Run offline: `node --test evals/owl-import/import.test.mjs`. These checks validate import metadata/link closure and real card-sort calculations, including incomplete and invalid data. They do not run a model, test Jev selection or prove that an agent follows the prose. The scenario prompts and rubrics remain ready for separate authorised selector/body-delivery and behavioural evaluation. Do not report them as model-passed merely because their fixture files parse.
+
+The only new executable helper is original BGZFLOW code in the card-sort skill. It reads supplied pseudonymous JSON and prints arithmetic; Node 22 or later, no packages/network/keys. Imported Owl methods are MIT text procedures with no mandatory paid tools or new runtime. Their cited books and named theory sources are influence references, not a claim of full-book implementation or verified causal efficacy.

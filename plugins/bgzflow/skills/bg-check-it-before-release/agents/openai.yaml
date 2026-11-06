@@ -1,0 +1,6 @@
+interface:
+  display_name: "BG Check It Before Release"
+  short_description: "Fresh independent checks bound to an exact candidate"
+  default_prompt: "Use $bg-check-it-before-release with a fresh read-only independent checker, the pinned candidate contract and captured results; return an honest ready, changes-required or blocked verdict."
+policy:
+  allow_implicit_invocation: true

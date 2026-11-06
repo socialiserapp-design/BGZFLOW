@@ -12,3 +12,12 @@ Thumbs.db
 .grok-job/
 .tmp/
 skills/*/evals/results/
+evals/foundation/.runs/
+dist/.bgzflow-builds/
+dist/.bgzflow-backups/
+
+# Reproducible local build outputs and private evaluation results
+dist/
+.output/
+evals/**/.runs/
+evals/**/.protocol-current/

@@ -2,30 +2,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const contained = (root, target) => {
   const relative = path.relative(root, target);
   return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
 };
-// The receipt writer outlives the engine process. Unknown launch outcomes are never replayed.
-const runner = String.raw`
-const fs = require('node:fs');
-const { spawn } = require('node:child_process');
-const [receiptPath, requestText] = process.argv.slice(1);
-const request = JSON.parse(requestText);
-const write = result => { const temporary = receiptPath + '.result'; fs.writeFileSync(temporary, JSON.stringify({ operationId: request.operationId, fingerprint: request.fingerprint, result })); fs.renameSync(temporary, receiptPath); };
-let stdout = '', stderr = '', done = false;
-const finish = result => { if (!done) { done = true; write(result); } };
-try {
-  const child = spawn(request.command.file, request.command.args, { cwd: request.cwd, shell: false, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...(request.methodContextPath ? { BGZFLOW_METHOD_CONTEXT_FILE: request.methodContextPath } : {}) } });
-  child.stdout.on('data', bytes => { stdout += bytes; });
-  child.stderr.on('data', bytes => { stderr += bytes; });
-  child.on('error', error => finish({ status: 'completed', exitCode: null, error: error.message, stdout, stderr }));
-  child.on('close', (exitCode, signal) => finish({ status: 'completed', exitCode, signal, stdout, stderr }));
-} catch (error) { finish({ status: 'uncertain', reason: error.message }); }
-`;
-
 /** Trusted local commands, argument arrays, explicit cwd; no shell or ambient project lookup. */
 export function createLocalHostAdapter() {
   async function context(request) {
@@ -74,7 +57,7 @@ export function createLocalHostAdapter() {
         await fs.writeFile(ctx.receipt, JSON.stringify({ operationId: request.operationId, fingerprint: ctx.fingerprint, result: { status: 'uncertain', reason: 'Operation launched; completion not recorded.' } }), { flag: 'wx' });
       } catch (error) { if (error.code === 'EEXIST') return read(ctx, request); throw error; }
       return new Promise(resolve => {
-        const child = spawn(process.execPath, ['-e', runner, ctx.receipt, JSON.stringify({ operationId: request.operationId, command: request.command, methodContextPath: ctx.methodContextPath, cwd: ctx.cwd, fingerprint: ctx.fingerprint })], { cwd: ctx.cwd, detached: true, stdio: 'ignore' });
+        const child = spawn(process.execPath, [fileURLToPath(new URL('./operation-runner.mjs', import.meta.url)), ctx.receipt, JSON.stringify({ operationId: request.operationId, command: request.command, methodContextPath: ctx.methodContextPath, cwd: ctx.cwd, fingerprint: ctx.fingerprint })], { cwd: ctx.cwd, detached: true, stdio: 'ignore', windowsHide: true });
         child.on('error', error => resolve({ status: 'uncertain', reason: error.message }));
         child.on('close', () => { read(ctx, request).then(resolve, error => resolve({ status: 'uncertain', reason: error.message })); });
       });
