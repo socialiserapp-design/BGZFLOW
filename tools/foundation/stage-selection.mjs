@@ -2,6 +2,19 @@ import {createHash} from 'node:crypto';
 
 const stable=value=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().filter(key=>value[key]!==undefined).map(key=>[key,stable(value[key])])):value;
 const digest=value=>createHash('sha256').update(JSON.stringify(stable(value))).digest('hex');
+export const routingInputFingerprint=value=>digest(value);
+export const isContinuationOnly=request=>/^(?:yes|yes please|okay|ok|continue|carry on|go ahead|thanks|thank you)[.!\s]*$/i.test(request.trim());
+export const latestWorkRequest=state=>state.messages.findLast(item=>!isConversationOnly(item.message)&&!isContinuationOnly(item.message))||state.messages.at(-1);
+export function nativeRoutingContext(state){
+  const sources=[],seen=new Set();let size=0;
+  for(const item of [...state.messages].reverse()){
+    if(isConversationOnly(item.message)||isContinuationOnly(item.message))continue;
+    if(seen.has(item.message))continue;
+    if(size+item.message.length>12000)break;
+    sources.unshift(item.message);size+=item.message.length;seen.add(item.message);
+  }
+  return {humanSources:sources,answers:(state.nativeView?.questions||[]).filter(item=>item.answer).map(item=>({question:item.text,answer:item.answer.text})),agentDeclaredStage:derivePlanStage(state)?.context};
+}
 const observationTimes=new Set(['at','observedAt','checkedAt','updatedAt','timestamp','observed_at','checked_at','updated_at']);
 const effectiveCapabilities=value=>Array.isArray(value)?value.map(effectiveCapabilities):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([key])=>!observationTimes.has(key)).map(([key,item])=>[key,effectiveCapabilities(item)])):value;
 

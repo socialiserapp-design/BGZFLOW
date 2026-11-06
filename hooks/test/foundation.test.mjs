@@ -11,8 +11,49 @@ function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-foundation-hook-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
-  return { input: { session_id: 'same-session', cwd: projectRoot }, options: { storageRoot: path.join(root, 'store'), route: false } };
+  return { input: { session_id: 'same-session', cwd: projectRoot }, options: { storageRoot: path.join(root, 'store'), route: false, recall: true } };
 }
+
+test('native default injects zero other-chat history across prompts, tools and restoration',async t=>{
+ const {input,options}=fixture(t),native={...options,recall:undefined};
+ const marker='OTHER CHAT NOTE NEVER AUTOMATICALLY INJECTED';
+ captureEvent({...input,session_id:'separate-history',hook_event_name:'UserPromptSubmit',prompt:(marker+'\n').repeat(200)},native);
+ const outputs=[];
+ for(const event of [{hook_event_name:'SessionStart'},{hook_event_name:'UserPromptSubmit',prompt:'Own current request: offline calendar.'},{hook_event_name:'UserPromptSubmit',prompt:'Own correction: blue heading.'},{hook_event_name:'UserPromptSubmit',prompt:'Any progress?'},{hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'read'},{hook_event_name:'PostToolUse',tool_name:'Read',tool_use_id:'read'},{hook_event_name:'SessionStart',source:'resume'},{hook_event_name:'PostCompact'},{hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'restored'}])outputs.push(await handleFoundationEvent({...input,...event},native));
+ assert.doesNotMatch(JSON.stringify(outputs),new RegExp(marker));
+ assert.match(JSON.stringify(outputs.at(-1)),/Own correction: blue heading/);
+ assert.equal(readContinuity({...input,session_id:'separate-history'},native).messages.length,1);
+});
+
+test('a simple status question remains free even when a known plan stage changed',async t=>{
+ const {input,options}=fixture(t);let calls=0;
+ captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Build an offline calendar.'},options);
+ captureEvent({...input,hook_event_name:'PostToolUse',tool_name:'TodoWrite',tool_use_id:'new-plan',tool_input:{todos:[{content:'Check the saved calendar',status:'in_progress'}]}},options);
+ const result=await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Any progress?'},{...options,route:true,host:{capabilities:async()=>{calls++;return{};}}});
+ assert.deepEqual(result,{});assert.equal(calls,0);assert.equal(readContinuity(input,options).messages.at(-1).message,'Any progress?');
+});
+
+test('unchanged success and failure routes reuse without calls or replayed method bodies',async t=>{
+ const {input,options}=fixture(t),skill=path.join(input.cwd,'skills','sample');fs.mkdirSync(skill,{recursive:true});fs.writeFileSync(path.join(skill,'SKILL.md'),'---\nname: sample\ndescription: Inspect calendar behavior\n---\nExact procedure: inspect the actual calendar.');
+ const catalog=discoverCatalog({roots:[path.dirname(skill)]});let calls=0;
+ const routing={catalog,decide:async x=>{calls++;return{selectedIds:x.candidates.map(item=>item.id),strategy:'single'};}};
+ const config={...options,route:true,routing};
+ await handleFoundationEvent({...input,hook_event_name:'SessionStart'},config);
+ const prompt={...input,hook_event_name:'UserPromptSubmit',prompt:'Inspect calendar behavior.'};
+ assert.match((await handleFoundationEvent(prompt,config)).hookSpecificOutput.additionalContext,/Exact procedure/);
+ const first=calls;assert.ok(first>0);
+ assert.deepEqual(await handleFoundationEvent(prompt,config),{});assert.equal(calls,first);
+ for(const [event,name] of [['PreToolUse','Bash'],['PostToolUse','Bash'],['PreToolUse','Edit'],['PostToolUse','Edit']])await handleFoundationEvent({...input,hook_event_name:event,tool_name:name,tool_use_id:name,tool_input:{}},config);
+ assert.equal(calls,first);assert.deepEqual(await handleFoundationEvent({...input,hook_event_name:'SessionStart',source:'resume'},config),{});
+ await handleFoundationEvent({...input,hook_event_name:'PostCompact'},config);
+ assert.match((await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'restored'},config)).hookSpecificOutput.additionalContext,/Exact procedure/);assert.equal(calls,first);
+ assert.deepEqual(await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'next'},config),{});
+ const failed={...input,session_id:'failure-cache'};calls=0;const offline={...options,route:true,routing:{catalog,decide:async()=>{calls++;throw Error('offline');}}};
+ const request={...failed,hook_event_name:'UserPromptSubmit',prompt:'Inspect calendar behavior.'};
+ await handleFoundationEvent(request,offline);assert.equal(calls,1);assert.deepEqual(await handleFoundationEvent(request,offline),{});assert.equal(calls,1);
+ await handleFoundationEvent({...request,prompt:'Correction: inspect the offline save behavior instead.'},offline);assert.equal(calls,2);
+ await handleFoundationEvent({...request,prompt:'Correction: inspect the offline save behavior instead.'},{...offline,routing:{...offline.routing,availableModels:[{id:'new-model',available:true}]}});assert.equal(calls,3);
+});
 
 test('conversation keeps original records without replaying history or visiting the router', async t=>{
   const {input,options}=fixture(t);
@@ -62,13 +103,15 @@ test('confirmations preserve compaction recovery and explicitly requested select
   assert.ok(readContinuity(input,options).selection,'an explicitly requested method still reaches selection');
 });
 
-test('confirmation after a known stage change still selects methods for that stage',async t=>{
+test('confirmation defers a known stage change until actual work',async t=>{
   const {input,options}=fixture(t);
   await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Build the calendar.'},options);
   const plan={...input,tool_name:'TodoWrite',tool_use_id:'check-stage',tool_input:{todos:[{content:'Check the saved effect',status:'in_progress',activeForm:'Checking the saved effect'}]}};
   captureEvent({...plan,hook_event_name:'PreToolUse'},options);
   captureEvent({...plan,hook_event_name:'PostToolUse',tool_response:'Updated'},options);
   await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:"Yes, that's right"},{...options,route:true,routing:{catalog:[],decide:async()=>({selectedIds:[],strategy:'single'})}});
+  assert.equal(readContinuity(input,options).selection,null);
+  await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'actual-work'},{...options,route:true,routing:{catalog:[],decide:async()=>({selectedIds:[],strategy:'single'})}});
   assert.match(readContinuity(input,options).selection.stage,/^agent-plan:/);
 });
 
@@ -79,7 +122,7 @@ test('confirmation with an additional task is captured and routed normally',asyn
   assert.ok(state.selection);assert.match(state.messages.at(-1).message,/investigate the saved data/);
 });
 
-test('conversation reroutes a known changed stage without treating a missing plan as new work',async t=>{
+test('conversation leaves a known changed stage for the next actual work event',async t=>{
   const {input,options}=fixture(t);
   await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Build the calendar.'},options);
   const plan={...input,tool_name:'functions.update_plan',tool_use_id:'new-stage',tool_input:{plan:[{step:'Check the saved effect',status:'in_progress'}]}};
@@ -87,6 +130,8 @@ test('conversation reroutes a known changed stage without treating a missing pla
   captureEvent({...plan,hook_event_name:'PostToolUse',tool_response:'Plan updated'},options);
   const routing={catalog:[],decide:async()=>({selectedIds:[],strategy:'single'})};
   await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Thanks!'},{...options,route:true,routing});
+  assert.equal(readContinuity(input,options).selection,null);
+  await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'actual-work'},{...options,route:true,routing});
   assert.match(readContinuity(input,options).selection.stage,/^agent-plan:/);
   const before=readContinuity(input,options).events.filter(item=>item.event==='RouteSelected').length;
   await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Hello!'},{...options,recordView:false,route:true,routing});
@@ -108,7 +153,7 @@ test('an incomplete old plan cannot make a status-only message reroute forever',
   assert.equal(state.nativeView.plan.reportedComplete,false);
 });
 
-test('another native session receives original project decisions and corrections automatically', async t => {
+test('explicit bounded recall preserves original project decisions and corrections', async t => {
   const { input, options } = fixture(t);
   const earlier = { ...input, session_id: 'other-provider-session' };
   captureEvent({ ...earlier, hook_event_name: 'UserPromptSubmit', prompt: 'Build a calendar with red headings and offline access.' }, options);
@@ -123,7 +168,7 @@ test('another native session receives original project decisions and corrections
   assert.ok(!Object.hasOwn(result, 'decision'));
 });
 
-test('unchanged project recall is delivered once and restored after compaction', async t => {
+test('explicit project recall is delivered once and restored after compaction', async t => {
   const { input, options } = fixture(t);
   captureEvent({ ...input, session_id: 'earlier', hook_event_name: 'UserPromptSubmit', prompt: 'Calendar uses blue headings and keeps offline access.' }, options);
   const prompt = { ...input, hook_event_name: 'UserPromptSubmit', prompt: 'Continue calendar work.' };
@@ -193,7 +238,7 @@ test('changed project decision is retrieved without granting historical requests
   assert.ok(changed.hookSpecificOutput.additionalContext.length <= 6000);
 });
 
-test('Antigravity repeat invocation restores cross-session history in ephemeral context', async t => {
+test('explicit Antigravity cross-session recall uses invocation-scoped context', async t => {
   const { input, options } = fixture(t);
   captureEvent({ ...input, session_id: 'earlier-provider', hook_event_name: 'UserPromptSubmit', prompt: 'Calendar must retain offline access.' }, options);
   const transcriptPath = path.join(input.cwd, 'transcript.jsonl');
@@ -213,7 +258,7 @@ test('native compact/resume restore the same task without a blocking decision', 
     const result = await handleFoundationEvent({ ...input, hook_event_name: name }, options);
     assert.deepEqual(result, {});
   }
-  for (const source of ['compact', 'resume']) {
+  for (const source of ['compact']) {
     const result = await handleFoundationEvent({ ...input, hook_event_name: 'SessionStart', source }, options);
     assert.match(result.hookSpecificOutput.additionalContext, /preserve its original identity/);
     assert.equal(result.hookSpecificOutput.hookEventName, 'SessionStart');
@@ -222,6 +267,7 @@ test('native compact/resume restore the same task without a blocking decision', 
     assert.ok(!Object.hasOwn(result,'continue'));
     assert.match(result.hookSpecificOutput.additionalContext,/native compaction and continuation/i);
   }
+  assert.deepEqual(await handleFoundationEvent({...input,hook_event_name:'SessionStart',source:'resume'},options),{});
 });
 
 test('tools, subagents and stops are captured automatically without asking the model to write forms', async t => {
@@ -311,7 +357,7 @@ test('routing receives original intent and corrections and reuses methods on a s
   assert.ok(readContinuity(input,options).selection.diagnostics.phases.rank.calls>0);
   const continuation = await handleFoundationEvent({ ...input, hook_event_name: 'UserPromptSubmit', prompt: 'continue' }, config);
   assert.equal(calls, before);
-  assert.match(continuation.hookSpecificOutput.additionalContext, /calendar library/);
+  assert.deepEqual(continuation,{});
   const reused=readContinuity(input,options).selection;
   assert.equal(reused.reused,true);
   assert.equal(reused.diagnostics.elapsedMs,undefined);
@@ -336,7 +382,7 @@ for (const host of [
   await handleFoundationEvent({...plan,hook_event_name:'PreToolUse'},config);assert.equal(calls,baseline);
   assert.deepEqual(readContinuity(input,options).nativeView.proposedPlan.items.map(item=>item.text),['Build calendar','Verify saved effect']);
   const result=await handleFoundationEvent({...input,tool_name:plan.tool_name,tool_use_id:plan.tool_use_id,...(host.returnsInput?{tool_input:plan.tool_input}:{}),hook_event_name:'PostToolUse',tool_response:{content:[{type:'text',text:'Plan shown (2 steps).'}]}},config);
-  assert.ok(calls>baseline);assert.match(result.hookSpecificOutput.additionalContext,/Check the saved calendar/);
+  assert.ok(calls>baseline);assert.doesNotMatch(JSON.stringify(result),/Check the saved calendar/,'An unchanged procedure is already present in this native context.');
   const view=readContinuity(input,options).nativeView;
   assert.equal(view.plan.items.length,2);assert.equal(view.plan.verified,false);
   assert.ok(contexts.some(value=>JSON.stringify(value).includes('agentDeclaredStage')&&JSON.stringify(value).includes('blue headings')));

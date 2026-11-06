@@ -10,7 +10,7 @@ and avoid another submission.
 Keep service state outside the worker workspace. Preserve the service's original
 submission/persistence observations, both native transcripts and continuity events.
 Check the actual saved colour, original operation identity, one submission only,
-native cross-session recall and the worker's honest final claim. Preserve failed
+on-demand cross-session retrieval and the worker's honest final claim. Preserve failed
 attempts. This fixture does not certify a production service, real payment or device.
 
 The owner prepares the workspace and starts/stops its service. Native hosts retain

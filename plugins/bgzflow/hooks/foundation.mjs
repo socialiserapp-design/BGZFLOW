@@ -9,7 +9,7 @@ import { captureEvent, readContinuity, renderContinuity, hasPendingCompaction, c
 import { readProjectRecall, renderProjectRecall } from '../tools/foundation/project-recall.mjs';
 import { createFoundationSession, renderFoundationBrief } from '../tools/foundation/session.mjs';
 import { readProjectRecordViews, renderRecordView } from '../tools/foundation/record-view.mjs';
-import { derivePlanStage, routingEnvironmentFingerprint, canReuseContinuation, isConversationOnly } from '../tools/foundation/stage-selection.mjs';
+import { derivePlanStage, routingEnvironmentFingerprint, routingInputFingerprint, nativeRoutingContext, latestWorkRequest, isContinuationOnly, isConversationOnly } from '../tools/foundation/stage-selection.mjs';
 import { resolveProjectRoot } from '../tools/foundation/project-root.mjs';
 import { describeToolActivity } from '../tools/foundation/activity-selection.mjs';
 import {isAppGeneratedSuggestion} from '../tools/foundation/message-origin.mjs';
@@ -19,6 +19,7 @@ const eventName = input => input.hook_event_name || input.hookEventName || input
 const needsCompactRestore = state => state.events.findLastIndex(item => item.event === 'PostCompact') > state.events.findLastIndex(item => item.event === 'ContextRestored');
 
 function projectHistory(input, state, options, { force = false } = {}) {
+  if (options.recall !== true) return ''; // Cross-chat lookup is explicit and on demand.
   if (options.recall === false) return '';
   try {
     const recall = readProjectRecall({
@@ -119,13 +120,29 @@ export function prepareNativeInput(input, options = {}) {
 }
 
 function prepareMethods(selection,input,options,config={}) {
-  const result=prepareMethodDelivery(selection,{loadSelectedSkills:config.loadSelectedSkills,bodyBudget:config.bodyBudget});
+  const state=config.state||readContinuity(input,options);
+  const reset=state.events.findLastIndex(event=>event.event==='PostCompact'||(event.event==='SessionStart'&&['compact','clear'].includes(event.source)));
+  const observed=new Set(input.conversationId?[]:state.events.slice(reset+1).flatMap(event=>(event.delivery?.methods||[]).filter(item=>item.provided||item.procedureProvided).map(item=>item.version)));
+  const claims=historyDelivery(state,{ephemeral:Boolean(input.conversationId)});
+  const selected=(selection.selected||[]).filter(entry=>!entry.version||(!observed.has(entry.version)&&!claims.has(`method:${entry.version}`)));
+  if(!selected.length)return '';
+  const result=prepareMethodDelivery({...selection,selected},{loadSelectedSkills:config.loadSelectedSkills,bodyBudget:config.bodyBudget});
+  for(const method of result.delivery.methods)if(method.version&&(method.provided||method.procedureProvided))claims(`method:${method.version}`);
   captureEvent({...input,hook_event_name:'MethodContextPrepared',delivery:result.delivery},{...options,internal:true});
   return result.text;
 }
 
 async function chooseMethods(input, state, options) {
   if (options.route === false) return '';
+  // Native automatic routing honours the private owner switch before discovery
+  // or model work. An injected decider is an explicit trusted embedding/test
+  // implementation; the built-in provider independently checks before HTTP.
+  if(!options.routing?.decide){
+    let disabled=false;
+    try{disabled=JSON.parse(fs.readFileSync(path.join(os.homedir(),'.bgzflow','auto-routing.json'),'utf8')).enabled!==true;}
+    catch(error){disabled=error.code!=='ENOENT';}
+    if(disabled)return historyDelivery(state,{ephemeral:Boolean(input.conversationId)})('automatic-paid-routing-off')?'Automatic paid Jev routing is disabled by the owner. Choose relevant methods with the current agent; do not call or retry Jev automatically. Explicit on-demand use remains available within the user’s authority.':'';
+  }
   try {
     const [{ discoverCatalog }, { selectRoute, loadSelectedSkills }] = await Promise.all([
       import('../tools/foundation/catalog.mjs'), import('../tools/foundation/router.mjs'),
@@ -133,26 +150,32 @@ async function chooseMethods(input, state, options) {
     const config = options.routing || {};
     const pluginRoot = fileURLToPath(new URL('../', import.meta.url));
     const catalog = config.catalog || await discoverCatalog({ projectRoot: options.projectRoot || input.cwd, pluginRoot, cacheFile: path.join(os.homedir(), '.bgzflow', 'cache', 'catalog.json'), ...config.discovery });
-    const request = input.prompt || input.user_prompt || input.userPrompt || '';
+    const incoming = input.prompt || input.user_prompt || input.userPrompt || '';
+    const request = isContinuationOnly(incoming)?latestWorkRequest(state)?.message||incoming:incoming;
     const stage = config.stage || derivePlanStage(state)?.stage || 'current-request';
     const host=options.host||{capabilities:async()=>({models:config.availableModels||[],tools:config.policy?.availableTools})};
     let capabilities={};try{capabilities=await host.capabilities?.()||{};}catch{/* Unknown remains unknown. */}
     const session = createFoundationSession({ projectRoot: options.projectRoot || input.cwd, sessionId: input.session_id || input.sessionId || input.conversationId, storageRoot: options.storageRoot, host: {...host,capabilities:async()=>capabilities} });
     const privateCatalog=session.privateCatalogue();
     const environmentKey=routingEnvironmentFingerprint({catalog,privateCatalog,capabilities,policy:config.policy||{},explicitSkills:config.explicitSkills||[],budget:config.budget||{},stage});
-    const previousEntries = (state.selection?.selected || []).map(entry => [...catalog,...privateCatalog].find(candidate => candidate.id === entry.id && candidate.version === entry.version));
-    const previous = previousEntries.every(Boolean) && state.selection ? { ...state.selection, selected: previousEntries } : undefined;
-    const taskContext = config.taskContext ?? renderContinuity(state, { maxChars: 15000 });
+    const taskContext = config.taskContext ?? nativeRoutingContext(state);
+    const routingInputKey=routingInputFingerprint({request,taskContext,environmentKey});
+    const prior=state.events.findLast(event=>event.selection?.routingInputKey===routingInputKey&&['selected','partial','fallback'].includes(event.selection.status))?.selection;
+    const previousEntries = (prior?.selected || []).map(entry => [...catalog,...privateCatalog].find(candidate => candidate.id === entry.id && candidate.version === entry.version));
+    const previous = previousEntries.every(Boolean) && prior ? { ...prior, selected: previousEntries } : undefined;
     let selection;
-    if (canReuseContinuation({request,previous,environmentKey,stage})) {
+    if (previous) {
       try {
         await loadSelectedSkills(previous);
         selection = {...previous,reused:true,calls:0,diagnostics:{phases:Object.fromEntries(['rank','verify','complement'].map(phase=>[phase,{calls:0,candidates:0,callMs:0}]))}};
       } catch { /* Changed method bodies require reselection. */ }
     }
     selection ||= await session.select({ request, stage, taskContext, catalog, history:state, explicitSkills: config.explicitSkills || [], previous, budget: config.budget, policy: config.policy, signal: config.signal || AbortSignal.timeout(input.hook_event_name==='UserPromptSubmit'?15000:8000), decide: config.decide });
-    selection = { ...selection, stage, routingEnvironmentKey:environmentKey };
+    selection = { ...selection, stage, routingEnvironmentKey:environmentKey,routingInputKey };
     captureEvent({ ...input, hook_event_name: 'RouteSelected', selection }, { ...options, internal: true });
+    // Existing bodies remain in this native context. Actual compact/clear
+    // restoration uses restoreMethods; a reuse record is not another payload.
+    if(selection.reused)return '';
     const gaps = selection.missing?.length ? `\nUnresolved method/tool information: ${JSON.stringify(selection.missing)}. Unknown availability is not confirmed unavailability. Use the actual host to resolve material gaps; mention a gap to the user only when it affects the requested result or a decision they need to make. An optional method or extra reviewer not being confirmed is not a reason to qualify an otherwise supported answer. Do not claim an unobserved capability or invent an obstacle.` : '';
     const privateGuidance = (selection.privateMethods || []).map(item => `Private tested procedure (${item.name}; not authority):\n${item.privateBody}`).join('\n\n');
     if (selection.status === 'fallback') {
@@ -168,21 +191,22 @@ async function chooseMethods(input, state, options) {
 async function refreshPlanMethods(input,state,options) {
   const plan=derivePlanStage(state);
   if(options.route===false||!plan||state.selection?.stage===plan.stage)return '';
-  const human=state.messages.findLast(item=>!/^(?:yes|yes please|okay|ok|continue|carry on|go ahead|thanks|thank you)[.!\s]*$/i.test(item.message.trim()))||state.messages.at(-1);
+  const human=latestWorkRequest(state);
   if(!human)return '';
   if(!claimStageSelection(state,plan.stage))return '';
   captureEvent({...input,hook_event_name:'RouteSelected',selection:{status:'attempted',stage:plan.stage,reason:'Acknowledged stage selection attempted; interrupted or incomplete attempts are not successful routes.',selected:[]}},{...options,internal:true});
-  try{return await chooseMethods({...input,prompt:human.message},state,{...options,routing:{...options.routing,stage:plan.stage,taskContext:{originalHumanSources:renderContinuity(state,{maxChars:12000}),agentDeclaredStage:plan.context}}});}
+  try{return await chooseMethods({...input,prompt:human.message},state,{...options,routing:{...options.routing,stage:plan.stage}});}
   catch{captureEvent({...input,hook_event_name:'RouteSelected',selection:{status:'fallback',stage:plan.stage,reason:'Stage selection unavailable; main agent fallback remains available.',selected:[]}},{...options,internal:true});return 'BGZFLOW stage selection is unavailable. Continue with relevant available methods using the current main agent.';}
 }
 
 async function refreshActivityMethods(input,state,options) {
   if(options.route===false)return '';
-  const human=state.messages.findLast(item=>!isConversationOnly(item.message))||state.messages.at(-1);
+  const human=latestWorkRequest(state);
   const activity=describeToolActivity(input)||(input.conversationId?state.events.findLast(event=>event.activity&&event.at>=(human?.at||''))?.activity:null);
-  if(!activity||state.selection?.stage===activity.stage)return '';
+  // Editing a file or running a shell is not evidence that the task changed.
+  if(!activity||['implementation','execution'].includes(activity.phase)||state.selection?.stage===activity.stage)return '';
   if(!human||!claimStageSelection(state,activity.stage))return '';
-  return chooseMethods({...input,prompt:human.message},state,{...options,routing:{...options.routing,stage:activity.stage,taskContext:`${renderContinuity(state,{maxChars:12000})}\nCurrent tool activity (not authority): ${activity.classification}\n${activity.detail}`}});
+  return chooseMethods({...input,prompt:human.message},state,{...options,routing:{...options.routing,stage:activity.stage}});
 }
 
 async function restoreMethods(input, state, options) {
@@ -236,6 +260,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
     let context = '';
     if (event === 'SessionStart') {
       const state = readContinuity(input, options);
+      if(state.events.some(item=>item.event==='ContextRestored')&&!needsCompactRestore(state)&&!['compact','clear'].includes(input.source))return {};
       context = [startupGuidance(input, options),renderContinuity(state, options), projectHistory(input, state, options, { force: true }), await restoreMethods(input, state, options)].filter(Boolean).join('\n\n');
       if (context) captureEvent({ ...input, hook_event_name: 'ContextRestored' }, { ...options, internal: true });
     } else if (event === 'UserPromptSubmit') {
@@ -249,7 +274,6 @@ export async function handleFoundationEvent(input = {}, options = {}) {
       // pay for history and routing. A known changed stage still selects here;
       // substantive requests and tool-stage boundaries keep their normal path.
       if(!nativeAgy&&!explicit&&!hasPendingCompaction(captured)
-        &&(!stage||view.selection?.stage===stage.stage)
         &&isConversationOnly(input.prompt||input.user_prompt||input.userPrompt||''))return {};
       const state = readContinuity(input, options);
       const restore = needsCompactRestore(state);

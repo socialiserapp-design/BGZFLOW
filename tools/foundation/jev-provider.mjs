@@ -1,3 +1,6 @@
+import routingPolicyFs from 'node:fs';
+import routingPolicyOs from 'node:os';
+import routingPolicyPath from 'node:path';
 import { noul, choice } from '@typesafe-ai/sdk';
 import { sanitizeRecord } from '../../hooks/lib/secrets.mjs';
 import { createJevClientGetter, sanitizeRoutingData } from './jev-judgment.mjs';
@@ -41,6 +44,11 @@ export function createJevDecider(options = {}) {
   return async ({ phase, context, candidates, selected = [], availableModels = [], signal }) => {
     const request=prepareRoutingRequest({phase,context,candidates,selected,availableModels});
     const criteria=request.questions.best.criteria;
+    if(options.automatic!==false){
+      let enabled=true;
+      try{const policy=JSON.parse(routingPolicyFs.readFileSync(routingPolicyPath.join(options.home||routingPolicyOs.homedir(),'.bgzflow','auto-routing.json'),'utf8'));enabled=policy.enabled===true;}catch(error){if(error.code!=='ENOENT')enabled=false;}
+      if(!enabled)throw new Error('automatic-paid-routing-disabled');
+    }
     const response = await getClient().systemOne(request, { signal, timeout: timeoutMs, retry: { maxRetries: 0 } });
     if(typeof response?.answers?.best?.choice!=='string'||!Object.hasOwn(criteria,response.answers.best.choice))throw new Error('invalid-jev-choice');
     if (phase === 'complement') {

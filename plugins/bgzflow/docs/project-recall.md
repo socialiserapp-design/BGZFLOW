@@ -22,18 +22,17 @@ home folders. `renderProjectRecall(result, {maxChars})` produces a bounded view.
 The native canonical path keeps Windows letter-case variants in the same project.
 Older records made under a noncanonical spelling remain preserved in their old
 store; this release does not scan unrelated project stores to merge them.
-Native foundation hooks retrieve this history at session start and search it
-against a new user request. They do not run retrieval on every tool call. An
-unchanged rendered view is not repeatedly injected into the same context.
-Codex accepts diagnostic output only from PostCompact; it rejects context in
-that response. That event is recorded without a response body. The next supported
-session-start, user-prompt or tool hook restores the context once. A tiny derived
-delivery hint avoids rescanning history on ordinary tool calls; it is neither a
-permission nor a success certificate. This cannot inject context into a host's
-model request before any supported hook has run. Antigravity's invocation-scoped
-ephemeral context also restores the bounded view on repeat invocations because
-its adapter has no documented PostCompact notification. A missing record never
-blocks a reply. Host contract: https://developers.openai.com/codex/hooks
+Native foundation hooks do not search or inject other sessions automatically.
+Use a focused on-demand lookup only when the current task needs earlier evidence.
+An embedding application may explicitly request a bounded view; ordinary native
+prompts, tool events and session starts do not opt into that operation. Original
+records remain private and available for targeted retrieval.
+
+Same-session context recovery is separate: native compaction restores needed
+current-session decisions and pending operations once, without adding other chats.
+Ordinary resumes do not repeat an already prepared context. Antigravity retains
+its invocation-scoped same-session restoration where the host uses ephemeral
+context. Missing records never block an ordinary reply.
 
 The query uses simple lexical matching, supplemented by the next two original
 user messages so a short correction can travel with its topic. It also returns
@@ -57,7 +56,7 @@ or truncated history is reported; every result is explicitly partial because
 uncaptured events and semantic relationships remain unknown. This is retrieval,
 not an authoritative current brief, ownership resolution or semantic memory.
 
-The automatic hook uses smaller limits: 12 sessions, 384 event files, 2 MiB read,
+An explicitly requested hook view uses smaller limits: 12 sessions, 384 event files, 2 MiB read,
 16 returned entries and 6,000 rendered characters. Relevant user messages take
 priority over unresolved tool requests; unrelated pending requests cannot crowd
 out a matching decision. Oversized messages retain a source pointer. This is a

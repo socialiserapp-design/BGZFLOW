@@ -38,7 +38,7 @@ test('master references, alternatives and quoted instructions do not acquire exp
 
 test('supporting-method comparisons receive actual excerpts and provenance without inventing tools',async()=>{
   let received;
-  const decide=createJevDecider({client:{systemOne:async input=>{received=input;return{answers:{best:{choice:'none'}}};}}});
+  const decide=createJevDecider({automatic:false,client:{systemOne:async input=>{received=input;return{answers:{best:{choice:'none'}}};}}});
   const result=await decide({phase:'complement',context:{request:'Change one local JSON value',policy:{}},candidates:[{id:'ui5',name:'cards',description:'Analytical charts',origin:'ui5-provider',excerpt:'Only operate on UI5 integration cards.',requiredTools:['ui5-tool']}],selected:[{name:'terminal',description:'Use existing native shell',origin:'native',excerpt:'Read local files.',requiredTools:[]}]});
   assert.deepEqual(result.selectedIds,[]);
   assert.match(received.questions.best.instructions||JSON.stringify(received.questions.best),/instruction excerpts/);
@@ -60,6 +60,14 @@ function catalogFixture(t, count = 2) {
   return discoverCatalog({ roots: [root] });
 }
 const chooseAll = async ({ candidates, phase }) => ({ selectedIds: candidates.map((e) => e.id), strategy: phase === 'verify' ? 'single' : undefined, modelIds: [] });
+
+test('owner automatic-routing switch prevents HTTP while explicit manual judgment remains available',async t=>{
+ const home=fs.mkdtempSync(path.join(os.tmpdir(),'auto-routing-off-'));t.after(()=>fs.rmSync(home,{recursive:true,force:true}));fs.mkdirSync(path.join(home,'.bgzflow'));fs.writeFileSync(path.join(home,'.bgzflow','auto-routing.json'),'{"enabled":false}');
+ let requests=0;const client={systemOne:async()=>{requests++;return{answers:{best:{choice:'none'}}};}};
+ const input={phase:'complement',context:{},candidates:[]};
+ await assert.rejects(createJevDecider({home,client})(input),/automatic-paid-routing-disabled/);assert.equal(requests,0);
+ await createJevDecider({home,client,automatic:false})(input);assert.equal(requests,1);
+});
 
 test('independent whole-procedure packets overlap within configured concurrency',async t=>{
   const catalog=catalogFixture(t,6).map(entry=>({...entry,privateBody:'Full bounded procedure. '.repeat(800)}));
@@ -272,7 +280,7 @@ test('cancellation and total deadline do not hang on an unresponsive decider', a
 
 test('official SDK adapter sanitizes the actual outgoing state and disables automatic retries', async () => {
   let received; const client = { systemOne: async (request, options) => { received = { request, options }; return { answers: { skill_0: { noul: 0.8 }, best: { choice: 's0' }, strategy: { choice: 'single' } } }; } };
-  const decide = createJevDecider({ client });
+  const decide = createJevDecider({ automatic:false, client });
   const result = await decide({ phase: 'verify', context: { password: 'do-not-disclose' }, candidates: [{ id: 's', description: 'Useful' }] });
   assert.equal(result.selectedIds[0], 's'); assert.ok(!JSON.stringify(received.request).includes('do-not-disclose')); assert.equal(received.options.retry.maxRetries, 0);
 });
@@ -280,9 +288,9 @@ test('official SDK adapter sanitizes the actual outgoing state and disables auto
 test('malformed raw SDK choices never become an affirmative no-more-methods decision',async()=>{
   const candidates=[{id:'one',name:'example',description:'A sample procedure'}];
   for(const phase of ['rank','verify','complement'])for(const bad of [undefined,'invented','s9',null]){
-    const decide=createJevDecider({client:{systemOne:async()=>({answers:{best:{choice:bad},skill_0:{noul:0.8},strategy:{choice:'single'}}})}});
+    const decide=createJevDecider({automatic:false,client:{systemOne:async()=>({answers:{best:{choice:bad},skill_0:{noul:0.8},strategy:{choice:'single'}}})}});
     await assert.rejects(()=>decide({phase,context:{},candidates}),/invalid-jev-choice/);
   }
-  const none=createJevDecider({client:{systemOne:async()=>({answers:{best:{choice:'none'}}})}});
+  const none=createJevDecider({automatic:false,client:{systemOne:async()=>({answers:{best:{choice:'none'}}})}});
   assert.deepEqual((await none({phase:'complement',context:{},candidates})).selectedIds,[]);
 });

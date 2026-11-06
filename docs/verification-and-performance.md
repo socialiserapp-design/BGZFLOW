@@ -142,3 +142,36 @@ not a completed Desktop journey. Desktop-specific verification remains separate.
 
 See [publication privacy](publication-privacy.md) for the distinction between the
 clean current release tree and retained findings in previously public ancestry.
+
+## 2.7.6 automatic-cost and context repair
+
+The 71-check affected repair run passed. After the urgent change to make
+cross-session recall on demand, four focused containment/cache regressions passed.
+Both packages built successfully. The changed files in the four installed copies
+match their artifacts; native Codex read-back confirms the twelve BG hooks remain
+trusted and enabled, with five unrelated hooks unchanged.
+
+Automatic other-chat lookup is off by default. A default installed-hook check
+across nine prompt, tool, resume and compact events injected zero bytes of seeded
+other-chat notes and made zero routing attempts. It still restored the current
+chat's correction after compaction, and an explicit targeted history lookup still
+returned its original evidence. Existing text already inside a host conversation
+is not retroactively erased.
+
+Native automatic paid routing respects the private owner file
+`~/.bgzflow/auto-routing.json`; `{"enabled":false}` stops it before catalogue or
+model work. The built-in selector also checks immediately before each SDK call.
+The current deployment remains off; no paid verification campaign was run.
+Explicit manual judgments and the saved credential remain available. This is a
+BGZFLOW automatic-routing control, not an account-wide billing limit for other
+software or explicit manual calls.
+
+When enabled by its owner, routing now caches successes, partial results and
+failures against stable task/stage, answers, catalogue and real capability inputs.
+Changing tool logs alone does not invalidate the result. Generic shell/edit
+actions are not new stages; status turns do not select methods. An unchanged
+method body is prepared once per native context and restored after real context
+reset. Genuine corrections, explicit method changes and capability changes still
+invalidate the relevant cached selection. These behaviours have local regression
+evidence; no claim is made that every model arrangement or semantic choice is
+correct, or that a complete live Desktop model journey was rerun for this patch.

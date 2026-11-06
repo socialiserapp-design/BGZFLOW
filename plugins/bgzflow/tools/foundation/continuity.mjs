@@ -75,6 +75,7 @@ function safeSelection(value) {
     ...(value.comparisonDeferred?.length?{comparisonDeferred:value.comparisonDeferred.slice(0,100).map(entry=>({id:/^skill-[0-9a-f]{24}$/.test(entry.id||'')?entry.id:safe(entry.id,100),name:safe(entry.name,200),path:safe(entry.path,2000),reason:safe(entry.reason,200)}))}:{}),
     cacheKey: digestIdentity(value.cacheKey) ? value.cacheKey : safe(value.cacheKey, 160),
     routingEnvironmentKey:digestIdentity(value.routingEnvironmentKey)?value.routingEnvironmentKey:'',
+    routingInputKey:digestIdentity(value.routingInputKey)?value.routingInputKey:'',
     selected,
     // Preserve the requested/inferred distinction through resume without
     // serialising arbitrary extra identifiers or a secret supplied as an ID.

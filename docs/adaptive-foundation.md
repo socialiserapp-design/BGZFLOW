@@ -73,7 +73,7 @@ preferences on everyone else.
 1. Catalogue and Jev selector: discover skills, assess relevant candidates and
    deliver selected bodies; expose a transparent main-agent fallback.
 2. Continuity store and host adapters: capture factual events and restore useful
-   context using supported host lifecycle events. Bounded project recall retrieves
+   context using supported host lifecycle events. On-demand project recall retrieves
    original messages and recorded operations across sessions in the same project;
    it is partial evidence, not a new authority or a verified current-state summary.
    See project-recall.md for exact limits and host behaviour.
