@@ -108,3 +108,37 @@ separate work. Closed host capabilities cannot be supplied by a skill's wording.
 The single combined local run passed332tests with zero failures/skips. An earlier affected run caught repeated failure guidance; it was removed and the complete hook/learning repair subset passed38checks. New tests cover historical composer-envelope filtering, unchanged original evidence, real pinned baseline/regression/unseen effects, later-session private delivery and rollback. Installed Claude current/cache, Codex cache and Antigravity packages match the validated2.7.4 builds and pass offline helper smoke checks. All12 BGZFLOW Codex hooks were individually reviewed through the native terminal interface; fresh host API read-back shows them trusted/enabled while five unrelated hooks remain untrusted. No CUA or paid model evaluation campaign was run for this repair. Existing conversations may require their host’s normal reload to adopt updated packages.
 
 No owner native-learning evaluator is configured on the deployment used for this check. Failures and source-linked proposals are available, but proposals remain unverified until suitable owner-controlled checks exist. Fixture-based adoption proves that configured path, not universal semantic learning or improving every task. Older full-envelope copies cannot be distinguished from host-generated requests without reliable origin metadata. No performance superiority or fresh2.7.4 browser/device journey is claimed.
+
+## 2.7.5 history and comparison repair
+
+The final affected offline run passed 78 checks. Both package builds passed;
+four installed copies match their validated artifacts. Native Codex read-back
+confirms twelve BGZFLOW hooks trusted and enabled, with five unrelated hooks
+unchanged. The full 332-check suite above belongs to 2.7.4 and was not rerun for
+this narrower repair.
+
+Historical context delivery now tracks individual immutable sources per native
+context generation. Changing an unrelated tool result or resuming an existing
+session does not replay unchanged historical messages. New corrections remain
+eligible, and actual compact/clear boundaries restore sources. Items that do not
+fit are not marked as delivered; emitted partial excerpts or deferred pointers
+retain the original source reference. Antigravity's explicitly ephemeral context
+still needs invocation-scoped restoration. These are prepared-context records,
+not proof that a model read the context or that its answer is correct. Existing
+duplicate text already retained by a host conversation is not retroactively
+removed.
+
+Independent whole-procedure comparison packets now overlap within the existing
+bounded concurrency. If a later winner comparison exceeds the local packet
+budget, a genuinely fit-checked lead remains available with an honest partial
+result; unassessed nominees do not become selected or acquire user authority.
+This does not guarantee that every library entry fits a remote comparison.
+
+An actual Claude command-line hook invocation reached Jev and prepared the full
+9,868-character diagnosis method in 2.7 seconds. Its route remained partial for
+an oversized additional nominee. The separate command-line OAuth session then
+expired before a model or Read-tool turn, so this is hook/provider evidence,
+not a completed Desktop journey. Desktop-specific verification remains separate.
+
+See [publication privacy](publication-privacy.md) for the distinction between the
+clean current release tree and retained findings in previously public ancestry.

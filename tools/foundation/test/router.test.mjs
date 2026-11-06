@@ -61,6 +61,30 @@ function catalogFixture(t, count = 2) {
 }
 const chooseAll = async ({ candidates, phase }) => ({ selectedIds: candidates.map((e) => e.id), strategy: phase === 'verify' ? 'single' : undefined, modelIds: [] });
 
+test('independent whole-procedure packets overlap within configured concurrency',async t=>{
+  const catalog=catalogFixture(t,6).map(entry=>({...entry,privateBody:'Full bounded procedure. '.repeat(800)}));
+  let active=0,maximum=0;
+  const result=await selectRoute({catalog,budget:{concurrency:2}},{decide:async input=>{
+    if(input.phase==='rank')return{selectedIds:input.candidates.map(entry=>entry.id)};
+    if(input.phase==='complement')return{selectedIds:[]};
+    active++;maximum=Math.max(maximum,active);await new Promise(resolve=>setImmediate(resolve));active--;
+    assert.ok(input.candidates.every(entry=>entry.excerpt.endsWith('procedure. ')));
+    return{selectedIds:[input.candidates[0].id],strategy:'single',ranks:input.candidates.map(entry=>({id:entry.id,score:0.9}))};
+  }});
+  assert.equal(result.status,'selected');assert.equal(maximum,2);assert.equal(result.selected.length,1);
+});
+
+test('oversized winner comparison retains one whole-procedure fit check without pretending global comparison completed',async t=>{
+  const catalog=catalogFixture(t,2).map(entry=>({...entry,privateBody:'Full substantive method. '.repeat(1500)}));
+  const result=await selectRoute({catalog},{decide:async input=>input.phase==='rank'?{selectedIds:input.candidates.map(entry=>entry.id)}:{selectedIds:[input.candidates[0].id],strategy:'single',ranks:input.candidates.map(entry=>({id:entry.id,score:entry.id===catalog[1].id?0.95:0.8}))}});
+  assert.equal(result.status,'partial');assert.deepEqual(result.explicitIds,[]);
+  assert.equal(result.selected[0].id,catalog[1].id);assert.equal(result.selected.length,1);
+  assert.equal(loadSelectedSkills(result)[0].body,catalog[1].privateBody);
+  assert.equal(result.diagnostics.failureCode,'complete-winner-comparison-too-large');
+  assert.match(result.reason,/local request budget/);assert.doesNotMatch(result.reason,/Jev selection unavailable/);
+  assert.ok(result.comparisonDeferred.some(entry=>entry.id===catalog[0].id));
+});
+
 test('successful empty ranking needs no verification call when there is no model choice',async t=>{
   const catalog=catalogFixture(t),phases=[];
   const result=await selectRoute({request:'Read the existing local probe',catalog},{decide:async input=>{phases.push(input.phase);return{selectedIds:[],strategy:'single'};}});

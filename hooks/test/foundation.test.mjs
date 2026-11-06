@@ -136,6 +136,29 @@ test('unchanged project recall is delivered once and restored after compaction',
   assert.deepEqual(await handleFoundationEvent({ ...input, hook_event_name: 'PreToolUse', tool_name: 'read_file', tool_use_id: 'read' }, options), {});
 });
 
+test('history delivery follows immutable source items across changing views, tools and session-start replays',async t=>{
+  const {input,options}=fixture(t);
+  const earlier={...input,session_id:'earlier-history'};
+  captureEvent({...earlier,hook_event_name:'UserPromptSubmit',prompt:'Calendar original: retain offline access.'},options);
+  captureEvent({...earlier,hook_event_name:'PostToolUse',tool_name:'TodoWrite',tool_use_id:'plan',tool_input:{todos:[{content:'Inspect saved calendar',status:'in_progress'}]}},options);
+  const submit=prompt=>handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt},options);
+  const first=await submit('Review calendar choices.');
+  assert.match(first.hookSpecificOutput.additionalContext,/Calendar original/);
+  captureEvent({...earlier,hook_event_name:'PostToolUse',tool_name:'read_file',tool_use_id:'irrelevant-new-tool'},options);
+  const next=await submit('Inspect calendar offline behavior.');
+  assert.doesNotMatch(JSON.stringify(next),/Calendar original|Inspect saved calendar/);
+  const restart=await handleFoundationEvent({...input,hook_event_name:'SessionStart',source:'resume'},options);
+  assert.doesNotMatch(JSON.stringify(restart),/Calendar original|Inspect saved calendar/);
+  captureEvent({...earlier,hook_event_name:'UserPromptSubmit',prompt:'Calendar correction: keep offline and change headings to blue.'},options);
+  const corrected=await submit('Review calendar choices again.');
+  assert.match(corrected.hookSpecificOutput.additionalContext,/Calendar correction/);
+  assert.doesNotMatch(corrected.hookSpecificOutput.additionalContext,/Calendar original/);
+  for(const event of ['PreToolUse','PostToolUse'])assert.doesNotMatch(JSON.stringify(await handleFoundationEvent({...input,hook_event_name:event,tool_name:'read_file',tool_use_id:'own-read'},options)),/Calendar original|Calendar correction/);
+  const reset=await handleFoundationEvent({...input,hook_event_name:'SessionStart',source:'compact'},options);
+  assert.match(reset.hookSpecificOutput.additionalContext,/Calendar correction/);
+  assert.doesNotMatch(JSON.stringify(await submit('Review calendar choices again.')),/Calendar original|Calendar correction/);
+});
+
 test('post-compact output follows the native diagnostic-only contract and restores at the next tool once', async t => {
   const { input, options } = fixture(t);
   await handleFoundationEvent({ ...input, hook_event_name: 'UserPromptSubmit', prompt: 'Keep offline access and the corrected blue heading.' }, options);

@@ -13,6 +13,7 @@ import { derivePlanStage, routingEnvironmentFingerprint, canReuseContinuation, i
 import { resolveProjectRoot } from '../tools/foundation/project-root.mjs';
 import { describeToolActivity } from '../tools/foundation/activity-selection.mjs';
 import {isAppGeneratedSuggestion} from '../tools/foundation/message-origin.mjs';
+import {historyDelivery} from '../tools/foundation/history-delivery.mjs';
 
 const eventName = input => input.hook_event_name || input.hookEventName || input.event;
 const needsCompactRestore = state => state.events.findLastIndex(item => item.event === 'PostCompact') > state.events.findLastIndex(item => item.event === 'ContextRestored');
@@ -26,15 +27,33 @@ function projectHistory(input, state, options, { force = false } = {}) {
       query: force ? '' : input.prompt || input.user_prompt || input.userPrompt || '',
     }, { ...options, maxSessions: 12, maxFiles: 384, maxBytes: 2 * 1024 * 1024, maxRecords: 16 });
     const project=readProjectRecordViews({projectRoot:options.projectRoot||input.cwd,sessionId:input.session_id||input.sessionId||input.conversationId},options);
-    const structured=project.sessions.filter(view=>!view.isCurrentSession&&(view.plan||view.questions.length||view.assistantMessages.length||view.assignments.length||view.operations.some(op=>op.status==='unresolved-recorded-request')));
-    const nativeState=structured.slice(0,2).map(view=>`Separate recorded session ${view.sessionId}; task identity is not automatically merged.\n${renderRecordView(view,{maxChars:2200})}`).join('\n\n');
+    const claim=historyDelivery(state,{ephemeral:Boolean(input.conversationId)});
+    const structured=project.sessions.filter(view=>!view.isCurrentSession);
+    const nativeBlocks=[];let nativeChars=0;
+    for(const view of structured.slice(0,2)){
+      const empty={...view,firstHuman:null,humanMessages:[],questions:[],assistantMessages:[],unlinkedAnswers:[],assignments:[],followups:[],operations:[],workers:[],plan:null,proposedPlan:null,planCoverage:null,wrapUp:null,application:null,methodContext:null,summary:null,assistantCoverage:null};
+      const rows=['questions','assistantMessages','unlinkedAnswers','assignments','followups','workers'].flatMap(field=>(view[field]||[]).map(item=>({field,item,array:true})));
+      rows.push(...view.operations.filter(item=>item.status==='unresolved-recorded-request'&&!recall.records.some(record=>record.eventId===item.request?.source?.eventId)).map(item=>({field:'operations',item,array:true})));
+      rows.push(...['plan','proposedPlan','planCoverage','wrapUp','application'].filter(field=>view[field]).map(field=>({field,item:view[field]})));
+      for(const {field,item,array} of rows){
+        const current={...empty,[field]:array?[item]:item};
+        const block=`Separate recorded session ${view.sessionId}; task identity is not automatically merged.\n${renderRecordView(current,{maxChars:2000,includeHuman:false})}`;
+        if(nativeChars+block.length>2200)continue; // Unemitted items remain eligible.
+        if(claim(`native:${view.sessionId}:${field}:${JSON.stringify(item)}`)){nativeBlocks.push(block);nativeChars+=block.length;}
+      }
+    }
+    const nativeState=nativeBlocks.join('\n\n');
     // Missing history is not a new obligation or a reason to block a reply.
     // Do not repeatedly inject an unchanged view; compaction must restore it.
-    if (!recall.records.length&&!nativeState) return '';
-    const context = [recall.records.length?renderProjectRecall(recall, { maxChars: nativeState?3000:6000 }):'',nativeState,project.partial?'Project view is partial; additional sessions may exist.':''].filter(Boolean).join('\n\n');
+    let emittedRecords=0;
+    const recalled=renderProjectRecall(recall,{maxChars:nativeState?3000:6000,includeRecord:(record,format)=>{
+      if(format==='pointer'&&claim.has(`record:${record.kind}:${record.eventId}:body`))return false;
+      const emitted=claim(`record:${record.kind}:${record.eventId}:${format}`);if(emitted)emittedRecords++;return emitted;
+    }});
+    if (!emittedRecords&&!nativeState) return '';
+    const context = [emittedRecords?recalled:'',nativeState,project.partial?'Project view is partial; additional sessions may exist.':''].filter(Boolean).join('\n\n');
     const key = createHash('sha256').update(context).digest('hex');
-    if (!force && state.projectRecall?.key === key) return '';
-    captureEvent({ ...input, hook_event_name: 'ProjectRecall', recall: { key } }, { ...options, internal: true });
+    try{captureEvent({ ...input, hook_event_name: 'ProjectRecall', recall: { key } }, { ...options, internal: true });}catch{/* Prepared context is still returned if its diagnostic record fails. */}
     return context;
   } catch { return ''; }
 }

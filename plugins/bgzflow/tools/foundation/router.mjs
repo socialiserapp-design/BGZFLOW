@@ -115,10 +115,24 @@ export async function selectRoute({ request = '', stage = 'work', taskContext = 
       }
       if(group.length||!entries.length)groups.push(group);
       if(!groups.length)return{selectedIds:[],strategy:'single',modelIds:[],reason:'No whole procedure fits; deferred nominees require main-agent assessment.'};
-      const results=[];
-      for(const candidates of groups)results.push(await invoke(phase,candidates,selected));
+      // Packet comparisons are independent. Bound concurrency, not useful
+      // catalogue coverage; serial packets previously consumed the whole native
+      // deadline before supporting comparisons could finish.
+      const results=new Array(groups.length);let nextGroup=0;
+      await Promise.all(Array.from({length:Math.min(groups.length,Math.max(1,Math.min(8,budget.concurrency||3)))},async()=>{
+        while(nextGroup<groups.length){const index=nextGroup++;results[index]=await invoke(phase,groups[index],selected);}
+      }));
       if(results.length===1)return results[0];
       let winners=unique(results.flatMap(result=>result.selectedIds.map(id=>entries.find(entry=>entry.id===id))));
+      // Each packet has compared its whole procedures. Retain one genuinely
+      // fit-checked lead if a later cross-packet comparison cannot fit, rather
+      // than misreporting a local size limit as total provider failure.
+      if(phase==='verify'&&winners.length){
+        const fit=new Map(results.flatMap(result=>result.ranks||[]).map(item=>[item.id,item.score]));
+        const lead=[...winners].sort((a,b)=>(fit.get(b.id)||0)-(fit.get(a.id)||0))[0];
+        checked=[byId.get(lead.id)];
+        provisional=winners.map(entry=>byId.get(entry.id));
+      }
       let finalResult=results.find(result=>result.selectedIds.includes(winners[0]?.id))||results[0];
       if(winners.length>1&&size(winners)<=packetBytes)return invoke(phase,winners,selected);
       // Compare packet winners in pairs instead of reassembling an unbounded
@@ -190,7 +204,8 @@ export async function selectRoute({ request = '', stage = 'work', taskContext = 
     failureCode=routingFailure(error);
     const cancelled = controller.signal.aborted;
     controller.abort();
-    return fallback(cancelled ? 'Routing cancelled or timed out.' : 'Jev selection unavailable or invalid; main-agent selection is required.');
+    const incomplete=['complete-winner-comparison-too-large','complete-procedure-comparison-too-large','routing-call-budget-reached'].includes(failureCode);
+    return fallback(cancelled ? 'Routing cancelled or timed out.' : incomplete?'Whole-procedure comparison did not finish within the local request budget; retained methods were independently fit-checked. The main agent must assess remaining nominees.':'Jev selection unavailable or invalid; main-agent selection is required.');
   }
   finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); }
 }

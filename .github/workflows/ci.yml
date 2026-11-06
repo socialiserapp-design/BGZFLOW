@@ -36,8 +36,10 @@ jobs:
           npm run build
           npm run build:antigravity
 
-      - name: Leak check
-        run: node scripts/leak-check.mjs
+      - name: Check the release tree for private material
+        # Existing public ancestry has separately recorded legacy findings.
+        # Do not exempt new lines or rewrite the repository's history in CI.
+        run: node scripts/leak-check.mjs --working-tree
 
       - name: Gitleaks
         if: runner.os == 'Linux'
