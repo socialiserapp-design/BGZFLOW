@@ -42,10 +42,19 @@ test('native default injects zero other-chat history across prompts, tools and r
 
 test('a simple status question remains free even when a known plan stage changed',async t=>{
  const {input,options}=fixture(t);let calls=0;
+ await handleFoundationEvent({...input,hook_event_name:'SessionStart'},options);
  captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Build an offline calendar.'},options);
  captureEvent({...input,hook_event_name:'PostToolUse',tool_name:'TodoWrite',tool_use_id:'new-plan',tool_input:{todos:[{content:'Check the saved calendar',status:'in_progress'}]}},options);
  const result=await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Any progress?'},{...options,route:true,host:{capabilities:async()=>{calls++;return{};}}});
  assert.deepEqual(result,{});assert.equal(calls,0);assert.equal(readContinuity(input,options).messages.at(-1).message,'Any progress?');
+});
+
+test('mid-session activation delivers the baseline on the next prompt only without a new chat or model call',async t=>{
+ const {input,options}=fixture(t);
+ captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Existing work before enabling plugin.'},options);
+ const one=await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Any progress?'},options);
+ assert.match(one.hookSpecificOutput.additionalContext,/BG Efficiency baseline/);
+ assert.deepEqual(await handleFoundationEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Thanks'},options),{});
 });
 
 test('unchanged success and failure routes reuse without calls or replayed method bodies',async t=>{
@@ -157,6 +166,7 @@ test('conversation leaves a known changed stage for the next actual work event',
 
 test('an incomplete old plan cannot make a status-only message reroute forever', async t=>{
   const {input,options}=fixture(t);
+  await handleFoundationEvent({...input,hook_event_name:'SessionStart'},options);
   captureEvent({...input,hook_event_name:'PostToolUse',tool_name:'TodoWrite',tool_use_id:'old-plan',tool_input:{todos:[...Array.from({length:40},(_,n)=>({content:`Reported item ${n}`,status:'completed'})),{content:'Still unverified',status:'pending'}]}},options);
   assert.equal(readContinuity(input,options).nativeView.plan.partial,true);
   let called=0;

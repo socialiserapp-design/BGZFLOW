@@ -271,15 +271,19 @@ export async function handleFoundationEvent(input = {}, options = {}) {
       // remain in the conversation; real stage changes still select on tools.
       const explicit=options.routing?.explicitSkills?.length||options.routing?.stage;
       const view=captured.nativeView,stage=derivePlanStage({nativeView:view});
+      const compactPending=hasPendingCompaction(captured);
+      // Enabling/reloading a plugin in an existing chat need not emit SessionStart.
+      // The durable delivery hint handles this without rereading session history.
+      const baseline=compactPending?'':efficiencyBaseline({...captured,events:[]});
       // A status question does not resolve an uncertain plan or authorise work.
       // Old/truncated plan metadata must not make every later greeting/status
       // pay for history and routing. A known changed stage still selects here;
       // substantive requests and tool-stage boundaries keep their normal path.
-      if(!nativeAgy&&!explicit&&!hasPendingCompaction(captured)
-        &&isConversationOnly(input.prompt||input.user_prompt||input.userPrompt||''))return {};
+      if(!nativeAgy&&!explicit&&!compactPending
+        &&isConversationOnly(input.prompt||input.user_prompt||input.userPrompt||''))return baseline?contextOutput(baseline):{};
       const state = readContinuity(input, options);
       const restore = needsCompactRestore(state);
-      context = [restore?efficiencyBaseline(state):'',restore ? renderContinuity(state, options) : '', projectHistory(input, state, options, { force: restore }), await chooseMethods(input, state, options)].filter(Boolean).join('\n\n');
+      context = [restore?efficiencyBaseline(state):baseline,restore ? renderContinuity(state, options) : '', projectHistory(input, state, options, { force: restore }), await chooseMethods(input, state, options)].filter(Boolean).join('\n\n');
       if (restore && context) captureEvent({ ...input, hook_event_name: 'ContextRestored' }, { ...options, internal: true });
     } else if (event === 'PreToolUse' && hasPendingCompaction(captured)) {
       const state = readContinuity(input, options);
