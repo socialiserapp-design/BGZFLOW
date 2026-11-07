@@ -1,32 +1,24 @@
 ---
 name: bg-efficiency
-description: "Reduce repeated context, routing and work while preserving the requested quality, meaningful checks and the user’s chosen time and usage priorities."
+description: "Choose methods to reduce repeated context, tool output, failed loops and unnecessary work."
 ---
 
-# Efficiency
+# BG Efficiency
 
-Optimise for the useful outcome, not minimum tokens in isolation. When noticeably better quality would require more time or usage and the preference is unsettled, ask what matters for this task. Honour the answer and existing spending limits.
+Optimise the completed user outcome, including quality, time and total usage. Use the user's existing priority; ask only when a material trade-off is unresolved. A simple answer needs no routing call, research campaign or extra worker.
 
-Use targeted searches, indexes and relevant passages. Retain sources and results already inspected; repeat a check only when its assumptions, inputs, environment or dependent work changed. Retrieve deeper detail when it could change the outcome.
+The supported host hook delivers the small [baseline](references/startup.md) once per context, and restores it after native compaction. Do not reread it if already present. A skill guides reasoning; the hook controls delivery, not correct application or billed savings.
 
-Keep a broad discoverable skill library but load only relevant bodies. Reuse a valid route during unchanged work. Batch independent lookup and judgment requests. Keep dependent actions and retries sequential. Count routing, failed attempts, checking and learning experiments in usage.
+Read only the specialist material for the current operation:
 
-Match workers to actual capability and availability. Extra agents are useful for independent work and fresh checking, but coordination also costs time and context. Do not hardcode the cheapest model, strongest model, provider combination or worker count.
+- Large logs, files or search results: [output and retrieval](references/output-and-retrieval.md).
+- Model choice, repeated requests or API cost: [routing and caching](references/routing-and-caching.md).
+- Repeated project mistakes or wasted attempts: [learning and measurement](references/learning-and-measurement.md).
+- A build becoming unnecessarily complicated: [simple implementation](references/simple-implementation.md).
+- Tool compatibility or exact evidence: [tool harmony](references/tool-harmony.md).
 
-Use the host's native compaction and resume. Retain original user decisions and pending operations outside a lossy summary using the automatic continuity store where supported. Do not infer context occupancy from transcript bytes, ask for a new chat on a timer, or stop an answer to fill a receipt.
+Select again when the operation changes. The current agent chooses locally; Jev may assist only within the owner's routing permissions. Never require a paid selector to load efficiency guidance. These references are available on disk without adding separate always-visible skill descriptions.
 
-Keep communication concise and useful. Do not expose internal logs, identifiers or bookkeeping in ordinary progress reports. State a real gap when it matters; a failed optional routing service does not prevent a normal reply.
+Keep one owner for each function: one output filter per result, one project learning mechanism, one native continuation path. Prefer installed capabilities; an absent optional package is not a reason to stop or install everything. Preserve original errors, user decisions, relevant evidence and the full requested outcome.
 
-A selected skill supplies a method, not extra permission. Follow the user's latest request, existing decisions and host permissions. Use the shared task context and native tools; do not create a parallel tracker or demand paperwork. A method being selected or loaded does not prove its result.
-
-## Private learned methods
-
-Where the embedding application enables tested private procedures, they enter the
-same selective catalogue and body-delivery path as other skills. Retrieve only
-relevant adopted methods. A private note, proposed lesson or model confidence is
-not an adopted improvement. Keep project evidence private; check a candidate on
-retained failures, working cases and unfamiliar cases before adopting it within
-existing authority, and withdraw a regression. Native event capture is automatic;
-do not create routine manual API or receipt work to simulate learning.
-
-The native learning bridge can retain a useful source-linked proposal during ordinary work. Failed tool events are captured automatically. Use only existing owner-configured evaluators for baseline, regression and unfamiliar cases; never write or alter those checks to certify your candidate. Without them, keep the proposal unverified and continue the task. Do not turn every failure into a lesson, a mandatory form or a background model job. Adopted procedures use the same selective delivery path.
+[Sources and integration choices](references/mechanisms.md) describe what was adapted and what was deliberately excluded. No savings claim follows from installation alone.

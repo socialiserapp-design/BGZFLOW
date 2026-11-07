@@ -18,6 +18,19 @@ function fixture(t) {
   return { root, projectRoot, options, input };
 }
 
+test('recovery renders original human source once and does not replay the host summary',t=>{
+ const {input,options}=fixture(t);
+ const marker='UNIQUE_USER_REQUIREMENT preserve offline use.';
+ captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:marker},options);
+ captureEvent({...input,hook_event_name:'PostCompact',summary:'ALREADY_IN_NATIVE_SUMMARY'},options);
+ const state=readContinuity(input,options),rendered=renderContinuity(state);
+ assert.equal(rendered.split(marker).length-1,1);
+ assert.doesNotMatch(rendered,/ALREADY_IN_NATIVE_SUMMARY/);
+ assert.ok(rendered.length<=6000);
+ assert.equal(state.messages[0].message,marker);
+ assert.equal(state.events.find(e=>e.summary).summary,'ALREADY_IN_NATIVE_SUMMARY');
+});
+
 test('route diagnostics retain only numeric phase costs, never supplied prompts or secrets',t=>{
   const {input,options}=fixture(t);
   captureEvent({...input,hook_event_name:'RouteSelected',selection:{status:'selected',selected:[],diagnostics:{elapsedMs:12.5,prompt:'must not persist',secret:'must not persist',phases:{rank:{calls:2,candidates:400,callMs:10.5,input:'must not persist'},verify:{calls:0,candidates:0,callMs:0},complement:{calls:-1,candidates:'bad',callMs:Infinity},unexpected:{calls:100}}}}},{...options,internal:true});

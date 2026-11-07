@@ -133,3 +133,20 @@ Research references do not imply endorsement or implementation of an entire pape
 
 
 Native private learning can retain source-linked proposals during ordinary work. Actual failed tools are recorded quietly; no background model job or manual user form is required. A preconfigured owner evaluator must prove a baseline failure corrected on regression and unseen cases before a procedure is adopted and delivered in later project sessions. Missing checks leave it unverified; this is not an always-on autonomous optimizer. See [native learning](docs/native-learning.md).
+
+### Efficiency in 2.7.7
+
+BG Efficiency now has a small automatically delivered baseline and focused references
+for output/retrieval, routing/caching, learning/measurement and simple implementation.
+The references load only when relevant; no additional always-visible specialist skill
+entries, compressors or paid selectors are required. Existing tools remain optional.
+
+Supported hooks deliver the baseline once per native context or worker and restore
+it after compaction. Same-session recovery no longer prints overlapping native and
+raw-history views or repeats the host's summary. Original records remain available.
+Owner-disabled automatic paid routing and on-demand other-chat history are preserved.
+
+Validation: 55 focused continuity/hook checks and three adapter/delivery checks passed;
+both host packages passed dependency and instruction-link validation. These are local
+checks, not a claim of lower bills or verified usage in every host. The host must enable
+and load the updated plugin. See [efficiency sources and boundaries](skills/bg-efficiency/references/mechanisms.md).

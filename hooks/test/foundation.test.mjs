@@ -14,6 +14,21 @@ function fixture(t) {
   return { input: { session_id: 'same-session', cwd: projectRoot }, options: { storageRoot: path.join(root, 'store'), route: false, recall: true } };
 }
 
+test('efficiency baseline is automatic once per native context and per worker without routing',async t=>{
+ const {input,options}=fixture(t),config={...options,recall:undefined};
+ const text=result=>result.hookSpecificOutput?.additionalContext||'';
+ const marker='BG Efficiency baseline';
+ const first=text(await handleFoundationEvent({...input,hook_event_name:'SessionStart'},config));
+ assert.equal(first.split(marker).length-1,1);
+ for(const event of [{hook_event_name:'SessionStart',source:'resume'},{hook_event_name:'UserPromptSubmit',prompt:'Any progress?'},{hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'one'},{hook_event_name:'PostToolUse',tool_name:'Read',tool_use_id:'one'}])assert.ok(!text(await handleFoundationEvent({...input,...event},config)).includes(marker));
+ assert.match(text(await handleFoundationEvent({...input,hook_event_name:'SubagentStart',agent_id:'worker-a'},config)),/BG Efficiency baseline/);
+ assert.ok(!text(await handleFoundationEvent({...input,hook_event_name:'SubagentStart',agent_id:'worker-a'},config)).includes(marker));
+ await handleFoundationEvent({...input,hook_event_name:'PostCompact'},config);
+ assert.match(text(await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'after-compact'},config)),/BG Efficiency baseline/);
+ assert.ok(!text(await handleFoundationEvent({...input,hook_event_name:'PreToolUse',tool_name:'Read',tool_use_id:'next'},config)).includes(marker));
+ assert.equal(readContinuity(input,config).events.filter(e=>e.event==='MethodSelection').length,0);
+});
+
 test('native default injects zero other-chat history across prompts, tools and restoration',async t=>{
  const {input,options}=fixture(t),native={...options,recall:undefined};
  const marker='OTHER CHAT NOTE NEVER AUTOMATICALLY INJECTED';
@@ -273,7 +288,9 @@ test('native compact/resume restore the same task without a blocking decision', 
 test('tools, subagents and stops are captured automatically without asking the model to write forms', async t => {
   const { input, options } = fixture(t);
   for (const hook_event_name of ['PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'SubagentStart', 'SubagentStop', 'Stop']) {
-    assert.deepEqual(await handleFoundationEvent({ ...input, hook_event_name, tool_name: 'Bash', tool_use_id: 'tool', agent_id: 'builder' }, options), {});
+    const result=await handleFoundationEvent({ ...input, hook_event_name, tool_name: 'Bash', tool_use_id: 'tool', agent_id: 'builder' }, options);
+    if(hook_event_name==='SubagentStart')assert.match(result.hookSpecificOutput.additionalContext,/BG Efficiency baseline/);
+    else assert.deepEqual(result,{});
   }
   assert.equal(readContinuity(input, options).events.length, 6);
 });
