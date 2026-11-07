@@ -5,6 +5,9 @@ description: "Use any relevant Jev capability for the current goal: typed judgme
 
 # Use Jev for this
 
+Choose locally first. For a justified Jev consultation, use the installed `judge --stdin --live` helper with a stable `taskId` from the original task brief. Reuse that identity across follow-ups, workers and compaction; do not generate a new identity to obtain another call. The helper allows one attempt and reuses an identical successful answer. On failure, uncertainty or changed input after use, continue locally and ask before another paid request. Do not use the multi-pass catalogue router or bypass the helper with a direct SDK call. Embedding applications must enforce the same budget in their trusted execution layer.
+
+
 Apply Jev where understanding supplied material can help this goal. It can answer
 yes/no probabilities, choose among actual candidates, score described situations,
 and experimentally locate objects in images. The main agent reasons, asks the user

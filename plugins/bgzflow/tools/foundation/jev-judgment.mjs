@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { sanitizeRecord } from '../../hooks/lib/secrets.mjs';
+import {budgetedJev} from './jev-budget.mjs';
 
 // One credential/transport path for the selector and on-demand judgments.
 // No background work, record ledger, tool execution or provider switching.
@@ -146,17 +147,18 @@ export function createJevJudgment(options = {}) {
 
 export async function runJevJudgmentCli(args, { input = '', write = line => console.log(line), options = {} } = {}) {
   if (args.includes('--help')) {
-    write('On-demand Jev judgments: judge --stdin [--live] [--experimental-images] [--long-context].\nInput: {state, questions, model?, assets?}; questions use noul, choice, score or experimental box.\nWithout --live, validates locally and prints a summary without sending data. Existing task authority governs live use. This command never executes a selected action.');
+    write('On-demand Jev judgments: judge --stdin [--live] [--experimental-images] [--long-context].\nInput: {taskId?, state, questions, model?, assets?}; live requests require a stable taskId and allow one attempt per task, reusing an identical successful answer; questions use noul, choice, score or experimental box.\nWithout --live, validates locally and prints a summary without sending data. Existing task authority governs live use. This command never executes a selected action.');
     return 0;
   }
   const allowed = new Set(['--stdin', '--live', '--preview', '--experimental-images', '--long-context']);
   if (!args.includes('--stdin') || args.some(arg => !allowed.has(arg)) || (args.includes('--live') && args.includes('--preview'))) { write(JSON.stringify({ status: 'fallback', reason: 'invalid-arguments', answers: null })); return 2; }
-  let value;
-  try { value = JSON.parse(input); prepareJevRequest(value, { experimentalImages: args.includes('--experimental-images') }); }
+  let value,taskId;
+  try { ({taskId,...value} = JSON.parse(input)); prepareJevRequest(value, { experimentalImages: args.includes('--experimental-images') }); }
   catch { write(JSON.stringify({ status: 'fallback', reason: 'invalid-input', answers: null })); return 2; }
   if (!args.includes('--live')) {
     write(JSON.stringify({ status: 'preview', network: false, model: value.model || 'jev-latest', questions: Object.entries(value.questions).map(([id, q]) => ({ id, type: q.type })), images: Object.keys(value.assets || {}).length })); return 0;
   }
-  const result = await createJevJudgment(options)(value, { experimentalImages: args.includes('--experimental-images'), longContext: args.includes('--long-context') });
+  const flags={experimentalImages:args.includes('--experimental-images'),longContext:args.includes('--long-context')};
+  const result = await budgetedJev({request:value,...flags},{taskId,home:options.home,projectRoot:options.projectRoot,run:input=>createJevJudgment(options)(input.request,flags)});
   write(JSON.stringify(result)); return result.status === 'answered' ? 0 : 1;
 }

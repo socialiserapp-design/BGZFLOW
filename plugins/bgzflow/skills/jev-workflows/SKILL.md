@@ -5,6 +5,9 @@ description: "Compose several Jev capabilities with reasoning, retrieval and obs
 
 # Compose Jev with the working agent
 
+Choose locally first. For a justified Jev consultation, use the installed `judge --stdin --live` helper with a stable `taskId` from the original task brief. Reuse that identity across follow-ups, workers and compaction; do not generate a new identity to obtain another call. The helper allows one attempt and reuses an identical successful answer. On failure, uncertainty or changed input after use, continue locally and ask before another paid request. Do not use the multi-pass catalogue router or bypass the helper with a direct SDK call. Embedding applications must enforce the same budget in their trusted execution layer.
+
+
 Read the relevant [composition](../bg-jev/references/methods.md#compositions), not
 every recipe. Identify the result and observable success. Reuse the task's authority,
 time/usage priorities and current records. Complexity is useful only when it improves

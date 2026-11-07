@@ -45,8 +45,8 @@ export function createJevDecider(options = {}) {
     const request=prepareRoutingRequest({phase,context,candidates,selected,availableModels});
     const criteria=request.questions.best.criteria;
     if(options.automatic!==false){
-      let enabled=true;
-      try{const policy=JSON.parse(routingPolicyFs.readFileSync(routingPolicyPath.join(options.home||routingPolicyOs.homedir(),'.bgzflow','auto-routing.json'),'utf8'));enabled=policy.enabled===true;}catch(error){if(error.code!=='ENOENT')enabled=false;}
+      let enabled=false;
+      try{const policy=JSON.parse(routingPolicyFs.readFileSync(routingPolicyPath.join(options.home||routingPolicyOs.homedir(),'.bgzflow','auto-routing.json'),'utf8'));enabled=policy.enabled===true;}catch{/* Automatic paid work requires owner opt-in. */}
       if(!enabled)throw new Error('automatic-paid-routing-disabled');
     }
     const response = await getClient().systemOne(request, { signal, timeout: timeoutMs, retry: { maxRetries: 0 } });

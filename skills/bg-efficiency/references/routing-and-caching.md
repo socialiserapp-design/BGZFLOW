@@ -9,3 +9,10 @@ When the application owns the model API request, keep unchanged instructions and
 Requesty-style auto caching means provider-aware cache breakpoints and cost accounting, not a new requirement to route through Requesty. Claude/Codex host-managed requests are outside a Markdown skill's control. Do not change endpoints, accounts, permissions or spending limits to claim this feature is active.
 
 Reuse exact local computations only when input, workspace and relevant environment match. Any answer cache additionally needs user/team isolation, source freshness and invalidation on corrections. Do not reuse uncertain external effects or private answers across users. Do not retry an unknown paid action until its actual outcome is reconciled.
+
+The native `judge --stdin --live` path requires a stable taskId from the original
+task brief. It reserves one request before sending, reuses an identical successful
+answer, and falls back locally after changed input or an uncertain/failed attempt.
+Ask before another paid request; do not rotate identities to reset the allowance.
+This controls BGZFLOW's command, not arbitrary direct API use with the same key.
+Keep task identity in the trusted application layer when embedding in Lucian.

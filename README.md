@@ -150,3 +150,16 @@ Validation: 55 focused continuity/hook checks and three adapter/delivery checks 
 both host packages passed dependency and instruction-link validation. These are local
 checks, not a claim of lower bills or verified usage in every host. The host must enable
 and load the updated plugin. See [efficiency sources and boundaries](skills/bg-efficiency/references/mechanisms.md).
+
+### Jev consultations in 2.7.8
+
+Choose locally first; consult Jev for a useful bounded judgment instead of running
+catalogue-wide comparisons around every message or tool call. Automatic remote
+selection requires explicit owner opt-in; it stays disabled on this installation.
+The supported live judgment command now requires a stable original-task identity,
+reserves one attempt before sending, reuses identical successful answers, and falls
+back locally after a used or uncertain attempt. Workers must share the task identity;
+changing working directory cannot mint another allowance. Ask before additional use.
+This is enforcement in BGZFLOW's command path, not a provider-wide spending control
+against arbitrary programs using the same API key. Embedding applications own task
+identity and permissions. Cached answers report zero new token usage.

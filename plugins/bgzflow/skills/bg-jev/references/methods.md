@@ -18,10 +18,13 @@ data and usage. The helper performs judgments only; it never runs a selected com
 Use the installed path supplied with this skill, not a guessed working directory.
 The legacy-compatible `jev` command still selects skills; `judge` is the broader API.
 
+Include `taskId` from the original task brief for live use. One attempt per task is reserved before sending, including uncertain failures; an identical successful answer is reused without another call. Do not change task identity to reset the allowance. The application owns task identity; this is not a provider-wide account spending cap. Existing direct SDK examples describe API capabilities, not a bypass of this execution path.
+
 An input example, using public fictional material:
 
 ```json
 {
+  "taskId": "original-export-investigation-task",
   "model": "jev-1.14.0",
   "state": {"message": "The export crashes every time; I cannot download my report."},
   "questions": {

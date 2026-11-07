@@ -139,9 +139,9 @@ async function chooseMethods(input, state, options) {
   // or model work. An injected decider is an explicit trusted embedding/test
   // implementation; the built-in provider independently checks before HTTP.
   if(!options.routing?.decide){
-    let disabled=false;
+    let disabled=true;
     try{disabled=JSON.parse(fs.readFileSync(path.join(os.homedir(),'.bgzflow','auto-routing.json'),'utf8')).enabled!==true;}
-    catch(error){disabled=error.code!=='ENOENT';}
+    catch{/* No explicit owner opt-in: selection stays local. */}
     if(disabled)return historyDelivery(state,{ephemeral:Boolean(input.conversationId)})('automatic-paid-routing-off')?'Automatic paid Jev routing is disabled by the owner. Choose relevant methods with the current agent; do not call or retry Jev automatically. Explicit on-demand use remains available within the user’s authority.':'';
   }
   try {

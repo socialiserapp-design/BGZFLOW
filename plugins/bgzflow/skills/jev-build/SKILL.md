@@ -5,6 +5,9 @@ description: "Build, review or debug Jev integrations using the official SDK and
 
 # Build with Jev
 
+Choose locally first. For a justified Jev consultation, use the installed `judge --stdin --live` helper with a stable `taskId` from the original task brief. Reuse that identity across follow-ups, workers and compaction; do not generate a new identity to obtain another call. The helper allows one attempt and reuses an identical successful answer. On failure, uncertainty or changed input after use, continue locally and ask before another paid request. Do not use the multi-pass catalogue router or bypass the helper with a direct SDK call. Embedding applications must enforce the same budget in their trusted execution layer.
+
+
 Start from the requested behaviour and inspect the existing application. Read the
 relevant current official docs and [shared method](../bg-jev/references/methods.md).
 Reuse the packaged official SDK and existing connection path for BGZFLOW; an external

@@ -5,6 +5,9 @@ description: "Use Jev as a bounded second look at scope drift, consequential una
 
 # Jev for scope, questions and risk
 
+Choose locally first. For a justified Jev consultation, use the installed `judge --stdin --live` helper with a stable `taskId` from the original task brief. Reuse that identity across follow-ups, workers and compaction; do not generate a new identity to obtain another call. The helper allows one attempt and reuses an identical successful answer. On failure, uncertainty or changed input after use, continue locally and ask before another paid request. Do not use the multi-pass catalogue router or bypass the helper with a direct SDK call. Embedding applications must enforce the same budget in their trusted execution layer.
+
+
 Use the [shared Jev method](../bg-jev/references/methods.md) and whichever existing
 [risky changes](../risky-changes/SKILL.md) or [risky decisions](../risky-decisions/SKILL.md)
 method fits. They own the risk procedure. For questioning, use the existing shared
