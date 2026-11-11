@@ -12,7 +12,7 @@ const scanner=path.join(root,'scripts/leak-check.mjs');
 const exceptions=JSON.parse(fs.readFileSync(path.join(root,'scripts/leak-check-allowlist.json'),'utf8')).exceptions;
 
 function fixture(t){
-  const directory=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-public-leak-test-'));
+  const directory=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-public-leak-test-'));
   t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
   fs.writeFileSync(path.join(directory,'VERSION'),'0.0.0\n');
   fs.writeFileSync(path.join(directory,'plugin.json'),'{}');

@@ -10,7 +10,7 @@ import {buildFoundation,validatePackage} from '../build-foundation.mjs';
 import {inspectDocumentLinks} from '../check-document-links.mjs';
 
 function output(t) {
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-package-test-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-package-test-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   return path.join(root,'package');
 }

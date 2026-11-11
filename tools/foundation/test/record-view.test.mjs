@@ -12,7 +12,7 @@ import { createFoundationSession } from '../session.mjs';
 import { handleFoundationEvent } from '../../../hooks/foundation.mjs';
 
 function fixture(t) {
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-native-current-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-native-current-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const projectRoot=path.join(root,'project');fs.mkdirSync(projectRoot);
   const input={cwd:projectRoot,session_id:'provider-a'};

@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {projectDecisionFiles} from '../project-decisions.mjs';
 test('generic defaults and private preferences preserve project decisions without personal names in the package',()=>{
- const home=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-context-')),root=path.join(home,'project');fs.mkdirSync(root);fs.mkdirSync(path.join(home,'.bgzflow'));
+ const home=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-context-')),root=path.join(home,'project');fs.mkdirSync(root);fs.mkdirSync(path.join(home,'.bgzflow'));
  fs.writeFileSync(path.join(root,'DECISIONS.md'),'Generic current decisions');
  fs.writeFileSync(path.join(root,'OWNER.md'),'Custom current decisions');
  assert.deepEqual(projectDecisionFiles(root,{home}),[path.join(fs.realpathSync(root),'DECISIONS.md')]);

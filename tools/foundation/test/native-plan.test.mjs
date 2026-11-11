@@ -9,7 +9,7 @@ import {renderRecordView} from '../record-view.mjs';
 import {derivePlanStage} from '../stage-selection.mjs';
 
 function fixture(t){
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-native-plan-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-native-plan-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const project=path.join(root,'project');fs.mkdirSync(project);let n=0;
   const input={cwd:project,session_id:'desktop-plan'},options={storageRoot:path.join(root,'store'),now:()=>new Date(Date.UTC(2026,10,5,3,0,n++)).toISOString()};
   const record=(event,tool,id,args,response)=>captureEvent({...input,hook_event_name:event,tool_name:`mcp__ccd_turn__${tool}`,tool_use_id:id,...(args?{tool_input:args}:{}),...(response?{tool_response:response}:{})},options);

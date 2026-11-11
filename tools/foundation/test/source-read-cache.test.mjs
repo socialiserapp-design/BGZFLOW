@@ -10,7 +10,7 @@ import { captureEvent, readContinuity } from '../continuity.mjs';
 import { readProjectRecall } from '../project-recall.mjs';
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-source-cache-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-source-cache-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const directory = path.join(root, 'session', 'events');
   fs.mkdirSync(directory, { recursive: true });
@@ -79,7 +79,7 @@ test('cached source reuse refuses hard links and a linked cache never reads or c
 });
 
 function nativeFixture(t) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-native-cache-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-native-cache-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const project = path.join(root, 'project'); fs.mkdirSync(project);
   const options = { storageRoot: path.join(root, 'store'), sourceCache: true };

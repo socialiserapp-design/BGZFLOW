@@ -10,7 +10,7 @@ import {renderMethodDelivery} from '../method-delivery.mjs';
 import {prepareRoutingRequest,routingRequestBytes} from '../jev-provider.mjs';
 
 function library(t,count,{long=false}={}) {
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-auto-routing-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-auto-routing-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   for(let i=0;i<count;i++) {
     const dir=path.join(root,`method-${String(i).padStart(3,'0')}`);fs.mkdirSync(dir);

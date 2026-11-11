@@ -28,7 +28,7 @@ test('candidate activation uses exact quoted flat TOML paths, never unquoted nes
   assert.throws(()=>candidateCliConfig('other@example'),/exact/);
 });
 function packages(){
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-hook-package-')),reviewed=path.join(root,'reviewed build'),actual=path.join(root,'native cache');
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-hook-package-')),reviewed=path.join(root,'reviewed build'),actual=path.join(root,'native cache');
   for(const dir of [reviewed,actual]){fs.mkdirSync(path.join(dir,'hooks'),{recursive:true});fs.writeFileSync(path.join(dir,'plugin.json'),JSON.stringify({name:'bgzflow',version:'test-candidate'}));fs.writeFileSync(path.join(dir,'hooks/hooks.json'),'{}');fs.writeFileSync(path.join(dir,'hooks/foundation.mjs'),'// synthetic, never executed\n');}
   const pluginId='bgzflow@bgzflow-candidate',metadata=good();
   for(const hook of metadata.data[0].hooks)Object.assign(hook,{pluginId,handlerType:'command',sourcePath:path.join(actual,'hooks/hooks.json'),command:`node "${path.join(actual,'hooks/foundation.mjs')}"`});

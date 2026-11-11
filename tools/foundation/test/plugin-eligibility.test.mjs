@@ -7,7 +7,7 @@ import path from 'node:path';
 import {discoverCatalog} from '../catalog.mjs';
 
 function fixture(t) {
-  const home=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-plugin-eligibility-'));
+  const home=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-plugin-eligibility-'));
   t.after(()=>fs.rmSync(home,{recursive:true,force:true}));
   return home;
 }

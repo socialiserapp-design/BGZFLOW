@@ -10,7 +10,7 @@ import {completionReviewContext} from '../../tools/foundation/completion-review.
 import {readContinuity} from '../../tools/foundation/continuity.mjs';
 
 function fixture(t){
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-completion-review-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-completion-review-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const input={cwd:root,session_id:'review-fixture'};
   let calls=0;

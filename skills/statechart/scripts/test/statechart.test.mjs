@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import assert from "node:assert/strict";
 import { constants } from "node:buffer";
 import { spawn, spawnSync } from "node:child_process";
@@ -146,7 +147,7 @@ Bare == TRUE
 });
 
 test("a rule defined in a module that the spec extends, directly or through another module, keeps its sentence and the step that breaks it", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "LampVars.tla"),
     `---- MODULE LampVars ----
@@ -251,7 +252,7 @@ const lampMap =
   'export const state = (v) => v.lamp;\nexport const step = (a) => ({ Short: "the wire shorts", SwitchOn: "you switch it on" })[a];\n';
 
 test("a rule that the spec pulls in through an unnamed INSTANCE with substitutions keeps its sentence and the step that breaks it", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "LampRules.tla"), lampRules);
   writeFileSync(
     join(dir, "Lamp.tla"),
@@ -311,7 +312,7 @@ ${done}`,
 });
 
 test("rules reached through nested EXTENDS and INSTANCE keep their sentences and read the spec's variables behind each substitution", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const module = (name, body) =>
     writeFileSync(join(dir, `${name}.tla`), `---- MODULE ${name} ----\n${body}\n====\n`);
   module("Wire", `VARIABLE wire\n\\* The wire is never cut.\nIntact == wire # "Cut"`);
@@ -372,7 +373,7 @@ Worded == Rules!SafeLight`,
 });
 
 test("a LOCAL INSTANCE or LOCAL definition stays inside the module that declares it, and a public name that starts with LOCAL does not", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const module = (name, body) =>
     writeFileSync(join(dir, `${name}.tla`), `---- MODULE ${name} ----\n${body}\n====\n`);
   module("Glow", `VARIABLE g\n\\* The glow is bright.\nOk == g = "Bright"`);
@@ -397,7 +398,7 @@ test("a LOCAL INSTANCE or LOCAL definition stays inside the module that declares
 });
 
 test("a rule that reads a CONSTANT reads the spec's variables that WITH puts in its place", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const module = (name, body) =>
     writeFileSync(join(dir, `${name}.tla`), `---- MODULE ${name} ----\n${body}\n====\n`);
   module(
@@ -455,7 +456,7 @@ Next == Tick \\/ Pay \\/ Fill
 });
 
 test("a rule reads the variables its helpers read, and not the ones its actions only change or leave unchanged", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Door.tla"),
     `---- MODULE Door ----
@@ -475,7 +476,7 @@ Settled == ~ENABLED System
 });
 
 test("a property is checked only in the initial states when no definition it reaches has a temporal operator", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "LampBase.tla"),
     `---- MODULE LampBase ----
@@ -770,7 +771,7 @@ test("a rule that TLC finds broken keeps its paths after any error that TLC then
 });
 
 test("a step that changes nothing keeps a state unsettled, and a quote in a reader label survives the chart", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "save.dot"),
     `strict digraph DiskGraph {
@@ -799,7 +800,7 @@ export const step = (action) => ({ Tap: "you tap Save" })[action] ?? "";
 });
 
 test("a map keys on the bare action name when TLC 1.8.0 writes each step with its parameters", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "seats.dot"),
     `strict digraph DiskGraph {
@@ -857,7 +858,7 @@ function layeredHouse({
   state = '(v.x === "attic" ? "Upstairs" : "Downstairs")',
   detail = '(v.x === "porch" || v.x === "hall" ? v.x : "")',
 } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "house.dot"),
     `strict digraph DiskGraph {
@@ -966,7 +967,7 @@ test("a layered chart and its --cover lists treat a blank state label or detail 
 });
 
 test("a large graph with a thousand bugs draws its overview and a bug chart in seconds", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const [states, bugs, bound] = [20_000, 1000, 10_000];
   const label = (n, broken) => `/\\\\ n = ${n}\\n/\\\\ broken = ${broken ? "TRUE" : "FALSE"}`;
   const dot = [];
@@ -1013,7 +1014,7 @@ export const cause = (v) => (v.broken ? \`counter \${v.n} broke\` : null);
 });
 
 test("chart-to-tla writes one action per label and one invariant per never line", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "sync.mmd"), fixture("sync.mmd"));
   const r = node("chart-to-tla.mjs", ["sync.mmd", "--module", "Sync"], dir);
   assert.equal(r.status, 0, r.stderr);
@@ -1035,7 +1036,7 @@ test("chart-to-tla writes one action per label and one invariant per never line"
 });
 
 test("chart-to-tla refuses a never line that names no state", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "c.mmd"),
     "stateDiagram-v2\n  [*] --> A\n  A --> B : go\n  %% never Bad: C -- never C\n",
@@ -1046,7 +1047,7 @@ test("chart-to-tla refuses a never line that names no state", () => {
 });
 
 test("a never line names a state exactly, or every state inside a composite", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "c.mmd"),
     `stateDiagram-v2
@@ -1105,7 +1106,7 @@ const flatDoor = (extra = []) =>
   ].join("\n");
 
 test("compare reads parallel regions as one machine, so a guard across regions shows", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "agreed.mmd"), door);
   writeFileSync(join(dir, "guarded.mmd"), flatDoor());
   writeFileSync(join(dir, "free.mmd"), flatDoor(["  U_O --> L_O : tap lock"]));
@@ -1149,7 +1150,7 @@ test("a %% when line guards a step on the other region's states, and [words] are
       guard: { not: true, states: { Power: ["On"] } },
     },
   ]);
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "lamp.mmd"), lamp);
   writeFileSync(
     join(dir, "flat.mmd"),
@@ -1222,7 +1223,7 @@ const switchLamp = `stateDiagram-v2
 `;
 
 test("a label with a guarded and an unguarded move in one region writes both moves", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "switch.mmd"), switchLamp);
   const r = node("chart-to-tla.mjs", ["switch.mmd", "--module", "Switch"], dir);
   assert.equal(r.status, 0, r.stderr);
@@ -1243,7 +1244,7 @@ FlipTheSwitch ==
 });
 
 test("compare reads a one-region chart as the machine its steps reach, with the steps that keep the state", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const drawn =
     "stateDiagram-v2\n  [*] --> Idle\n  Idle --> Busy : start\n  Busy --> Idle : finish\n";
   writeFileSync(join(dir, "drawn.mmd"), drawn);
@@ -1267,7 +1268,7 @@ test("a -- outside a composite is refused, not read as one region", () => {
   const split =
     "stateDiagram-v2\n  [*] --> Online\n  Online --> Offline : the network drops\n  --\n  [*] --> Synced\n  Synced --> Pending : you edit a note\n";
   assert.throws(() => parseMermaid(split), /-- outside a composite/);
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "split.mmd"), split);
   writeFileSync(join(dir, "door.mmd"), door);
   const tla = node("chart-to-tla.mjs", ["split.mmd", "--module", "Split"], dir);
@@ -1285,7 +1286,7 @@ test("a -- outside a composite is refused, not read as one region", () => {
 });
 
 test("compare refuses a chart it cannot read, or an ACTUAL chart that is not drawn for comparison", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "agreed.mmd"), door);
   for (const pair of [
     ["agreed.mmd", "missing.mmd"],
@@ -1315,7 +1316,7 @@ test("compare refuses a chart it cannot read, or an ACTUAL chart that is not dra
 });
 
 test("an edge lists every step, writes shared leading words once, and the chart renders at its natural width", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const nodes = [
     ["Home", 1],
     ["Home", 2],
@@ -1411,10 +1412,10 @@ const FROM_SPEC_USAGE =
 const FROM_CHART_USAGE =
   "node statechart.mjs from-chart CHART.mmd [--module NAME] [--expect-broken RULE]... [--title TEXT] [--out DIR] [--png [--theme NAME]]";
 const RENDER_USAGE = "node statechart.mjs render CHART.mmd [--theme NAME] [--out FILE]";
-const noTlc = { PATH: mkdtempSync(join(tmpdir(), "empty-path-")), TLA2TOOLS: "", JAVA: "" };
+const noTlc = { PATH: mkdtempSync(join(canonicalTestPath.native(tmpdir()), "empty-path-")), TLA2TOOLS: "", JAVA: "" };
 
 test("statechart.mjs writes the spec next to the chart, keeps it on the next run, and stops without TLC", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "notes-app.mmd"), fixture("sync.mmd"));
   const first = node("statechart.mjs", ["from-chart", "notes-app.mmd"], dir, noTlc);
   assert.equal(first.status, 2);
@@ -1455,8 +1456,8 @@ const installCommand = (...tools) =>
   `cd "$(mktemp -d)" && MISE_CEILING_PATHS="$PWD" mise install ${tools.map((t) => `'${t}'`).join(" ")}`;
 
 test("statechart.mjs shows mise's own error when mise fails before it can look for TLC", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
-  const bin = mkdtempSync(join(tmpdir(), "fake-mise-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
+  const bin = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "fake-mise-"));
   const said =
     "mise ERROR failed to read the global config\nmise ERROR Run with --verbose for more";
   writeFileSync(join(bin, "mise"), `#!/bin/sh\nprintf '%s\\n' "${said}" >&2\nexit 1\n`, {
@@ -1483,7 +1484,7 @@ Fix that, or set TLA2TOOLS to the path of tla2tools.jar, and JAVA to a java bina
 });
 
 test("statechart.mjs writes no output folder when it refuses the input", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "tla2tools.jar"), "");
   writeFileSync(join(dir, "Pay.tla"), "---- MODULE Pay ----\n====\n");
   writeFileSync(join(dir, "Pay.cfg"), "SPECIFICATION Spec\nINVARIANT Paid\n");
@@ -1504,7 +1505,7 @@ test("statechart.mjs writes no output folder when it refuses the input", () => {
 });
 
 test("statechart.mjs does not use an output folder that has files that it did not write", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "tla2tools.jar"), "");
   writeFileSync(join(dir, "Pay.tla"), "---- MODULE Pay ----\n====\n");
   writeFileSync(join(dir, "Pay.cfg"), "SPECIFICATION Spec\n");
@@ -1537,7 +1538,7 @@ test("statechart.mjs does not use an output folder that has files that it did no
 });
 
 test("statechart.mjs exits 2 and names a helper script that cannot start", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "notes-app.mmd"), fixture("sync.mmd"));
   writeFileSync(join(dir, "no-node.cjs"), 'process.execPath = "/nonexistent/node";\n');
   const r = node("statechart.mjs", ["from-chart", "notes-app.mmd"], dir, {
@@ -1548,7 +1549,7 @@ test("statechart.mjs exits 2 and names a helper script that cannot start", () =>
 });
 
 test("statechart.mjs names the chart it refuses and the argument it does not know", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "c.mmd"),
     "stateDiagram-v2\n  [*] --> A\n  A --> B : go\n  %% never Bad: C -- never C\n",
@@ -1687,7 +1688,7 @@ const lib = await loadRenderer().catch(() => null);
 const needsPng = { skip: lib ? false : "cannot install Pele and resvg" };
 
 function fakeRenderer() {
-  const xdg = mkdtempSync(join(tmpdir(), "xdg-"));
+  const xdg = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "xdg-"));
   const dir = join(xdg, "statechart", CACHE_NAME);
   mkdirSync(dir, { recursive: true });
   writeFileSync(
@@ -1808,7 +1809,7 @@ function tlc(dir, name) {
       tools.jar,
       "tlc2.TLC",
       "-metadir",
-      mkdtempSync(join(tmpdir(), "tlc-")),
+      mkdtempSync(join(canonicalTestPath.native(tmpdir()), "tlc-")),
       "-deadlock",
       "-continue",
       "-dump",
@@ -1848,7 +1849,7 @@ exit 1
 `;
 
 function outsideRepoWithoutTlc() {
-  const root = mkdtempSync(join(tmpdir(), "statechart-outside-"));
+  const root = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-outside-"));
   const at = join(root, "skill", "scripts");
   cpSync(scripts, at, { recursive: true, filter: (f) => !f.startsWith(here) });
   const bin = join(root, "bin");
@@ -2010,7 +2011,7 @@ test(
           : false,
   },
   () => {
-    const root = mkdtempSync(join(tmpdir(), "statechart-outside-"));
+    const root = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-outside-"));
     const at = join(root, "scripts");
     cpSync(scripts, at, { recursive: true, filter: (f) => !f.startsWith(here) });
     const dir = join(root, "work");
@@ -2036,7 +2037,7 @@ test(
 );
 
 test("statechart.mjs shows why java cannot start TLC", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "upload.mmd"), fixture("upload.mmd"));
   const setVars =
     "Fix that, or set TLA2TOOLS to the path of tla2tools.jar, and JAVA to a java binary (Java 11 or later).\n";
@@ -2065,7 +2066,7 @@ ${setVars}`,
 });
 
 test("from-chart checks the agreed chart and draws it back unchanged", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "upload.mmd"), fixture("upload.mmd"));
   const r = node("statechart.mjs", ["from-chart", "upload.mmd"], dir);
   assert.equal(r.status, 0, r.stderr);
@@ -2100,7 +2101,7 @@ test(
   "from-chart counts a self-loop, so a spec that drops it does not draw the chart back",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "call.mmd"), ringing);
     const drawn = node("statechart.mjs", ["from-chart", "call.mmd"], dir);
     assert.equal(drawn.status, 0, drawn.stdout + drawn.stderr);
@@ -2120,7 +2121,7 @@ test(
 );
 
 test("from-chart draws a chart with no transitions back unchanged", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "lone.mmd"), "stateDiagram-v2\n  [*] --> Idle\n");
   const r = node("statechart.mjs", ["from-chart", "lone.mmd"], dir);
   assert.equal(r.status, 0, r.stdout + r.stderr);
@@ -2129,7 +2130,7 @@ test("from-chart draws a chart with no transitions back unchanged", needsTlc, ()
 });
 
 test("TLC reads a label with a guarded and an unguarded move in one region", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "switch.mmd"), switchLamp);
   const r = node("statechart.mjs", ["from-chart", "switch.mmd"], dir);
   assert.equal(r.status, 0, r.stdout + r.stderr);
@@ -2147,7 +2148,7 @@ In the model, one step leads into this bug: "the server confirms".
 `;
 
 test("from-chart finds the design bug, and from-spec with the fix marks it fixed", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "sync.mmd"), fixture("sync.mmd"));
   const today = node("statechart.mjs", ["from-chart", "sync.mmd"], dir);
   assert.equal(today.status, 1, today.stderr);
@@ -2281,7 +2282,7 @@ test(
   "a second model with the module name of the spec, in its own folder, keeps its own TLC files",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "sync.mmd"), fixture("sync.mmd"));
     assert.equal(node("statechart.mjs", ["from-chart", "sync.mmd"], dir).status, 1);
     const guarded = readFileSync(join(dir, "Sync.tla"), "utf8").replace(
@@ -2350,7 +2351,7 @@ test(
   "from-spec on a lock protocol names every step that leads into the bug, not only the shortest trace",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "Lock.tla"), lockSpec);
     writeFileSync(join(dir, "Lock.cfg"), "SPECIFICATION Spec\nINVARIANT MutualExclusion\n");
     writeFileSync(join(dir, "Lock.map.mjs"), lockMap);
@@ -2402,7 +2403,7 @@ test(
   "a story does not count the steps into a bug when TLC names them only after the whole next-state action",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Jump.tla"),
       `---- MODULE Jump ----
@@ -2444,7 +2445,7 @@ test(
   "a story says its path is the shortest only when more than one step leads into the bug",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Skip.tla"),
       `---- MODULE Skip ----
@@ -2498,7 +2499,7 @@ test(
   "a story says which step into the bug keeps the state, so that no chart draws it",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Panel.tla"),
       `---- MODULE Panel ----
@@ -2556,7 +2557,7 @@ test(
       [["bug-1"], 2, ["chart.mmd", "bug-1.mmd", "chart.png"]],
       [[], 0, ["chart.mmd", "bug-1.mmd", "chart.png", "bug-1.png"]],
     ]) {
-      const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+      const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
       writeFileSync(join(dir, "sync.mmd"), fixture("sync.mmd"));
       const rendered = join(dir, "rendered");
       const r = node("statechart.mjs", args, dir, {
@@ -2622,7 +2623,7 @@ test(
   "render writes a PNG at twice the chart's size, next to the chart or at --out",
   needsPng,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "regions.mmd"), SOURCE);
     writeFileSync(join(dir, "regions.txt"), SOURCE);
     for (const [args, file, theme] of [
@@ -2650,7 +2651,7 @@ test(
   "a chart too big to draw at twice its size draws at about 100 million pixels",
   needsPng,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const steps = Array.from({ length: 60 }, (_, i) =>
       [0, 1, 2].map((k) => `  s${i} --> s${(i * 7 + k * 13 + 1) % 60} : e${i}x${k}`),
     ).flat();
@@ -2670,7 +2671,7 @@ test(
   "a PNG fills a state with its theme's group color, and a state that breaks a rule with the theme's wrong fill and border",
   needsPng,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "regions.mmd"), SOURCE);
     const chartFill = /classDef group0 fill:(#\w{6})/.exec(SOURCE)[1];
     for (const name of [undefined, ...Object.keys(THEMES)]) {
@@ -2773,7 +2774,7 @@ test(
 );
 
 test("a PNG draws no edge over a group's title band", needsPng, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const source = fixture("band.mmd");
   writeFileSync(join(dir, "band.mmd"), source);
   for (const [name, theme] of Object.entries(THEMES)) {
@@ -2866,7 +2867,7 @@ test(
         "needs Nimbus Sans with an OpenType regular face and Type 1 bold and italic faces"),
   },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "fontconfig-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "fontconfig-"));
     for (const file of type1Styles) symlinkSync(file, join(dir, basename(file)));
     writeFileSync(
       join(dir, "fonts.conf"),
@@ -2902,13 +2903,13 @@ test("a PNG puts parallel regions side by side and the legend above them", needs
 });
 
 test("a renderer that npm cannot install exits 2 and writes nothing", () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "c.mmd"), SOURCE);
   writeFileSync(join(dir, "sync.mmd"), fixture("sync.mmd"));
-  const xdg = mkdtempSync(join(tmpdir(), "xdg-"));
+  const xdg = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "xdg-"));
   const env = {
     XDG_CACHE_HOME: xdg,
-    npm_config_cache: mkdtempSync(join(tmpdir(), "npm-")),
+    npm_config_cache: mkdtempSync(join(canonicalTestPath.native(tmpdir()), "npm-")),
     npm_config_offline: "true",
   };
   for (const args of [
@@ -2934,11 +2935,11 @@ test("a renderer that npm cannot install exits 2 and writes nothing", () => {
 });
 
 test("a renderer that cannot load exits 2, names its folder, and says to delete it", () => {
-  const xdg = mkdtempSync(join(tmpdir(), "xdg-"));
+  const xdg = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "xdg-"));
   const cache = join(xdg, "statechart", CACHE_NAME);
   mkdirSync(cache, { recursive: true });
   writeFileSync(join(cache, "entry.mjs"), 'export { render } from "no-such-package";\n');
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "c.mmd"), SOURCE);
   const r = node("statechart.mjs", ["render", "c.mmd"], dir, { XDG_CACHE_HOME: xdg });
   assert.equal(r.status, 2);
@@ -2949,7 +2950,7 @@ test("a renderer that cannot load exits 2, names its folder, and says to delete 
 });
 
 test("a chart too long for Pele exits 2, writes no PNG, and says how to get one", needsPng, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const lines = Array.from({ length: 3000 }, (_, i) => `  s${i} --> s${i + 1} : step ${i}`);
   writeFileSync(join(dir, "c.mmd"), `stateDiagram-v2\n${lines.join("\n")}\n`);
   const r = node("statechart.mjs", ["render", "c.mmd"], dir);
@@ -2988,7 +2989,7 @@ test(
   "from-spec checks each PROPERTY in its own TLC run, and names the counterexample of a broken one",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay("Pay", `screen = "Paying" /\\ charges = 0 /\\ charges' = 1 /\\ UNCHANGED screen`).replace(
@@ -3041,7 +3042,7 @@ test(
   "from-spec names the reader states that a broken PROPERTY's counterexample loops through, without a state twice in a row and without the states before the loop",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Bell.tla"),
       `---- MODULE Bell ----
@@ -3093,7 +3094,7 @@ test(
   "from-spec checks a rule that the config lists as both PROPERTY and INVARIANT once, as the INVARIANT, and charts its bug",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -3129,7 +3130,7 @@ test(
 );
 
 test("from-spec reports a broken PROPERTY in each form that TLC reports it in", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Pay.tla"),
     pay(
@@ -3177,7 +3178,7 @@ test(
   "from-spec reports a broken refinement of an instanced module in its output, the stories, and the summary",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "TicketApi.tla"),
       `---- MODULE TicketApi ----
@@ -3255,7 +3256,7 @@ test(
   "from-spec explains an invariant and a property that name rules of a named INSTANCE with substitutions in the instanced module's words",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "LampRules.tla"), lampRules);
     writeFileSync(
       join(dir, "Lamp.tla"),
@@ -3298,7 +3299,7 @@ test(
   "a state reached only after a bug gets its own color, and the fix edge leaves the state before the changed step",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const cfg = "SPECIFICATION Spec\nINVARIANT NoDoubleCharge\n";
     writeFileSync(
       join(dir, "Pay.tla"),
@@ -3379,7 +3380,7 @@ test(
   "a rule that the second model does not check reads not checked, and a rule it checks reads unchanged",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -3417,7 +3418,7 @@ test(
   "from-spec writes a mapping to fill in, then draws each bug in every view the mapping has",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -3500,7 +3501,7 @@ Wrote chart.mmd, bug-1.mmd, bug-1-developer.mmd, bug-1-layered.mmd, stories.md, 
 );
 
 test("a rule broken by a start state marks that state wrong", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Start.tla"),
     `---- MODULE Start ----
@@ -3546,7 +3547,7 @@ test(
   "a screen that a clean path reaches is marked wrong in some cases when a state under it breaks a rule after a bug",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Fork.tla"),
       `---- MODULE Fork ----
@@ -3587,7 +3588,7 @@ test(
   "a bug that ends on the start screen's label marks that screen wrong in some cases, and a screen reached only after the bug gets its own color",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Echo.tla"),
       `---- MODULE Echo ----
@@ -3624,7 +3625,7 @@ test(
   "a bug story numbers the step into the bug and each step that changes what the rule reads, and names the steps it hides",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Reads.tla"),
       `---- MODULE Reads ----
@@ -3689,7 +3690,7 @@ test(
   "a story of a bug that only the spec has numbers a step that changes what the spec's rule reads, skips the variables that the spec lacks, and a step that the spec lacks cannot happen in the spec",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Code.tla"),
       `---- MODULE Code ----
@@ -3756,7 +3757,7 @@ test(
   "a bug that only the fixed model has is numbered after the current bugs and drawn as breaking a rule only with the fix",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const cfg = "SPECIFICATION Spec\nINVARIANT NoLostEdit\n";
     for (const [name, fixed] of [
       ["Edit", false],
@@ -3834,7 +3835,7 @@ test(
   "with --fixed, a state that breaks a rule only with the fix has its own status, legend line, and count",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const counter = (name, leap) => `---- MODULE ${name} ----
 EXTENDS Naturals
 VARIABLE x
@@ -3887,7 +3888,7 @@ test(
   "only --cover trims the overview, and it lists what it leaves out and counts every state",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Route.tla"),
       `---- MODULE Route ----
@@ -4000,7 +4001,7 @@ test(
   "states of one context sit in one box, and an arrow from the box's border stands for the same step from each",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Window.tla"),
       `---- MODULE Window ----
@@ -4078,7 +4079,7 @@ test(
   "from-spec --against compares the code with the spec on the parts both have, and --expect-broken sets the exit code",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "SaveCode.tla"), save("SaveCode", true));
     writeFileSync(join(dir, "SaveAgreed.tla"), save("SaveAgreed", false));
     writeFileSync(
@@ -4351,7 +4352,7 @@ test(
   "from-spec --against stops when the mapping reads what the spec lacks through a spread, a later state, a field of another type, or a field some states lack",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "CartCode.tla"), cartCode);
     writeFileSync(join(dir, "CartAgreed.tla"), cartAgreed);
     writeFileSync(join(dir, "CartCode.cfg"), "SPECIFICATION Spec\nINVARIANT Ok\n");
@@ -4436,7 +4437,7 @@ Spec == Init /\\ [][Next]_vars
 `;
 
 function seats() {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "Seats.tla"), seatsSpec);
   writeFileSync(join(dir, "Seats.cfg"), "SPECIFICATION Spec\n");
   const draw = (name, map) => {
@@ -4586,7 +4587,7 @@ test(
 );
 
 test("a map flattens a set of tuples with flat and flatMap", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Pairs.tla"),
     `---- MODULE Pairs ----
@@ -4635,7 +4636,7 @@ test(
   "from-spec --against draws a step that step() does not name by its action in the developer and layered views",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const packing = (name, more = "") => `---- MODULE ${name} ----
 VARIABLES phase
 Init == phase = "cart"
@@ -4683,7 +4684,7 @@ test(
   "from-spec --against compares a rule's variable of another type without blaming the mapping",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "ShopCode.tla"),
       `---- MODULE ShopCode ----
@@ -4776,7 +4777,7 @@ const codeAgainstAgreed = [
   ...["--against-config", "ShipCode.cfg"],
 ];
 function shipAgainst(map, models = codeAgainstAgreed, agreed = shipAgreed) {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "ShipCode.tla"), shipCode);
   writeFileSync(join(dir, "ShipAgreed.tla"), agreed);
   writeFileSync(join(dir, "ShipCode.cfg"), "SPECIFICATION Spec\nINVARIANT Ok\n");
@@ -4848,7 +4849,7 @@ test(
   "tlc-to-chart stops when the mapping reads a field of another type that only a trace of the second model has",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "ShipCode.tla"), shipCode);
     writeFileSync(join(dir, "ShipAgreed.tla"), shipAgreed);
     writeFileSync(join(dir, "ShipCode.cfg"), "SPECIFICATION Spec\nINVARIANT NotShipped\n");
@@ -4884,7 +4885,7 @@ test(
   "from-spec --against names the group when the mapping groups a state of the spec by a field that state lacks",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "CartCode.tla"), cartCode);
     writeFileSync(join(dir, "CartAgreed.tla"), cartAgreed);
     writeFileSync(join(dir, "CartCode.cfg"), "SPECIFICATION Spec\nINVARIANT Ok\n");
@@ -4925,7 +4926,7 @@ test(
   "from-chart checks a chart whose regions guard each other, and draws it back unchanged",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "lamp.mmd"), lamp);
     const r = node(
       "statechart.mjs",
@@ -4961,7 +4962,7 @@ export const step = (a) => ({ Ask: "you ask", Answer: "the reply arrives", Drop:
 `;
 
 function runDoor(map) {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(join(dir, "Door.tla"), doorSpec);
   writeFileSync(join(dir, "Door.map.mjs"), map);
   const out = join(dir, "Door-statechart");
@@ -5026,7 +5027,7 @@ test(
   "from-spec draws parallel regions whose arrows together make a step back to the same state, which the overview leaves out",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Knobs.tla"),
       `---- MODULE Knobs ----
@@ -5107,7 +5108,7 @@ test(
     );
     assert.equal(again.stdout, "same\n", again.stderr);
 
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "Door.tla"), doorSpec);
     writeFileSync(join(dir, "Door.cfg"), "SPECIFICATION Spec\nINVARIANT NoLostReply\n");
     writeFileSync(join(dir, "Door.map.mjs"), `${doorMap}export const timer = () => "soon";\n`);
@@ -5322,7 +5323,7 @@ test(
   "the fix changes a bug only at the first step that the reader sees differently",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(join(dir, "Order.tla"), order("Order", 0, chargeAgain));
     writeFileSync(join(dir, "Order.cfg"), "SPECIFICATION Spec\nINVARIANT NoDoubleCharge\n");
     const withFix = (charge, map = payMap) => {
@@ -5391,7 +5392,7 @@ test(
   "a step that the fix cannot take keeps its own loop when the fix keeps another bug on the same state",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const shop = (name, steps) => `---- MODULE ${name} ----
 VARIABLES screen, charged, refunded, declined
 vars == <<screen, charged, refunded, declined>>
@@ -5449,7 +5450,7 @@ test(
   "the replay on the fix skips only the steps that the story hides, so a step that the fix stops cannot happen",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Order.tla"),
       `---- MODULE Order ----
@@ -5508,7 +5509,7 @@ test(
   "the replay takes only the trace's own steps, matches a step by its words between the same two states, and quotes the second model's words",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Retry.tla"),
       retry(
@@ -5578,7 +5579,7 @@ test(
   "the replay says which hidden step goes elsewhere in the fix, and when the rule holds on the same states and steps",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const keepCache = "UNCHANGED <<screen, copies, merged>>";
     const keepCopy = "UNCHANGED <<screen, cached, merged>>";
     writeFileSync(join(dir, "Upload.tla"), upload("Upload", keepCache, keepCopy));
@@ -5635,7 +5636,7 @@ test(
   "a step the reader does not see breaks the rule, and the fix shows it on another screen",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Notify.tla"),
       notify("Notify", "missed' = TRUE /\\ UNCHANGED <<banner, badge>>"),
@@ -5708,7 +5709,7 @@ test(
   "each looping step on a bug path keeps its own label, a null cause groups bugs by end state, and the mapping names the key's colors",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Browse.tla"),
       `---- MODULE Browse ----
@@ -5759,7 +5760,7 @@ export const legend = { works: "Works on main", wrong: "Wrong on main" };
 );
 
 test("a rule that stays broken reports only the step that broke it", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Buzz.tla"),
     `---- MODULE Buzz ----
@@ -5795,7 +5796,7 @@ NeverBuzzed == ~buzzed
 });
 
 test("from-spec warns when steps carry the name of the whole next-state action", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const count = (next) => `---- MODULE Count ----
 EXTENDS Naturals
 VARIABLES x
@@ -5845,7 +5846,7 @@ const writeLamp = (dir) => {
 };
 
 test("a rerun without --png removes the chart.png of an earlier run", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const out = writeLamp(dir);
   mkdirSync(out);
   writeFileSync(join(out, "chart.png"), "");
@@ -5926,7 +5927,7 @@ test(
   "a run whose Node is killed mid-TLC leaves the output folder as it was, and a rerun charts its own spec",
   needsTlc,
   async () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const out = writeSlowPay(dir, 60000);
     const tmp = ownTmp(dir, "tmp");
     const first = startRun(dir, { env: { TMPDIR: tmp } });
@@ -5955,7 +5956,7 @@ test(
 );
 
 const changedMidRun = async ({ wrap = [], env = {} }) => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const out = writeSlowPay(dir, 20000);
   const tmp = ownTmp(dir, "tmp-a");
   const first = startRun(dir, { wrap, env: { ...env, TMPDIR: tmp } });
@@ -5985,7 +5986,7 @@ test(
   "a run whose inputs get new times and a new inode but the same content still charts them",
   needsTlc,
   async () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const out = writeSlowPay(dir, 20000);
     const tmp = ownTmp(dir, "tmp");
     const run = startRun(dir, { env: { TMPDIR: tmp } });
@@ -6025,7 +6026,7 @@ ssize_t readlink(const char *path, char *buf, size_t size) {
 `;
 const hidingPreload = (() => {
   if (spawnSync(unshare[0], [...unshare.slice(1), "true"]).status !== 0) return null;
-  const dir = mkdtempSync(join(tmpdir(), "statechart-preload-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-preload-"));
   writeFileSync(join(dir, "hide.c"), hidePidNamespace);
   const so = join(dir, "hide.so");
   const cc = spawnSync("cc", ["-shared", "-fPIC", "-o", so, join(dir, "hide.c"), "-ldl"]);
@@ -6045,7 +6046,7 @@ test(
   "a file that is put in the output folder during a run stays, and the run exits 2",
   needsTlc,
   async () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const out = writeSlowPay(dir, 20000);
     const tmp = ownTmp(dir, "tmp");
     const run = startRun(dir, { env: { TMPDIR: tmp } });
@@ -6160,7 +6161,7 @@ int rename(const char *from, const char *to) {
 }
 `;
 const failingRenames = (() => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-preload-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-preload-"));
   writeFileSync(join(dir, "rename.c"), failRenames);
   const so = join(dir, "rename.so");
   const cc = spawnSync("cc", ["-shared", "-fPIC", "-o", so, join(dir, "rename.c"), "-ldl"]);
@@ -6170,7 +6171,7 @@ test(
   "a run whose rename fails after it moves the output folder aside puts the folder back, or says where it is",
   { skip: needsTlc.skip || (!failingRenames && "cannot compile a rename preload") },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeLamp(dir);
     const args = ["from-spec", "Lamp.tla", "--out", "shared"];
     const shared = join(dir, "shared");
@@ -6206,7 +6207,7 @@ test(
   "a run on a filesystem that cannot rename copies its files into place",
   { skip: needsTlc.skip || (!failingRenames && "cannot compile a rename preload") },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeLamp(dir);
     const args = ["from-spec", "Lamp.tla", "--out", "shared"];
     for (const [cannot, label] of [
@@ -6233,7 +6234,7 @@ test(
   "a run that cannot rename replaces a folder that another run makes before its copy, and keeps one that another run makes during its copy",
   { skip: needsTlc.skip || (!failingRenames && "cannot compile a rename preload") },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeLamp(dir);
     const shared = join(dir, "shared", "chart.mmd");
     const run = (anotherRun) =>
@@ -6265,7 +6266,7 @@ test(
   "a run that cannot rename stops when another run removes its folder during its copy and makes an empty one in its place, and keeps that folder",
   { skip: needsTlc.skip || (!failingRenames && "cannot compile a rename preload") },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeLamp(dir);
     const r = node("statechart.mjs", ["from-spec", "Lamp.tla", "--out", "shared"], dir, {
       LD_PRELOAD: failingRenames,
@@ -6286,7 +6287,7 @@ test(
   "a run that cannot rename keeps the folder that another run puts in place of its folder as soon as the run makes it",
   { skip: needsTlc.skip || (!failingRenames && "cannot compile a rename preload") },
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeLamp(dir);
     const r = node("statechart.mjs", ["from-spec", "Lamp.tla", "--out", "shared"], dir, {
       LD_PRELOAD: failingRenames,
@@ -6307,7 +6308,7 @@ test(
   "a run whose input changes before --png renders stops before it renders, and keeps its files",
   { skip: needsTlc.skip || needsPng.skip },
   async () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeSlowPay(dir, 20000);
     const rendered = join(dir, "rendered");
     const tmp = ownTmp(dir, "tmp");
@@ -6356,7 +6357,7 @@ esac
 exec "$REAL_JAVA" "$@"
 `;
 const editDuringTlc = (file, edit, putBack) => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   const out = writeCount(dir);
   const side = ownTmp(dir, "side");
   const target = join(dir, file);
@@ -6428,7 +6429,7 @@ test(
   "a rule that TLC finds broken before TLC stops on an error is broken, and the run draws the paths TLC printed",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -6480,7 +6481,7 @@ test(
   "each TLC run writes the standard modules in its own temp folder, so overlapping runs cannot rewrite them under each other",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeSlowPay(dir, 0);
     const tmp = ownTmp(dir, "tmp");
     const log = join(dir, "java.log");
@@ -6522,7 +6523,7 @@ test(
   "a run that TLC stops on an error keeps TLC's output and writes no output folder",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       "---- MODULE Pay ----\nVARIABLE x\nASSUME FALSE\nInit == x = 0\nSpec == Init /\\ [][x' = x]_x\n====\n",
@@ -6545,7 +6546,7 @@ test(
   "a state graph too large for one string prints the rule results, keeps TLC's output, and draws no chart",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -6600,7 +6601,7 @@ test(
   "a graph dump that grows past one string is stopped, and the rule results stay",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -6656,7 +6657,7 @@ exec sleep 20
 );
 
 test("TLC output that grows past one string stops TLC, and the command exits 2", needsTlc, () => {
-  const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+  const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
   writeFileSync(
     join(dir, "Pay.tla"),
     pay("Pay", `screen = "Paying" /\\ charges < 2 /\\ charges' = charges + 1 /\\ UNCHANGED screen`),
@@ -6708,7 +6709,7 @@ test(
   "the rule results print before the graph dump, and stay when TLC stops on an error in the dump",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -6756,7 +6757,7 @@ test(
   "an error after TLC runs keeps TLC's output, and the message names its folder",
   needsTlc,
   () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     writeFileSync(
       join(dir, "Pay.tla"),
       pay(
@@ -6792,7 +6793,7 @@ test(
   "runs of two specs that overlap on one output folder all finish, and the folder always holds one run's files",
   needsTlc,
   async () => {
-    const dir = mkdtempSync(join(tmpdir(), "statechart-"));
+    const dir = mkdtempSync(join(canonicalTestPath.native(tmpdir()), "statechart-"));
     const out = writeSlowPay(dir, 400);
     writeLamp(dir);
     const pay = ["from-spec", "Pay.tla", "--out", "shared"];

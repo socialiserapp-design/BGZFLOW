@@ -56,14 +56,14 @@ test('explicit offline policy makes zero remote calls and preserves local fallba
 });
 
 function catalogFixture(t, count = 2) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bg-route-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bg-route-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   for (let i = 0; i < count; i++) { const dir = path.join(root, `s${i}`); fs.mkdirSync(dir); fs.writeFileSync(path.join(dir, 'SKILL.md'), `---\nname: skill-${i}\ndescription: ${i === 0 ? 'Edit existing slides in an unfamiliar provider' : 'Build new presentations'}\n---\nSpecific instruction ${i}`); }
   return discoverCatalog({ roots: [root] });
 }
 const chooseAll = async ({ candidates, phase }) => ({ selectedIds: candidates.map((e) => e.id), strategy: phase === 'verify' ? 'single' : undefined, modelIds: [] });
 
 test('owner automatic-routing switch prevents HTTP while explicit manual judgment remains available',async t=>{
- const home=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'auto-routing-off-'));t.after(()=>fs.rmSync(home,{recursive:true,force:true}));fs.mkdirSync(path.join(home,'.bgzflow'));fs.writeFileSync(path.join(home,'.bgzflow','auto-routing.json'),'{"enabled":false}');
+ const home=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'auto-routing-off-'));t.after(()=>fs.rmSync(home,{recursive:true,force:true}));fs.mkdirSync(path.join(home,'.bgzflow'));fs.writeFileSync(path.join(home,'.bgzflow','auto-routing.json'),'{"enabled":false}');
  let requests=0;const client={systemOne:async()=>{requests++;return{answers:{best:{choice:'none'}}};}};
  const input={phase:'complement',context:{},candidates:[]};
  await assert.rejects(createJevDecider({home,client})(input),/automatic-paid-routing-disabled/);assert.equal(requests,0);

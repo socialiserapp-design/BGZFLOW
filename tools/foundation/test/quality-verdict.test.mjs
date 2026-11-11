@@ -46,7 +46,7 @@ test('the caller cannot lower an already pinned rubric by changing its original 
  assert.throws(()=>pinQualityPlan({...original,criteria:[{...original.criteria[0],required:true,kind:'judgment'}]}));
 });
 test('the actual executable runner rejects exit-zero success with failed or absent quality evidence',()=>{
- const root=fs.realpathSync(fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-quality-')));
+ const root=fs.realpathSync(fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-quality-')));
  const source=path.join(root,'observer.cjs'),observations=path.join(root,'observed.json');
  fs.writeFileSync(source,"process.stdout.write(require('fs').readFileSync('observed.json','utf8'))");
  const checks=createExecutableChecks({projectRoot:root,outcomeChecks:{journey:{id:'actual configured runner',quality:plan,target:{...target,projectRoot:root},sources:[source],command:{file:process.execPath,args:[source]}}}});

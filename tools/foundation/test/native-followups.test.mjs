@@ -7,7 +7,7 @@ import path from 'node:path';
 import {captureEvent,readContinuity,renderContinuity} from '../continuity.mjs';
 
 test('native worker followups stay on the observed owning assignment without inventing completion',t=>{
- const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-native-followup-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-native-followup-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const input={cwd:root,session_id:'lead'},options={storageRoot:path.join(root,'history')};
  captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Repair the export and preserve existing formatting.'},options);
  captureEvent({...input,hook_event_name:'PreToolUse',tool_use_id:'spawn',tool_name:'collaboration.spawn_agent',tool_input:{task_name:'export-worker',message:'Repair only the agreed export.'}},options);
@@ -21,7 +21,7 @@ test('native worker followups stay on the observed owning assignment without inv
 });
 
 test('bounded recovery retains the latest followup and original-source pointer without the derived view',t=>{
- const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-followup-bounded-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-followup-bounded-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const input={cwd:root,session_id:'lead'},options={storageRoot:path.join(root,'history'),recordView:false};
  let tick=0;options.now=()=>new Date(Date.UTC(2026,10,11,8,0,tick++)).toISOString();
  captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Repair only the export and preserve formatting.'},options);

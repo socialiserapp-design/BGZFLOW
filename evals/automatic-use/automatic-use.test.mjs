@@ -13,7 +13,7 @@ import {parseArguments,applyCandidateConfig} from './run.mjs';
 import {createHash} from 'node:crypto';
 
 const plugin=path.resolve(import.meta.dirname,'../..');
-const temporary=()=>fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-auto-owner-'));
+const temporary=()=>fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-auto-owner-'));
 function run(script,args){const result=spawnSync(process.execPath,[path.join(plugin,script),...args],{encoding:'utf8',timeout:10000});assert.equal(result.status,0,result.stderr);}
 const methods=names=>[{event:'UserPromptSubmit',message:'synthetic owner test'}, {event:'RouteSelected',selection:{status:'selected',selected:names.map(name=>({name})),stage:'investigate'}},{event:'MethodContextPrepared',delivery:{methods:names.map(name=>({name,provided:true,characters:300,bodyDigest:'a'.repeat(64)}))}}];
 

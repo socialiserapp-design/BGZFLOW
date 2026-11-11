@@ -14,7 +14,7 @@ import { createExecutableChecks } from '../executable-checks.mjs';
 import { captureEvent, readContinuity } from '../continuity.mjs';
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-foundation-session-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-foundation-session-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
   const config = { projectRoot, sessionId: 'native-a', storageRoot: path.join(root, 'store') };

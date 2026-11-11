@@ -12,7 +12,7 @@ import {color} from '../../skills/design-taste-assets/assets/effects/fx.js';
 import {glslProblems} from '../../skills/design-taste-assets/assets/objects/_print-core/print3d.js';
 const root=fileURLToPath(new URL('../../skills/design-taste-assets/',import.meta.url));
 const read=name=>fs.readFileSync(path.join(root,name),'utf8');
-function temp(t){const dir=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-taste-import-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;}
+function temp(t){const dir=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-taste-import-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;}
 
 test('complete pinned source capture is intact; browser tools and policy remain inspection material',()=>{
   const manifest=JSON.parse(read('source-manifest.json'));assert.equal(manifest.files.length,1617);assert.ok(verifyIntegrity().pass);

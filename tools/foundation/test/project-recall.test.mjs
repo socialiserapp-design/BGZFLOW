@@ -8,7 +8,7 @@ import { captureEvent } from '../continuity.mjs';
 import { readProjectRecall, renderProjectRecall } from '../project-recall.mjs';
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-project-recall-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-project-recall-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
   const otherProject = path.join(root, 'other'); fs.mkdirSync(otherProject);

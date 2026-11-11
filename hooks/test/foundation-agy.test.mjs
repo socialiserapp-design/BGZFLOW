@@ -13,7 +13,7 @@ test('Antigravity structured tool calls reach the same mechanical protections',a
   assert.equal(mapAgyInput({...raw,toolCall:{name:'multi_replace_file_content',args:{TargetFile:'a.js',ReplacementChunks:[{ReplacementContent:'one'},{ReplacementContent:'two'}]}}},'PreToolUse').tool_input.new_string,'one\ntwo');
 });
 test('Antigravity syntax failure is retained for the next permitted context delivery',async t=>{
-  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-agy-check-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-agy-check-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const file=path.join(root,'broken.mjs');fs.writeFileSync(file,'export const broken=;');
   const raw={conversationId:'synthetic-session',workspacePaths:[root],stepIdx:4,toolCall:{name:'write_to_file',args:{TargetFile:file,CodeContent:'export const broken=;'}}};

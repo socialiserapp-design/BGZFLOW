@@ -11,7 +11,7 @@ import { readProjectRecall } from '../project-recall.mjs';
 import { ownedPath, writablePath, writeOwnedFile } from '../../../hooks/lib/owned-path.mjs';
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-continuity-test-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-continuity-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
   const options = { projectRoot, storageRoot: path.join(root, 'store') };

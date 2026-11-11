@@ -12,7 +12,7 @@ const require=createRequire(import.meta.url);
 const {evaluateArtifacts,observedRequestedMethods}=require('./assertions.cjs');
 const judgeContext=require('./judge-context.cjs');
 const caseId='combined-small-wording-change';
-function fixture(t){const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-combination-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return prepareFixture(path.join(root,'run'));}
+function fixture(t){const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-combination-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return prepareFixture(path.join(root,'run'));}
 
 test('new design-specialist case rejects unchanged work, visual drift and extra records',t=>{
   const work=fixture(t),file=path.join(work,'action-labels.json');

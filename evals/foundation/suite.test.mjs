@@ -15,7 +15,7 @@ const { evaluateArtifacts, observedProcedure } = require('./assertions.cjs');
 const { observedFoundation } = require('./assertions.cjs');
 
 function fixture(t) {
-  const parent = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-behaviour-test-'));
+  const parent = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-behaviour-test-'));
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   return prepareFixture(path.join(parent, 'attempt'));
 }

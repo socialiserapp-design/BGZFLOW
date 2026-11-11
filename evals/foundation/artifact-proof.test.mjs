@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const { snapshotWorkspace, workspaceMatches, verifyConverterOnUnseenInputs } = require('./artifact-proof.cjs');
 
 function fixture(t) {
-  const parent = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-artifact-proof-'));
+  const parent = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-artifact-proof-'));
   t.after(() => {
     assert.ok(fs.realpathSync(parent).startsWith(fs.realpathSync(os.tmpdir()) + path.sep));
     fs.rmSync(parent, { recursive: true, force: true });

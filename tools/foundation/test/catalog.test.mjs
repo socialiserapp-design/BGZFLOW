@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { discoverCatalog, readSkill } from '../catalog.mjs';
 
-function fixture(t) { const dir = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bg-catalog-')); t.after(() => fs.rmSync(dir, { recursive: true, force: true })); return dir; }
+function fixture(t) { const dir = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bg-catalog-')); t.after(() => fs.rmSync(dir, { recursive: true, force: true })); return dir; }
 function skill(dir, name, description = 'A complete useful description', body = 'Real instructions') { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, 'SKILL.md'), `---\nname: ${name}\ndescription: >-\n  ${description}\n---\n${body}`); }
 
 test('full descriptions and distinct same-name sources survive; generated overlays do not', (t) => {

@@ -11,7 +11,7 @@ import {isAppGeneratedSuggestion} from '../message-origin.mjs';
 import {handleFoundationEvent} from '../../../hooks/foundation.mjs';
 
 const suggestion="This is an app-generated request for a suggested next user message. The user did not write this message.\n\nYour suggestion will appear in the user's empty message composer. They can ignore it.\nPredict a next message.";
-function fixture(t){const base=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-origin-'));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));const project=path.join(base,'project');fs.mkdirSync(project);return {input:{cwd:project,session_id:'native'},options:{storageRoot:path.join(base,'records'),route:false,recall:false}};}
+function fixture(t){const base=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-origin-'));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));const project=path.join(base,'project');fs.mkdirSync(project);return {input:{cwd:project,session_id:'native'},options:{storageRoot:path.join(base,'records'),route:false,recall:false}};}
 test('composer envelope is excluded while genuine quotations and partial matches remain human',t=>{
   const {input,options}=fixture(t);
   for(const prompt of ['Keep the current calendar.',suggestion,'Explain this envelope: '+suggestion,'This is an app-generated request for a suggested next user message. The user did not write this message.'])captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt},options);

@@ -14,7 +14,7 @@ const assertOutcome=require('./assertions.cjs');
 const {verifyConverterOnUnseenInputs}=require('./artifact-proof.cjs');
 const judgeContext=require('./judge-context.cjs');
 
-function fixture(t){const parent=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-uncoached-'));t.after(()=>fs.rmSync(parent,{recursive:true,force:true}));return prepareFixture(path.join(parent,'run'));}
+function fixture(t){const parent=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-uncoached-'));t.after(()=>fs.rmSync(parent,{recursive:true,force:true}));return prepareFixture(path.join(parent,'run'));}
 const read=(name,output)=>({name:'Read',input:{file_path:name},output});
 
 test('ordinary cases reuse direct checks and independent semantic judge without prescribing their answer',()=>{

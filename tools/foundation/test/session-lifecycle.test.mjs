@@ -7,7 +7,7 @@ import path from 'node:path';
 import { createFoundationSession, createProjectPathReservations } from '../session.mjs';
 
 function fixture(t, overrides = {}) {
-  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-input-lifecycle-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-input-lifecycle-'));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const config = { projectRoot, sessionId: 'native-owner', storageRoot: path.join(root, 'store') };

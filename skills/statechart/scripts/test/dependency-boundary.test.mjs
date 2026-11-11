@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import fs from 'node:fs';
@@ -8,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 
 const scripts = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 function isolated(code, overrides = {}) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-skill-deps-'));
+  const dir = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-skill-deps-'));
   try {
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], {
       encoding: 'utf8', timeout: 10000,

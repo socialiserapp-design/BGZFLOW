@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {inspectMechanicalSafety} from '../mechanical-safety.mjs';
 
-const fixture=()=>{const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-mechanical-patch-'));const allowed=path.join(root,'allowed'),outside=path.join(root,'outside');fs.mkdirSync(allowed);fs.mkdirSync(outside);return {root,allowed,outside,env:{BGZFLOW_WRITE_ROOTS:JSON.stringify([allowed])}};};
+const fixture=()=>{const root=fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()),'bgz-mechanical-patch-'));const allowed=path.join(root,'allowed'),outside=path.join(root,'outside');fs.mkdirSync(allowed);fs.mkdirSync(outside);return {root,allowed,outside,env:{BGZFLOW_WRITE_ROOTS:JSON.stringify([allowed])}};};
 const patch=lines=>`*** Begin Patch\n${lines.join('\n')}\n*** End Patch`;
 const pre=(tool_input,extra={})=>({hook_event_name:'PreToolUse',tool_name:'apply_patch',tool_input,...extra});
 const denied=result=>assert.equal(result.hookSpecificOutput?.permissionDecision,'deny');
