@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -6,7 +7,7 @@ import path from 'node:path';
 import {discoverCatalog} from '../catalog.mjs';
 
 function fixture(t) {
-  const home=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-plugin-eligibility-'));
+  const home=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-plugin-eligibility-'));
   t.after(()=>fs.rmSync(home,{recursive:true,force:true}));
   return home;
 }

@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -10,7 +11,7 @@ const {evaluateArtifacts,observedProcedure}=require('./assertions.cjs');
 const preview={status:'preview',network:false,model:'jev-1.14.0',questions:[{id:'blocked',type:'noul'},{id:'area',type:'choice'},{id:'impact',type:'score'}],images:0};
 
 test('Jev native evaluation rejects fabricated answers and unrelated project changes',t=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-jev-native-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-jev-native-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const work=prepareFixture(path.join(root,'run')),file=path.join(work,'jev-preview.json');
   fs.writeFileSync(file,JSON.stringify(preview));assert.equal(evaluateArtifacts('jev-mixed-preview',work),true);
   fs.writeFileSync(file,JSON.stringify({...preview,answers:{impact:2}}));assert.equal(evaluateArtifacts('jev-mixed-preview',work),false);

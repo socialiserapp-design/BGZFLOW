@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import {readContinuity} from '../../tools/foundation/continuity.mjs';
 import {discoverCatalog} from '../../tools/foundation/catalog.mjs';
 
 function fixture(t){
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-live-delivery-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-live-delivery-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const project=path.join(root,'project');fs.mkdirSync(project);const skills=path.join(root,'skills');fs.mkdirSync(skills);
  for(const name of ['build','verify']){const dir=path.join(skills,name);fs.mkdirSync(dir);fs.writeFileSync(path.join(dir,'SKILL.md'),`---\nname: ${name}\ndescription: Relevant ${name} method\n---\n${name==='build'?'Preserve the original request. ':'Inspect the actual saved result. '}${'.'.repeat(6500)}`);}
  const catalog=discoverCatalog({roots:[skills]});let calls=0;

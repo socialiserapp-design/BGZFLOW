@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -29,7 +30,7 @@ test('Desktop PowerShell and namespaced shell tools receive the same narrow acci
   assert.deepEqual(inspectMechanicalSafety({hook_event_name:'PostToolUse',tool_name:'PowerShell',tool_input:{command:'Remove-Item -Recurse -Force C:\\'}}),{});
 });
 test('configured write boundary follows junctions rather than text prefixes',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-path-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-path-'));
   try {
     const allowed=path.join(root,'allowed'),other=path.join(root,'allowed-other'); fs.mkdirSync(allowed);fs.mkdirSync(other);
     fs.symlinkSync(other,path.join(allowed,'escape'),process.platform==='win32'?'junction':'dir');
@@ -41,7 +42,7 @@ test('configured write boundary follows junctions rather than text prefixes',()=
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 test('actual saved JavaScript is checked without executing it',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-syntax-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-syntax-'));
   try {
     const file=path.join(root,'case.mjs'),marker=path.join(root,'must-not-exist');
     const input={hook_event_name:'PostToolUse',tool_name:'Write',tool_input:{file_path:file}};

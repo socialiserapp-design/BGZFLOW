@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -8,7 +9,7 @@ import proof from './testing-proof.cjs';
 const meaningful = `import test from 'node:test';import assert from 'node:assert/strict';import fc from 'fast-check';import {priceAfterDiscount} from './discount.mjs';test('nearest penny, half up',()=>{fc.assert(fc.property(fc.integer({min:0,max:1000000}),fc.integer({min:0,max:100}),(cents,percent)=>{const actual=priceAfterDiscount(cents,percent),residual=actual*100-cents*(100-percent);assert.ok(Number.isInteger(actual)&&actual>=0&&actual<=cents);assert.ok(residual>=-49&&residual<=50);}),{numRuns:200,seed:420123});});`;
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-strength-proof-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-strength-proof-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const workspace = prepareFixture(path.join(root, 'run'), { propertyTesting: true });
   const original = fs.readFileSync(path.join(workspace, 'discount.mjs'), 'utf8');

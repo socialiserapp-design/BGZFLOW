@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import {buildFoundation,validatePackage} from '../build-foundation.mjs';
 import {inspectDocumentLinks} from '../check-document-links.mjs';
 
 function output(t) {
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-package-test-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-package-test-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   return path.join(root,'package');
 }

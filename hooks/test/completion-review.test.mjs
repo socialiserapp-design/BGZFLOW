@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import {completionReviewContext} from '../../tools/foundation/completion-review.
 import {readContinuity} from '../../tools/foundation/continuity.mjs';
 
 function fixture(t){
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-completion-review-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-completion-review-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const input={cwd:root,session_id:'review-fixture'};
   let calls=0;

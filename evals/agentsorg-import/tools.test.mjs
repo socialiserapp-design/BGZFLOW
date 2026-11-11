@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,readdirSync,statSync,symlinkSync} from 'node:fs';
@@ -8,7 +9,7 @@ import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const root=fileURLToPath(new URL('../../',import.meta.url)),skills=path.join(root,'skills');
 const run=(skill,file,args=[],options={})=>spawnSync(process.execPath,[path.join(skills,skill,'scripts',file),...args],{encoding:'utf8',timeout:20000,...options});
-const fresh=()=>mkdtempSync(path.join(tmpdir(),'bgz-agentsorg-'));
+const fresh=()=>mkdtempSync(path.join(canonicalTestPath(tmpdir()),'bgz-agentsorg-'));
 function wav(file,channels){const b=readFileSync(file);assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WAVE');assert.equal(b.readUInt16LE(22),channels);assert.equal(b.readUInt32LE(24),44100);assert.equal(b.readUInt16LE(34),16);assert.equal(b.readUInt32LE(40),b.length-44);let peak=0,energy=0;for(let i=44;i<b.length;i+=2){const s=b.readInt16LE(i)/32768;peak=Math.max(peak,Math.abs(s));energy+=s*s}assert(peak>0&&peak<1);assert(energy>0);return b;}
 test('family defaults to local synthesis despite a configured key and preserves existing output',()=>{const dir=fresh(),input=path.join(dir,'family.json'),out=path.join(dir,'out');writeFileSync(input,JSON.stringify({sounds:{tap:{synth:{type:'tap'}}}}));let r=run('design-sound','sound-family.mjs',[input,'--out',out],{env:{...process.env,ELEVENLABS_API_KEY:'synthetic-test-placeholder'}});assert.equal(r.status,0,r.stderr);const manifest=JSON.parse(readFileSync(path.join(out,'manifest.json')));assert.equal(manifest.provider,'synth');const before=wav(path.join(out,'tap.wav'),1);r=run('design-sound','sound-family.mjs',[input,'--out',out]);assert.notEqual(r.status,0);assert.deepEqual(readFileSync(path.join(out,'tap.wav')),before);});
 test('preview creates no output and unsupported manifests cannot escape destination',()=>{const dir=fresh(),input=path.join(dir,'family.json'),out=path.join(dir,'out');writeFileSync(input,JSON.stringify({sounds:{tick:{synth:{type:'tick'}}}}));assert.equal(run('design-sound','sound-family.mjs',[input,'--out',out,'--dry-run']).status,0);assert.equal(existsSync(out),false);writeFileSync(input,JSON.stringify({sounds:{'../escape':{synth:{type:'tick'}}}}));assert.notEqual(run('design-sound','sound-family.mjs',[input,'--out',out]).status,0);assert.equal(existsSync(path.join(dir,'escape.wav')),false);});

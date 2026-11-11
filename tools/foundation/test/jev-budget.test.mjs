@@ -1,7 +1,8 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {budgetedJev} from '../jev-budget.mjs';
 import {runJevJudgmentCli} from '../jev-judgment.mjs';
-function fixture(t){const home=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-jev-budget-'));t.after(()=>fs.rmSync(home,{recursive:true,force:true}));return {home,projectRoot:home,taskId:'original-task'};}
+function fixture(t){const home=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-jev-budget-'));t.after(()=>fs.rmSync(home,{recursive:true,force:true}));return {home,projectRoot:home,taskId:'original-task'};}
 const answer={status:'answered',answers:{choice:{type:'choice',choice:'local'}},usage:{input_tokens:20,output_tokens:4},model:'jev-test'};
 test('one successful consultation is reused across independent invocations, but changed input cannot spend again',async t=>{
  const options=fixture(t);let calls=0;const run=async()=>{calls++;return answer;};

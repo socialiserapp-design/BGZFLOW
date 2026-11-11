@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ import {loadSelectedSkills} from '../router.mjs';
 import {renderMethodDelivery} from '../method-delivery.mjs';
 import {handleFoundationEvent} from '../../../hooks/foundation.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
-function fixture(t){const base=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-native-learning-'));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));const projectRoot=path.join(base,'project'),home=path.join(base,'home'),storageRoot=path.join(base,'records');fs.mkdirSync(projectRoot);fs.mkdirSync(home);const input={cwd:projectRoot,session_id:'native'};captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Repair event ordering and retain the latest actual status.'},{storageRoot});const failure=captureEvent({...input,hook_event_name:'PostToolUse',tool_name:'Bash',tool_use_id:'failed-test',tool_response:{exit_code:1}},{storageRoot});return {base,projectRoot,home,storageRoot,sessionId:'native',input,failure};}
+function fixture(t){const base=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-native-learning-'));t.after(()=>fs.rmSync(base,{recursive:true,force:true}));const projectRoot=path.join(base,'project'),home=path.join(base,'home'),storageRoot=path.join(base,'records');fs.mkdirSync(projectRoot);fs.mkdirSync(home);const input={cwd:projectRoot,session_id:'native'};captureEvent({...input,hook_event_name:'UserPromptSubmit',prompt:'Repair event ordering and retain the latest actual status.'},{storageRoot});const failure=captureEvent({...input,hook_event_name:'PostToolUse',tool_name:'Bash',tool_use_id:'failed-test',tool_response:{exit_code:1}},{storageRoot});return {base,projectRoot,home,storageRoot,sessionId:'native',input,failure};}
 function owner(f){
   const script=path.join(f.base,'owner-check.mjs');
   fs.writeFileSync(script,`import fs from 'node:fs';let input='';for await(const part of process.stdin)input+=part;const {candidate}=JSON.parse(input);const unseen=process.argv[2]==='unseen';const rows=unseen?[{sequence:18,status:'closed'},{sequence:2,status:'open'}]:[{sequence:7,status:'paused'},{sequence:1,status:'open'}];const rule=JSON.parse(candidate.body);const selected=rule.strategy==='highest-sequence'?rows.reduce((a,b)=>a.sequence>b.sequence?a:b):rows.at(-1);fs.writeFileSync(${JSON.stringify(path.join(f.projectRoot,'observed-'))}+(unseen?'unseen':'regression')+'.json',JSON.stringify(selected));console.log(JSON.stringify({matches:selected.status===(unseen?'closed':'paused')}));`);

@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ import { createExecutableChecks } from '../executable-checks.mjs';
 import { captureEvent, readContinuity } from '../continuity.mjs';
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-foundation-session-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-foundation-session-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project'); fs.mkdirSync(projectRoot);
   const config = { projectRoot, sessionId: 'native-a', storageRoot: path.join(root, 'store') };

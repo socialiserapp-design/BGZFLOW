@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import { createFoundationSession } from '../../tools/foundation/session.mjs';
 import assertions from './assertions.cjs';
 
 test('private native preflight preserves real baseline and improvement artifacts and scopes adoption to one project', async t => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-private-native-'));
+  const root = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-private-native-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const run = path.join(root, 'run'), project = prepareFixture(run);
   const evidence = await preparePrivateLearning(project, run), owned = path.join(run, 'private-learning-owner');

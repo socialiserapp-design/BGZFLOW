@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import {renderMethodDelivery} from '../method-delivery.mjs';
 import {prepareRoutingRequest,routingRequestBytes} from '../jev-provider.mjs';
 
 function library(t,count,{long=false}={}) {
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'bgz-auto-routing-'));
+  const root=fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()),'bgz-auto-routing-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   for(let i=0;i<count;i++) {
     const dir=path.join(root,`method-${String(i).padStart(3,'0')}`);fs.mkdirSync(dir);

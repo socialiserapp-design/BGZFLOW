@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ const require = createRequire(import.meta.url);
 const { snapshotWorkspace, workspaceMatches, verifyConverterOnUnseenInputs } = require('./artifact-proof.cjs');
 
 function fixture(t) {
-  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-artifact-proof-'));
+  const parent = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-artifact-proof-'));
   t.after(() => {
     assert.ok(fs.realpathSync(parent).startsWith(fs.realpathSync(os.tmpdir()) + path.sep));
     fs.rmSync(parent, { recursive: true, force: true });

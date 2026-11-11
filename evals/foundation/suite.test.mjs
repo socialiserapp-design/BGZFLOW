@@ -1,3 +1,4 @@
+import {realpathSync as canonicalTestPath} from 'node:fs'; // Resolve OS temp aliases before testing descendant link protection.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -14,7 +15,7 @@ const { evaluateArtifacts, observedProcedure } = require('./assertions.cjs');
 const { observedFoundation } = require('./assertions.cjs');
 
 function fixture(t) {
-  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'bgz-behaviour-test-'));
+  const parent = fs.mkdtempSync(path.join(canonicalTestPath(os.tmpdir()), 'bgz-behaviour-test-'));
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   return prepareFixture(path.join(parent, 'attempt'));
 }
