@@ -72,8 +72,10 @@ test('current project view recovers separate host sessions without API calls or 
   const other=path.join(f.root,'other');fs.mkdirSync(other);captureEvent({cwd:other,session_id:'elsewhere',hook_event_name:'UserPromptSubmit',prompt:'PRIVATE OTHER PROJECT'},f.options);
   const project=readProjectRecordViews({projectRoot:f.projectRoot,sessionId:'provider-b'},f.options);
   assert.equal(project.sessions.length,2);assert.ok(!JSON.stringify(project).includes('PRIVATE OTHER PROJECT'));assert.equal(project.sessions[0].sessionKey===project.sessions[1].sessionKey,false);
-  const restored=await handleFoundationEvent({cwd:f.projectRoot,session_id:'provider-b',hook_event_name:'SessionStart'},f.options);
+  const restored=await handleFoundationEvent({cwd:f.projectRoot,session_id:'provider-b',hook_event_name:'SessionStart'},{...f.options,recall:true});
   assert.match(restored.hookSpecificOutput.additionalContext,/Verify blue calendar/);assert.match(restored.hookSpecificOutput.additionalContext,/Separate recorded session/);assert.match(restored.hookSpecificOutput.additionalContext,/not automatically merged/);
+  const privateSession=await handleFoundationEvent({cwd:f.projectRoot,session_id:'without-recall',hook_event_name:'SessionStart'},f.options);
+  assert.doesNotMatch(privateSession.hookSpecificOutput?.additionalContext||'',/Verify blue calendar|PRIVATE OTHER PROJECT/);
 });
 
 test('missing, corrupt, stale and interrupted derived caches rebuild from original events without stale locks',t=>{

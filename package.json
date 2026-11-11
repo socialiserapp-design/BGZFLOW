@@ -1,13 +1,13 @@
 {
   "name": "bgzflow",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "private": true,
   "license": "MIT AND Apache-2.0 AND ISC AND BSD-3-Clause AND CC-BY-SA-4.0 AND LicenseRef-Taste-Assets",
   "bin": {
     "bgz": "tools/bgz.mjs"
   },
   "scripts": {
-    "test": "node --test tools/foundation/test/*.test.mjs hooks/test/foundation.test.mjs hooks/test/foundation-agy.test.mjs hooks/test/mechanical-safety.test.mjs evals/foundation/*.test.mjs evals/recovery/*.test.mjs evals/design/*.test.mjs scripts/test/*.test.mjs skills/statechart/scripts/test/dependency-boundary.test.mjs evals/agentsorg-import/*.test.mjs evals/owl-import/*.test.mjs evals/taste-import/*.test.mjs hooks/test/mechanical-patch.test.mjs hooks/test/automatic-use.test.mjs evals/automatic-use/*.test.mjs",
+    "test": "node --test tools/foundation/test/*.test.mjs hooks/test/foundation.test.mjs hooks/test/foundation-agy.test.mjs hooks/test/mechanical-safety.test.mjs evals/foundation/*.test.mjs evals/recovery/*.test.mjs evals/design/*.test.mjs scripts/test/*.test.mjs skills/statechart/scripts/test/dependency-boundary.test.mjs evals/agentsorg-import/*.test.mjs evals/owl-import/*.test.mjs evals/taste-import/*.test.mjs hooks/test/mechanical-patch.test.mjs hooks/test/automatic-use.test.mjs evals/automatic-use/*.test.mjs hooks/test/completion-review.test.mjs",
     "build": "node scripts/build-foundation.mjs",
     "build:antigravity": "node scripts/build-foundation.mjs --antigravity",
     "eval:foundation": "node evals/foundation/run.mjs"

@@ -15,6 +15,7 @@ import { describeToolActivity } from '../tools/foundation/activity-selection.mjs
 import {isAppGeneratedSuggestion} from '../tools/foundation/message-origin.mjs';
 import {historyDelivery} from '../tools/foundation/history-delivery.mjs';
 import {efficiencyBaseline} from '../tools/foundation/efficiency-baseline.mjs';
+import {completionReviewGuidance} from '../tools/foundation/completion-review.mjs';
 
 const eventName = input => input.hook_event_name || input.hookEventName || input.event;
 const needsCompactRestore = state => state.events.findLastIndex(item => item.event === 'PostCompact') > state.events.findLastIndex(item => item.event === 'ContextRestored');
@@ -236,7 +237,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
     if (originalEvent === 'PreInvocation' && !input.prompt) {
       const state = readContinuity(input, options);
       const changedStage=await refreshPlanMethods(input,state,options)||await refreshActivityMethods(input,state,options);
-      const context = [input.native_prompt_unavailable?'BGZFLOW could not safely extract the current request from the host transcript. Use the actual current conversation; do not treat host-added transcript metadata as a user decision.':'',renderContinuity(state, options), projectHistory(input, state, options, { force: true }), changedStage||await restoreMethods(input, state, options)].filter(Boolean).join('\n\n');
+      const context = [input.native_prompt_unavailable?'BGZFLOW could not safely extract the current request from the host transcript. Use the actual current conversation; do not treat host-added transcript metadata as a user decision.':'',renderContinuity(state, options), projectHistory(input, state, options, { force: true }), changedStage||await restoreMethods(input, state, options),completionReviewGuidance(input,state)].filter(Boolean).join('\n\n');
       return context ? contextOutput(context) : {};
     }
     if (input.source_message_id !== undefined) {
@@ -245,7 +246,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
         // Antigravity supplies invocation-scoped ephemeral context rather than
         // a documented PostCompact event. Restore bounded history here too.
         const changedStage=await refreshPlanMethods(input,previous,options)||await refreshActivityMethods(input,previous,options);
-        const context = [renderContinuity(previous, options), projectHistory(input, previous, options, { force: nativeAgy }), changedStage||await restoreMethods(input, previous, options)].filter(Boolean).join('\n\n');
+        const context = [renderContinuity(previous, options), projectHistory(input, previous, options, { force: nativeAgy }), changedStage||await restoreMethods(input, previous, options),completionReviewGuidance(input,previous)].filter(Boolean).join('\n\n');
         return context ? contextOutput(context) : {};
       }
     }
@@ -263,7 +264,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
       const state = readContinuity(input, options);
       const baseline=efficiencyBaseline(state);
       if(state.events.some(item=>item.event==='ContextRestored')&&!needsCompactRestore(state)&&!['compact','clear'].includes(input.source))return baseline?contextOutput(baseline):{};
-      context = [baseline,startupGuidance(input, options),renderContinuity(state, options), projectHistory(input, state, options, { force: true }), await restoreMethods(input, state, options)].filter(Boolean).join('\n\n');
+      context = [baseline,startupGuidance(input, options),renderContinuity(state, options), projectHistory(input, state, options, { force: true }), await restoreMethods(input, state, options),completionReviewGuidance(input,state)].filter(Boolean).join('\n\n');
       if (context) captureEvent({ ...input, hook_event_name: 'ContextRestored' }, { ...options, internal: true });
     } else if (event === 'UserPromptSubmit') {
       // Keep conversational turns immediate. The original message and any
@@ -283,7 +284,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
         &&isConversationOnly(input.prompt||input.user_prompt||input.userPrompt||''))return baseline?contextOutput(baseline):{};
       const state = readContinuity(input, options);
       const restore = needsCompactRestore(state);
-      context = [restore?efficiencyBaseline(state):baseline,restore ? renderContinuity(state, options) : '', projectHistory(input, state, options, { force: restore }), await chooseMethods(input, state, options)].filter(Boolean).join('\n\n');
+      context = [restore?efficiencyBaseline(state):baseline,restore ? renderContinuity(state, options) : '', projectHistory(input, state, options, { force: restore }), await chooseMethods(input, state, options),completionReviewGuidance(input,state)].filter(Boolean).join('\n\n');
       if (restore && context) captureEvent({ ...input, hook_event_name: 'ContextRestored' }, { ...options, internal: true });
     } else if (event === 'PreToolUse' && hasPendingCompaction(captured)) {
       const state = readContinuity(input, options);
@@ -292,7 +293,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
         if (!claim) return {};
         try {
           const changedStage=nativeAgy?'':await refreshPlanMethods(input,state,options);
-          context = [efficiencyBaseline(state),renderContinuity(state, options), projectHistory(input, state, options, { force: true }), changedStage||await restoreMethods(input, state, options)].filter(Boolean).join('\n\n');
+          context = [efficiencyBaseline(state),renderContinuity(state, options), projectHistory(input, state, options, { force: true }), changedStage||await restoreMethods(input, state, options),completionReviewGuidance(input,state)].filter(Boolean).join('\n\n');
           if (context) captureEvent({ ...input, hook_event_name: 'ContextRestored' }, { ...options, internal: true });
           else claim.release();
         } catch (error) { claim.release(); throw error; }
@@ -303,6 +304,7 @@ export async function handleFoundationEvent(input = {}, options = {}) {
       const stage=derivePlanStage({nativeView:captured.nativeView});
       if(stage&&captured.nativeView.selection?.stage!==stage.stage)context=await refreshPlanMethods(input,readContinuity(input,options),options);
       else if(!stage&&describeToolActivity(input))context=await refreshActivityMethods(input,readContinuity(input,options),options);
+      if(captured.event.activity?.completionReview)context=[context,completionReviewGuidance(input,readContinuity(input,options))].filter(Boolean).join('\n\n');
     }
     return context ? contextOutput(context) : {};
   } catch {

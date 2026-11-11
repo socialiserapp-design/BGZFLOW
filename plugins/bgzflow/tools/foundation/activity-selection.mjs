@@ -1,3 +1,5 @@
+import {completionReviewContext} from './completion-review.mjs';
+
 /** A proposed tool activity is task context, never authority or outcome proof.
  * This deliberately does not parse a shell or infer success from a command. */
 export function describeToolActivity(input={}) {
@@ -30,5 +32,6 @@ export function describeToolActivity(input={}) {
   if(phase==='execution'&&/^(?:\s*(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:test|check|lint|typecheck|verify)\b|\s*(?:node\s+--test|pytest|vitest|jest|cargo\s+test|go\s+test|playwright\s+test)\b)/i.test(command))phase='verification';
   if(failed)phase='diagnosis';
   const detail=JSON.stringify({tool:name,input:args}).slice(0,2400);
-  return {stage:`tool-activity:${phase}`,phase,detail,classification:'Proposed or host-reported tool activity within the original task; not a user decision or verified result.'};
+  const completionReview=completionReviewContext(input);
+  return {stage:`tool-activity:${phase}`,phase,detail,...(completionReview?{completionReview}:{}),classification:'Proposed or host-reported tool activity within the original task; not a user decision or verified result.'};
 }

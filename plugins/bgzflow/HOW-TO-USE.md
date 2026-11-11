@@ -129,3 +129,6 @@ Old score/receipt/council commands are retired rather than mapped to fake succes
 
 [Enforcement boundaries](docs/enforcement-boundaries.md) explain what the portable
 plugin can observe, and what requires an application's own trusted execution layer.
+
+[Automatic completion reviews](docs/automatic-review.md) explain how the build and
+finish methods choose an appropriate audit and when independent Expo testing fits.

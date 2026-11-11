@@ -1,6 +1,6 @@
 {
   "name": "bgzflow",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Adaptive AI workflow: relevant skills, preserved intent, real outcome checks and optional multi-agent coordination.",
   "author": {
     "name": "Simeon Kontogeorges"

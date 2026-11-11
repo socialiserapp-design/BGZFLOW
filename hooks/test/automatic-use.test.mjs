@@ -27,23 +27,25 @@ test('native prompt context actually contains complete selected procedures and r
  assert.match(prepared.delivery.evidence,/use and outcomes require separate/);
 });
 
-test('native edit and test activity refresh selection once without a formal plan; greetings remain immediate',async t=>{
+test('native edits avoid paid rerouting; verification refreshes selection once and greetings remain immediate',async t=>{
  const f=fixture(t);await handleFoundationEvent({...f.input,hook_event_name:'UserPromptSubmit',prompt:'Fix the export and check the saved result.'},f.options);
  const initial=f.calls();
  await handleFoundationEvent({...f.input,hook_event_name:'PreToolUse',tool_name:'Read',tool_input:{file_path:'sdk.mjs'}},f.options);assert.equal(f.calls(),initial);
  await handleFoundationEvent({...f.input,hook_event_name:'PreToolUse',tool_use_id:'edit-1',tool_name:'Edit',tool_input:{file_path:'export.mjs',new_string:'export const value=1;'}},f.options);
- const editCalls=f.calls();assert.ok(editCalls>initial);
+ const editCalls=f.calls();assert.equal(editCalls,initial);
  await handleFoundationEvent({...f.input,hook_event_name:'PostToolUse',tool_use_id:'edit-1',tool_name:'Edit',tool_input:{file_path:'export.mjs'},tool_response:{}},f.options);assert.equal(f.calls(),editCalls);
  await handleFoundationEvent({...f.input,hook_event_name:'PreToolUse',tool_name:'Bash',tool_input:{command:'npm test'}},f.options);
  const stages=readContinuity(f.input,f.options).events.filter(x=>x.selection).map(x=>x.selection.stage);
- assert.ok(stages.includes('tool-activity:implementation'));assert.ok(stages.includes('tool-activity:verification'));
+ assert.ok(!stages.includes('tool-activity:implementation'));assert.ok(stages.includes('tool-activity:verification'));
  const before=f.calls();const answer=await handleFoundationEvent({...f.input,hook_event_name:'UserPromptSubmit',prompt:'Thanks!'},f.options);assert.deepEqual(answer,{});assert.equal(f.calls(),before);
 });
 
 test('ordinary arithmetic replies do not discover or route skills, while mixed work still routes',async t=>{
  const f=fixture(t);
  const output=await handleFoundationEvent({...f.input,hook_event_name:'UserPromptSubmit',prompt:'What is 7 times 8? Just the answer, please.'},f.options);
- assert.deepEqual(output,{});assert.equal(f.calls(),0);
+ assert.match(output.hookSpecificOutput?.additionalContext||'',/BG Efficiency baseline/);assert.equal(f.calls(),0);
+ const repeated=await handleFoundationEvent({...f.input,hook_event_name:'UserPromptSubmit',prompt:'What is 3 times 4?'},f.options);
+ assert.deepEqual(repeated,{});assert.equal(f.calls(),0);
  await handleFoundationEvent({...f.input,hook_event_name:'UserPromptSubmit',prompt:'What is 7 times 8? Update the invoice too.'},f.options);
  assert.ok(f.calls()>0);
 });
@@ -57,6 +59,8 @@ test('partial comparisons deliver checked bodies and retain unassessed sources t
  assert.equal(selection.status,'partial');assert.equal(selection.selected.length,2);assert.equal(selection.comparisonDeferred.length,1);
  assert.match(selection.comparisonDeferred[0].id,/^skill-[0-9a-f]{24}$/);assert.match(output.hookSpecificOutput.additionalContext,/incomplete comparison/);
  const prepared=state.events.findLast(x=>x.event==='MethodContextPrepared');assert.equal(prepared.delivery.methods.filter(x=>x.provided).length,2);
- const calls=f.calls();const restored=await handleFoundationEvent({...f.input,hook_event_name:'SessionStart'},f.options);
+ const calls=f.calls();
+ assert.deepEqual(await handleFoundationEvent({...f.input,hook_event_name:'PostCompact'},f.options),{});
+ const restored=await handleFoundationEvent({...f.input,hook_event_name:'SessionStart',source:'compact'},f.options);
  assert.equal(f.calls(),calls);assert.match(restored.hookSpecificOutput.additionalContext,/Unassessed nominee/);
 });

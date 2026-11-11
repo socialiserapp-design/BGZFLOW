@@ -15,6 +15,10 @@ Read actual results after each consequential action. Preserve failures, distingu
 
 Integrate the result and exercise the intended journey in its real environment. Confirm actual service identity, user-visible behaviour and resulting state. Use independent checking when the consequence warrants it. Recheck affected behaviour after repairs.
 
+Automatically read and apply [the full-spectrum audit](../bg-full-spectrum-audit/SKILL.md) before calling a software feature or repair complete; the user need not remember a skill name. Choose feature-journey, repair-cause/regression or whole-product/codebase scope from the actual request and demonstrated wider effects. Challenge omissions and better approaches as well as correctness. Reuse applicable evidence and the existing release review; do not add a second gate or silently expand product scope.
+
+Use [Expo testing](../bg-expo-testing/SKILL.md) as an independent optional testing method when relevant to the app and already configured within account, test-data and spending authority. Reuse its existing workflows. Otherwise record the missing coverage and continue other checks. A full audit does not require Expo, and an Expo run does not require an audit.
+
 Automatic continuity records preserve factual progress; keep one concise human-readable plan when useful. Do not fill read receipts, forge proof or create new mandatory trackers. Preserve native compaction and resume.
 
 For a demonstrated recurring problem, propose a scoped improvement to a method or tool. Private user/team evidence stays private. Adoption requires real tests, including previously working cases and unfamiliar cases; an agent's assertion that a lesson is good is insufficient.

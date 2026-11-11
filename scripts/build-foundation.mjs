@@ -102,6 +102,7 @@ for(const entry of fs.readdirSync(path.join(root,'skills'),{withFileTypes:true})
   copy(`skills/${entry.name}`,`skills/${name}`);
 }
 copy('AGENTS.md',agyBuild?'rules/AGENTS.md':'AGENTS.md');
+copy('docs/automatic-review.md');
 for(const file of ['hooks/foundation.mjs','hooks/foundation-agy.mjs','hooks/mechanical-safety.mjs','LICENSE','THIRD_PARTY_NOTICES.md','ATTRIBUTION.md','SECURITY.md','HOW-TO-USE.md','docs/install.md','docs/adaptive-foundation.md','docs/enforcement-boundaries.md','docs/testing-skill-sources.json','docs/project-recall.md','docs/packaging-and-hosts.md','docs/skill-harmony-audit.md','docs/foundation-session.md','docs/questioning-method.md','docs/mailbox.md','docs/testing-ladder.md','templates/CHECKPOINT.md','templates/PROJECT-AGENTS.md','templates/DECISIONS.md','templates/LIVE-MANIFEST.md'])copy(file);
 for(const file of ['docs/native-learning.md','docs/automatic-methods.md','LICENSES/DeepSeek-SuperAgent-MIT.txt','docs/design-skill-sources.md','docs/design-skill-sources.json','docs/design-expansion.md','docs/design-library-imports.md','LICENSES/LicenseRef-Taste-Assets.txt'])copy(file);
 fs.writeFileSync(path.join(output,'VERSION'),version+'\n');

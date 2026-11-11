@@ -21,6 +21,10 @@ Inspect actual tool results. A timeout or lost response is an unknown effect, no
 
 Check the intended end-to-end result in its real environment. For software this includes the actual running instance, relevant user journey and resulting state; for research it includes the supporting sources; for creative work it includes the agreed brief and intended use. Report what was accomplished, the meaningful evidence and any limitation. Do not call the overall goal complete because one component passed.
 
+Before reporting a software feature or repair complete, automatically read and apply [the full-spectrum audit](../bg-full-spectrum-audit/SKILL.md) at the scope the work needs; the user need not name it. Review a feature's complete journey and wider effects, or a repair's cause, callers and regressions. Reserve a whole-product/codebase audit for that request or a demonstrated wider issue. Challenge missing needs and better approaches within that scope, not just changed lines. Reuse applicable evidence; recheck affected behaviour after repairs. This is the existing completion check, not another release gate or permission to redesign the product.
+
+[Expo testing](../bg-expo-testing/SKILL.md) is a separate optional capability. Include it when the affected app is compatible and its workflow, account, test data and spending authority are configured. Inspect and use the existing setup instead of installing it again. Report unavailable coverage and continue other checks. Audit and Expo testing can each run independently; neither requires the other.
+
 Continue in the same conversation using native compaction. Restore current decisions, owners and pending operations after compaction or interruption. A fresh worker may be useful for an independent assignment; a new chat is never required merely because a transcript file grew.
 
 A selected skill supplies a method, not extra permission. Follow the user's latest request, existing decisions and host permissions. Use the shared task context and native tools; do not create a parallel tracker or demand paperwork. A method being selected or loaded does not prove its result.
