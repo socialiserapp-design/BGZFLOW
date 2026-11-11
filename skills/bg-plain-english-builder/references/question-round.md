@@ -71,6 +71,17 @@ device matters more. I still need to verify your existing service's storage term
 
 ## Use the answer and keep asking when it matters
 
+Before a consequential action, compare the plausible interpretations of the user's
+request. If they produce materially different products, audiences, standards,
+permissions or irreversible effects, resolve that difference with the user first.
+Explain your current understanding briefly and ask the smallest useful question;
+do not make them list unknown omissions or complete a requirements questionnaire.
+Investigate discoverable facts yourself and choose routine engineering details.
+When delegated, carry the unresolved choice to workers so it cannot become an
+assumed requirement. Check later that the answer changed the implementation, not
+just the notes. See [quality assessment](../../bg-outcome-evals/references/product-quality.md)
+for turning an agreed result into observable acceptance and repair criteria.
+
 Preserve the user's wording and source through native automatic records where
 supported; maintain the existing concise project view only when a decision changes
 it. No separate questionnaire, receipt, decision ledger or manual API call is

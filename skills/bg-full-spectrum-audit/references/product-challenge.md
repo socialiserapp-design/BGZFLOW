@@ -1,5 +1,10 @@
 # Challenge the whole product
 
+Use [benchmark discovery](../../bg-outcome-evals/references/quality-benchmarks.md)
+to find current industry/design/architecture references and test better approaches
+against the actual outcome. Carry material findings into the existing quality
+rubric and repair loop; do not wait for the user to ask what is missing.
+
 The audit owns discovering questions and opportunities. Do not ask the owner to enumerate unknown omissions or treat the current implementation, brief or competitor feature list as the complete definition of a good product. Requirements remain binding for implementation; questioning them produces a recommendation, not permission to change them.
 
 ## Reconstruct the real problem

@@ -5,6 +5,8 @@ description: "Independently check a substantial completed result against the ori
 
 # Check the real result
 
+Assess [task-specific product quality](../bg-outcome-evals/references/product-quality.md), including the actual output/content, first user experience and agreement between visible claims and real capabilities. Use explicit required criteria, evidence and calibrated judgments; a high average score cannot erase an essential failure. Apply this in the existing review and repair process, under the project's release rules.
+
 Recover the original request, consequential answers, intended users/environment and promised result. Identify the exact candidate and the current running version. Assess the whole requested outcome, not just a convenient file, checklist or unit test.
 
 For a comprehensive product, feature or change audit, use the relevant coverage from [full-spectrum audit](../bg-full-spectrum-audit/SKILL.md), including independent product challenge, undiscovered needs, better concepts, approved designs, architecture alternatives and actual cross-platform outcomes. This supplies expertise to the existing review, not a second release gate. Use [Expo testing](../bg-expo-testing/SKILL.md) when Expo automation is a suitable way to obtain mobile evidence.

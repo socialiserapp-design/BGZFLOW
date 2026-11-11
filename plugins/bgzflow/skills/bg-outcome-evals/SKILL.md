@@ -27,6 +27,8 @@ question is not success; implementing the answer is.
 
 ## Use three complementary kinds of evidence
 
+For product, feature or output quality, apply [the quality assessment](references/product-quality.md): define acceptable outcomes before building, inspect actual content and customer-visible promises, and return evidenced failures to the existing repair loop. Technical success alone does not establish usefulness, meaning or craft.
+
 1. **Direct checks:** run assertions on observable outputs and effects. For an app,
    drive its real user route and read back the saved or external state. Confirm the
    process, served version, account and environment actually under test. A live

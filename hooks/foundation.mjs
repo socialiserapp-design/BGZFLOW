@@ -16,6 +16,7 @@ import {isAppGeneratedSuggestion} from '../tools/foundation/message-origin.mjs';
 import {historyDelivery} from '../tools/foundation/history-delivery.mjs';
 import {efficiencyBaseline} from '../tools/foundation/efficiency-baseline.mjs';
 import {completionReviewGuidance} from '../tools/foundation/completion-review.mjs';
+import {projectDecisionFiles} from '../tools/foundation/project-decisions.mjs';
 
 const eventName = input => input.hook_event_name || input.hookEventName || input.event;
 const needsCompactRestore = state => state.events.findLastIndex(item => item.event === 'PostCompact') > state.events.findLastIndex(item => item.event === 'ContextRestored');
@@ -71,7 +72,7 @@ function startupGuidance(input, options) {
   const rootContract=fileURLToPath(new URL('../AGENTS.md',import.meta.url));
   const contract=fs.existsSync(rootContract)?rootContract:fileURLToPath(new URL('../rules/AGENTS.md',import.meta.url));
   const projectRoot = options.projectRoot || input.cwd;
-  for(const [label,file] of [['BGZFLOW working contract',contract],['Current project decisions',projectRoot?path.join(projectRoot,'SIMON.md'):null]]) {
+  for(const [label,file] of [['BGZFLOW working contract',contract],...projectDecisionFiles(projectRoot,options).map(file=>['Current project decisions',file])]) {
     if(!file)continue;
     try {
       const stat=fs.statSync(file);

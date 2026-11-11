@@ -117,6 +117,33 @@ scheduler. Runner output is bounded and redacted; no new global task timeout is
 imposed. External effect reconciliation and process ownership remain necessary.
 
 
+## Optional quality criteria in executable outcome checks
+
+A trusted host can add `quality` to an existing `outcomeChecks` entry. It contains
+`version` and `criteria`; each criterion has `id`, `expected`, `required` and
+`kind` (`direct` or `judgment`). Judgment criteria require a host-owned
+`calibrationRef`; an optional `minScore` is a calibrated threshold between 0 and 1.
+There is no global quality score or implicit paid model call.
+
+The configured runner still observes the actual app/data and returns `matches`.
+When quality is configured it must also return `quality` containing `candidate`,
+`revision`, `rubricVersion`, and per-criterion observations (`id`, `kind`, `verdict`,
+nonempty `evidence` references and `reason`). Judgment observations must name the
+same `calibrationRef`, with `score` when the rubric requires it. Verdicts are
+`meets`, `fails`, `unverified`, or `needs-decision`. All required criteria must meet
+their standard; advisory criteria do not become blockers. Missing/stale/duplicate
+evidence cannot pass, and high scores cannot cancel a failed required criterion.
+
+`createExecutableChecks` combines this with its existing exit/result, trusted-source
+and before/after target checks. The foundation's outcome observer therefore cannot
+accept a configured quality failure through a bare successful command. The host
+still owns evaluator calibration, raw evidence, source protection, repair routing
+and the release path. This optional contract does not certify a report's truth,
+activate an evaluator in every native chat or prevent bypass by an unrestricted
+agent. Keep original observations in the existing evidence store. Use the
+[quality method](../skills/bg-outcome-evals/references/product-quality.md) to design
+the checks and exercise the actual candidate-to-app and repair loop.
+
 ## Native learning bridge
 
 The [native bridge](native-learning.md) connects observed tool failures and source-linked agent proposals to the same private checks, adoption and catalogue. It does not accept a greeting/status question as an application goal. Recognized composer suggestions stay recorded as app provenance but are excluded from human history, recall and routing. Old derived views rebuild without rewriting originals. Exact envelope matching is a compatibility fallback, not universal origin proof: a genuine unquoted copy of the complete envelope cannot be distinguished without host metadata.

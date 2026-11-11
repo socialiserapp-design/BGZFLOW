@@ -3,12 +3,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { randomUUID, createHash } from 'node:crypto';
 import { sanitize } from '../../hooks/lib/secrets.mjs';
+import {pinQualityPlan,qualityVerdict} from './quality-verdict.mjs';
 
 /** Fixed, owner-configured check commands. No command is accepted from a candidate. */
 export function createExecutableChecks({ projectRoot, outcomeChecks = {}, improvementChecks = [], baselineCandidate, timeoutMs = 30000 } = {}) {
   projectRoot = fs.realpathSync(projectRoot);
   const hashFile=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  const pin=check=>({...check,command:{file:check.command.file,args:[...check.command.args]},pins:(check.sources||[]).map(file=>({file:fs.realpathSync(file),hash:hashFile(file)}))});
+  const pin=check=>({...check,command:{file:check.command.file,args:[...check.command.args]},quality:check.quality?pinQualityPlan(check.quality):null,pins:(check.sources||[]).map(file=>({file:fs.realpathSync(file),hash:hashFile(file)}))});
   outcomeChecks=Object.fromEntries(Object.entries(outcomeChecks).map(([id,check])=>[id,pin(check)]));
   improvementChecks=improvementChecks.map(pin);
   function run(check, input) {
@@ -21,7 +22,8 @@ export function createExecutableChecks({ projectRoot, outcomeChecks = {}, improv
     let report;try {report=JSON.parse(result.stdout||'{}');}catch {report=null;}
     const after=check.currentTarget?check.currentTarget():check.target;
     const targetMatches=!input.revision || (before?.candidate===input.candidate && after?.candidate===input.candidate && before?.revision===input.revision && after?.revision===input.revision && before?.projectRoot===projectRoot && after?.projectRoot===projectRoot);
-    return {observationId,source:sanitize(check.id||path.basename(check.command.file)),matches:result.status===0&&!result.error&&report?.matches===true&&targetMatches&&unchanged(),exitCode:result.status,error:result.error?sanitize(result.error.code||'check failed'):!targetMatches?'Current target identity was not established.':undefined};
+    const quality=check.quality?qualityVerdict(check.quality,report?.quality,input):undefined;
+    return {observationId,source:sanitize(check.id||path.basename(check.command.file)),matches:result.status===0&&!result.error&&report?.matches===true&&targetMatches&&unchanged()&&(!quality||quality.matches),...(quality?{quality}:{}),exitCode:result.status,error:result.error?sanitize(result.error.code||'check failed'):!targetMatches?'Current target identity was not established.':undefined};
   }
   return {
     observeOutcome(input) {

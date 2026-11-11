@@ -50,6 +50,12 @@ test('an unexcepted credential-shaped line elsewhere still fails and output stay
   assert.equal(JSON.stringify(found.result).includes(synthetic),false);
 });
 
+test('ordinary task-status words are not mistaken for embedded credential prefixes',t=>{
+ const directory=fixture(t);
+ fs.writeFileSync(path.join(directory,'README.md'),'task-request-record-unavailable\ntask-owned-by-another-workspace-consult-lead\n');
+ assert.equal(scan(directory).status,0);
+});
+
 test('private overlay terms are ignored unless their denylist is explicitly supplied',t=>{
   const directory=fixture(t),overlay=path.join(directory,'private-overlay');fs.mkdirSync(overlay);
   const denylist=path.join(overlay,'denylist.txt');fs.writeFileSync(denylist,'private-fixture-term\n');

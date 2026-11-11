@@ -15,8 +15,8 @@ function fixture(t) {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const project = path.join(root, 'project'), nested = path.join(project, 'mockups', 'web');
   fs.mkdirSync(nested, { recursive: true });
-  fs.writeFileSync(path.join(project, 'SIMON.md'), 'Keep customer decisions intact across folder changes.');
-  return { root, project, nested, options: { nativeProjectRoot: project, storageRoot: path.join(root, 'store'), route: false, recall: false }, input: { cwd: project, session_id: 'same-host-chat' } };
+  fs.writeFileSync(path.join(project, 'DECISIONS.md'), 'Keep customer decisions intact across folder changes.');
+  return { root, project, nested, options: { home:root, nativeProjectRoot: project, storageRoot: path.join(root, 'store'), route: false, recall: false }, input: { cwd: project, session_id: 'same-host-chat' } };
 }
 
 test('native hooks retain decisions and reconcile a tool across an ordinary cd', async t => {
@@ -83,7 +83,7 @@ test('the actual hook entry uses the native launch root without changing command
   const { nested, project, input, options } = fixture(t);
   captureEvent({ ...input, hook_event_name: 'UserPromptSubmit', prompt: 'Recover the launch-root decision.' }, { ...options, projectRoot: project });
   const file = base ? path.join(base, 'hooks/foundation.mjs') : new URL('../../../hooks/foundation.mjs', import.meta.url);
-  const result = spawnSync(process.execPath, [file instanceof URL ? fileURLToPath(file) : file], { cwd: nested, encoding: 'utf8', input: JSON.stringify({ ...input, cwd: nested, hook_event_name: 'SessionStart', source: 'resume' }), env: { ...process.env, CLAUDE_PROJECT_DIR: project, BGZFLOW_CONTINUITY_HOME: options.storageRoot } });
+  const result = spawnSync(process.execPath, [file instanceof URL ? fileURLToPath(file) : file], { cwd: nested, encoding: 'utf8', input: JSON.stringify({ ...input, cwd: nested, hook_event_name: 'SessionStart', source: 'resume' }), env: { ...process.env, CLAUDE_PROJECT_DIR: project, BGZFLOW_CONTINUITY_HOME: options.storageRoot, BGZFLOW_CONTEXT_HOME:options.home } });
   assert.equal(result.status, 0, result.stderr);
   const output = JSON.parse(result.stdout);
   assert.match(output.hookSpecificOutput?.additionalContext || '', /Recover the launch-root decision/);

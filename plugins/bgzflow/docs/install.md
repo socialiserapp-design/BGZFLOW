@@ -1,5 +1,12 @@
 # Install the current BGZFLOW
 
+Project decisions use the generic `DECISIONS.md` by default. An existing project
+does not need to rename its records: an owner may set `decisionFiles` in the
+private `~/.bgzflow/context.json`, for example `{"decisionFiles":["OWNER.md"]}`.
+Only Markdown filenames inside the project are read. Embedding hosts can supply
+the same `decisionFiles` option. This preference is local and is never bundled
+with the public plugin; user corrections and project instructions still govern.
+
 The supported instructions are [HOW-TO-USE](../HOW-TO-USE.md). The current
 release number is in `VERSION`. Earlier swarm commands, receipt gates and Node 18
 installation instructions do not describe this release.

@@ -5,6 +5,8 @@ description: "Execute and integrate an agreed outcome through repair and meaning
 
 # Finish the whole job
 
+Apply [the quality assessment and repair loop](../bg-outcome-evals/references/product-quality.md) to the real result. An output can run successfully and still be wrong, misleading or unusable. Return confirmed failures of required outcomes to the existing builder within authority; collect missing evidence and ask about unresolved consequential choices instead of guessing a fix.
+
 Read the agreed outcome, latest corrections, current plan and existing evidence. Identify the next unfinished authorised result. Continue useful work instead of offering to do the next already-approved step.
 
 Build complete usable pieces. Keep integration, user access and intended effects in scope where the request requires them. Do not call an unwired screen, unused backend function or passing isolated test a finished product.

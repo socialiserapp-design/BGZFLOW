@@ -1,10 +1,13 @@
 # BGZFLOW
 
-**Created and led by [Simeon Kontogeorges](https://github.com/socialiserapp-design).**
+**Product architecture and direction by [Simeon Kontogeorges](https://github.com/socialiserapp-design).**
 
 [GitHub](https://github.com/socialiserapp-design) ·
 [LinkedIn](https://www.linkedin.com/in/simeon-konto-soclo/) ·
-[X](https://x.com/socloapp)
+[X](https://x.com/socloapp) ·
+[Instagram](https://www.instagram.com/socloapp/)
+
+**Make AI work worth shipping.**
 
 An adaptive workflow foundation for getting useful, checked results from AI.
 BGZFLOW connects a selectively loaded skill library, shared working rules,
@@ -50,10 +53,29 @@ See [installation](docs/install.md) and [host boundaries](docs/packaging-and-hos
 3. Build or produce the requested result, adapting methods as the work changes.
 4. Check the actual result and preserve decisions, corrections and remaining uncertainty.
 
-The bundled library contains **100 skills** covering clarification, research,
+The bundled library contains **103 skills** covering clarification, research,
 engineering, product design, accessibility, sound, SVG, testing, risk and recovery.
 It includes a design master, specialist design methods and research methods.
 Large references and assets stay available on demand.
+
+Explore the [interactive guide](docs/guide.html), [architecture](docs/architecture.md)
+and [quality methods](skills/bg-outcome-evals/references/product-quality.md).
+The guide is a self-contained HTML file: download it and open it in a browser.
+
+### Quality beyond green tests
+
+BGZFLOW challenges whether the product solves the right problem, finds relevant
+external benchmarks and tests actual user outcomes. Its full-spectrum audit covers
+product merit, experience, architecture, security, data, performance and AI quality.
+Confirmed failures of required outcomes return to the existing repair loop.
+Unknown evidence stays unverified; consequential product choices go to the owner.
+Expo testing is an independent optional method using Expo's supported workflows.
+
+Skills guide judgment. Hooks deliver context and record events. Trusted configured
+checks enforce specific outcome and quality contracts. Installation alone cannot
+make an agent autonomously deploy and verify every application: connect the
+project's real release, completion receiver and observation tools. See
+[enforcement boundaries](docs/enforcement-boundaries.md).
 
 Optional Jev routing uses the official TypeSafe SDK and your own protected key.
 Without it, the main agent selects from the same library. Jev can recommend

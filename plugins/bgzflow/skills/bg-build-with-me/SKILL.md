@@ -5,6 +5,8 @@ description: "Coordinate a substantial requested outcome from understanding thro
 
 # Build with me
 
+For substantial product work, establish [the quality standard and repair loop](../bg-outcome-evals/references/product-quality.md) in the existing brief before implementation. Discover missing professional considerations yourself. Ask before choosing between materially different user outcomes; investigate facts and own routine engineering decisions. Reuse settled answers and show how corrections change the actual result.
+
 Understand the result the user wants, including audience, environment, constraints and what would demonstrate success. Inspect existing work and decisions. Ask only about consequential unknown choices; investigate discoverable facts yourself. Bring useful alternatives and missing professional considerations to the user without silently expanding the brief.
 
 For substantial work, keep one concise current plan. Preserve the original request and corrections separately from your interpretation. State what will be delivered and how its real effect will be checked. Reuse the project's existing record rather than adding a competing board. Revisit understanding when prototypes reveal a choice, new constraints arrive, evidence contradicts an assumption or a failed check exposes a different expectation. Ask before dependent work and visibly use the answer. Load bg-outcome-evals when designing consequential completion checks.

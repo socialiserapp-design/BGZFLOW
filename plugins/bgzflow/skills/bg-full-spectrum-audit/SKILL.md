@@ -38,6 +38,8 @@ Identify the actual candidate and deployed instance. Prefer the current project'
 
 ## Inspect, exercise and challenge
 
+Use [the task-specific quality assessment](../bg-outcome-evals/references/product-quality.md) for actual outputs and experience. Reconcile visible promises with real data; inspect source content rather than trusting its labels. Distinguish required failures, missing evidence, consequential user choices and advisory improvements. Feed authorised repairs back to the existing builder and verify the affected result.
+
 Check implementation and real behaviour. Follow a user's action to its saved, delivered, billed or otherwise useful result, including what the recipient or next actor must do. Compare the rendered product with the owner's approved design and words; separately assess its effectiveness and worthwhile alternatives. Measure relevant speed, resource use and cost under stated conditions; do not infer them from code or animation.
 
 Test important failures and recovery in an authorised test environment. Reconcile an uncertain external operation through its original identity before retrying; a timeout does not prove it failed. Preserve original failures. Test the tests with known-good and deliberately wrong cases where practical; green tests, coverage percentages and screenshots can all miss the actual outcome.

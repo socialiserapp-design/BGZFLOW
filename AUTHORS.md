@@ -8,8 +8,8 @@ integration direction and real-project acceptance goals.
 
 Public profiles: [GitHub](https://github.com/socialiserapp-design),
 [LinkedIn](https://www.linkedin.com/in/simeon-konto-soclo/),
-[X](https://x.com/socloapp). These are the author links retained from the
-project's previously published README.
+[X](https://x.com/socloapp),
+[Instagram](https://www.instagram.com/socloapp/).
 
 BGZFLOW's original system work connects:
 
