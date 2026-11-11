@@ -53,6 +53,8 @@ for stateful operations; accessibility, security and isolation checks for affect
 surfaces. Reuse unchanged evidence only while the candidate and relevant environment
 are unchanged. Load specialist references only when needed.
 
+For a product-wide coverage investigation, use [full-spectrum audit](../bg-full-spectrum-audit/SKILL.md). For Expo mobile journeys, [Expo testing](../bg-expo-testing/SKILL.md) coordinates the official Expo methods and distinguishes simulator observations from service and physical-device proof.
+
 AI workflows need multi-turn and tool-effect checks as well as final-answer checks.
 Measure the selector (including no skill, explicit skills, wrong triggers and outage),
 the delivered instructions, the action taken, and the final result separately.

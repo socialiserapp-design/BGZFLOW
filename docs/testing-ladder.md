@@ -17,6 +17,10 @@ balancing reliability, coverage, time and cost rather than price alone.
   matching the risk and target platform. Maestro, platform test tools, EAS or hosted
   devices are options, not mandatory vendors. Respect device ownership, emulator
   restrictions and approved spending. A simulator pass does not prove every device.
+  [Expo testing](../skills/bg-expo-testing/SKILL.md) coordinates Expo's official
+  tools and suitable controllers when that option fits the app. Verify both the
+  device journey and any promised service effect; preserve missing physical-device
+  coverage and uncertain cleanup explicitly.
 - For research, legal, marketing and documents, inspect source support, calculations,
   completeness and the final rendered artifact as appropriate. Expert review may be
   required by the task or consequences; a model judgment is not legal certainty.
@@ -50,6 +54,10 @@ An unavailable required surface remains unverified; report it plainly and contin
 independent work. Use an available equivalent only when it proves the same outcome.
 
 Use [outcome evaluation guidance](../skills/bg-outcome-evals/SKILL.md) when applicable.
+For a broader product or feature assessment, use
+[full-spectrum audit](../skills/bg-full-spectrum-audit/SKILL.md) to challenge the
+underlying concept, discover missing needs and compare better approaches alongside
+the technical checks. Test results alone do not establish product value.
 The foundation's direct tests and optional Promptfoo evaluations serve different
 purposes: deterministic assertions check observable facts; an independent judge can
 assess relevance and interpretation but cannot invent unobserved effects.

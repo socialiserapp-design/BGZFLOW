@@ -7,6 +7,8 @@ description: "Independently check a substantial completed result against the ori
 
 Recover the original request, consequential answers, intended users/environment and promised result. Identify the exact candidate and the current running version. Assess the whole requested outcome, not just a convenient file, checklist or unit test.
 
+For a comprehensive product, feature or change audit, use the relevant coverage from [full-spectrum audit](../bg-full-spectrum-audit/SKILL.md), including independent product challenge, undiscovered needs, better concepts, approved designs, architecture alternatives and actual cross-platform outcomes. This supplies expertise to the existing review, not a second release gate. Use [Expo testing](../bg-expo-testing/SKILL.md) when Expo automation is a suitable way to obtain mobile evidence.
+
 For consequential or complex work, use an independent checker with access to the request, candidate and evidence. The checker should reproduce behaviour and inspect sources; it must not simply endorse the builder's explanation. A different provider is optional, not proof of independence or correctness.
 
 Use checks proportionate to the change. Exercise the relevant actual browser/device/service and inspect its resulting state. Confirm the server or app instance used by the user is the one tested. Include the applicable failure, retry and recovery behaviour. Use test accounts and provider test modes where relevant.

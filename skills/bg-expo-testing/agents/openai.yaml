@@ -1,0 +1,4 @@
+interface:
+  display_name: "Expo end-to-end testing"
+  short_description: "Coordinate Expo tests and verify their evidence"
+  default_prompt: "Use $bg-expo-testing to plan or run the authorised Expo app checks and report what the evidence proves."

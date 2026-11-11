@@ -1,4 +1,4 @@
-# BGZFLOW 2.7.9
+# BGZFLOW 2.8.0
 
 Adaptive AI workflow: relevant skills, preserved intent, real outcome checks and optional multi-agent coordination.
 

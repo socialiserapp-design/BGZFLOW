@@ -1,0 +1,4 @@
+interface:
+  display_name: "Whole product review and audit"
+  short_description: "Challenge the product and verify how it works"
+  default_prompt: "Use $bg-full-spectrum-audit to challenge this product, discover missing needs and better approaches, and audit its experience and technical behaviour."

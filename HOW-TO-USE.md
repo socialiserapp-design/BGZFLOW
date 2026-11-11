@@ -71,6 +71,22 @@ See [what was adapted and why](docs/design-skill-sources.md).
 
 ## Everyday work
 
+For a broad review, ask: "Use bg-full-spectrum-audit to challenge this product,
+find what we have missed and better ways to achieve its purpose, and check that
+the whole experience and technical system work." It can review a whole codebase,
+feature or change. It investigates product assumptions and opportunities without
+requiring you to name the omissions. Recommendations remain distinct from
+permission to redesign or release. The former `bg-zero-defect-gate` name redirects
+to this method and the established release check; it adds no extra gate.
+
+For Expo apps, ask: "Use bg-expo-testing to plan or run the authorised end-to-end
+checks." This coordinates official Expo, agent-device, Argent or Maestro methods
+and verifies their evidence. You can request planning or setup alone. A cloud run
+requires suitable access, a chosen runner/controller and existing spending
+authority; it does not start merely because the skill is installed. See the
+[audit method](skills/bg-full-spectrum-audit/SKILL.md) and
+[Expo testing method](skills/bg-expo-testing/SKILL.md).
+
 Describe the result you want in ordinary language. State an important priority or
 boundary when you know it. The agent should ask about consequential uncertainty,
 inspect facts it can discover itself, choose useful methods, and execute within
