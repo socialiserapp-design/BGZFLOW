@@ -9,9 +9,13 @@ Confirm the intended release target, current authority, candidate, configuration
 
 Check the relevant actual platform before exposing users. Rehearse customer journeys and the applicable recovery path with the intended runtime, bindings and compatible data. Use provider test modes for money. Database compatibility and irreversible effects need their own checks; reverting code does not undo them.
 
+For mobile JavaScript/asset updates, read [OTA compatibility and recovery](references/ota-updates.md) before publishing or changing a channel mapping. For store delivery of a native binary, read [app-store release](references/app-store-release.md); otherwise use the project's authorised internal installation route. Observe the installed binary/runtime first; a remembered build number is not an inventory. Native dependencies or configuration changes need a compatible new binary, not a relabelled old runtime. HTTP success from the update service does not establish compatibility or installation.
+
 Integrate the candidate and run the required combined checks. Use a focused independent review when the release's consequences warrant it. Preserve demonstrated failures. Repair and recheck affected behaviour without ceremonial repeated reviews.
 
 Apply the approved switch through the existing installation/deployment route. Cover the intended entry points, installed copies and running services. Do not edit a package cache to pretend a managed update occurred. Observe the actual installed version and execute a harmless real journey after activation.
+
+Bind that evidence to the same integrated artifact and configuration that were checked. Keep publication, installed/running version and successful use separate in the existing release record. Do not mark all platforms working from one platform's result. When updating an agent's tools, preserve active sessions and verify the new method or hook on the actual host; discovery alone proves availability, not adoption.
 
 Watch the live outcome for the period appropriate to the service and its existing release policy. Distinguish request acceptance, deployment completion and a verified user-visible result. A server process existing or a deployment command exiting successfully is insufficient.
 

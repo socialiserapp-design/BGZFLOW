@@ -13,6 +13,8 @@ For consequential or complex work, use an independent checker with access to the
 
 Use checks proportionate to the change. Exercise the relevant actual browser/device/service and inspect its resulting state. Confirm the server or app instance used by the user is the one tested. Include the applicable failure, retry and recovery behaviour. Use test accounts and provider test modes where relevant.
 
+Trace the same candidate through integration, delivery, installed runtime and observed use, following the [real-use loop](../bg-finish-the-whole-job/references/integration-and-real-use.md). A worker's pass must not silently become the combined app's pass. Match the user's latest required surface; a simulator run cannot establish a physical-device outcome. Preserve the narrow meaning of each result and record missing links explicitly.
+
 For source-based work, check that the important claims follow from applicable sources and that quoted material, dates, jurisdiction or versions match. For calculations, independently recompute meaningful totals. For creative work, assess the agreed audience, constraints and intended use; do not pretend a machine score settles taste.
 
 Preserve failures and missing evidence. A test that did not run, unavailable device, stale screenshot or guessed process is unverified. A command exiting successfully, a selected skill or a model-written report cannot substitute for observing the promised effect.

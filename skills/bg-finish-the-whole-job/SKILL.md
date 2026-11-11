@@ -9,6 +9,8 @@ Read the agreed outcome, latest corrections, current plan and existing evidence.
 
 Build complete usable pieces. Keep integration, user access and intended effects in scope where the request requires them. Do not call an unwired screen, unused backend function or passing isolated test a finished product.
 
+Apply the [integration and real-use loop](references/integration-and-real-use.md) whenever a usable slice or worker handback is ready. The accountable lead owns the transition from worker result to combined candidate to installed app to observed use. Advance ready work without waiting for unrelated workers. If only the lead may release, workers report their verified scope and remaining installation checks; they must not invent live evidence to satisfy a contradictory definition of done.
+
 Use suitable existing packages and project conventions. Confirm relevant real interfaces before implementation. Choose one worker or independent parallel assignments according to actual task dependencies and available resources. Keep one owner for shared changes and give each worker the current request and meaningful checks.
 
 Read actual results after each consequential action. Preserve failures, distinguish expected nonzero search results from broken work, and diagnose repeated failures before changing approach. Reconcile uncertain external effects before retrying them.

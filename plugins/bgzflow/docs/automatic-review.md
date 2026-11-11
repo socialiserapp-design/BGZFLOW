@@ -16,6 +16,8 @@ The existing foundation hook supplies a short local completion-review reminder a
 
 The hook does not decide that a feature is finished. It does not establish that a review happened, that tests passed, or that a customer outcome works. It makes no paid selection call and adds no Stop gate. The agent reads the actual audit skill and chooses the appropriate scope. Complex shell writes and generic execution wrappers are not parsed into asserted edits; the build/finish instructions still require the appropriate review.
 
+The reminder also points to the [integration and real-use loop](../skills/bg-finish-the-whole-job/references/integration-and-real-use.md). A ready worker result must reach the lead, be integrated and reach the intended app before its real use can be verified. Publication, installation and successful use remain separate facts. This is guidance delivered by code; it does not itself dispatch workers, deploy an app or wake an idle lead.
+
 ## Expo stays separate
 
 [Expo testing](../skills/bg-expo-testing/SKILL.md) is an independently usable method for an app's end-to-end tests. An audit can use Expo evidence when relevant; an Expo run does not need a full audit. Neither method requires the other.

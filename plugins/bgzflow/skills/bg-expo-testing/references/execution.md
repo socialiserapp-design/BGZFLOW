@@ -61,6 +61,8 @@ Keep these distinctions in the project record:
 
 A simulator or workflow status describes execution, not product correctness. An agent report is an assertion to assess. Neither a report file nor an arbitrary number of screenshots proves complete coverage. A confident PASS must not override contradictory logs or observations.
 
+Keep cloud simulator evidence distinct from installation and use on the intended physical device. Match the user's current acceptance surface. Trace source/local upload, built artifact, installed runtime and actual running update; an HTTP response or published channel cannot fill a missing link. When OTA delivery is involved, apply [OTA compatibility and recovery](../../bg-ship-and-recover/references/ota-updates.md) before publishing. Exercise old persisted data and supported installed clients where the change affects them; fresh fixtures alone do not cover those states.
+
 For a defect, keep steps, expected/actual outcome, conditions, evidence and scope. Distinguish a faulty flow or fixture from an app defect. Repair only within authority; preserve the original failure and recheck affected behaviour. Repeated runs should test a hypothesis, not hide flakiness.
 
 Store evidence through the approved private route. Avoid publishing session links, signed artifact download URLs, tokens, personal data or unredacted agent logs. Report useful outcomes and access-controlled evidence references to the owner.
