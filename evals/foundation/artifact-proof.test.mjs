@@ -12,7 +12,7 @@ const { snapshotWorkspace, workspaceMatches, verifyConverterOnUnseenInputs } = r
 function fixture(t) {
   const parent = fs.mkdtempSync(path.join(canonicalTestPath.native(os.tmpdir()), 'bgz-artifact-proof-'));
   t.after(() => {
-    assert.ok(fs.realpathSync(parent).startsWith(fs.realpathSync(os.tmpdir()) + path.sep));
+    assert.ok(fs.realpathSync.native(parent).startsWith(fs.realpathSync.native(os.tmpdir()) + path.sep));
     fs.rmSync(parent, { recursive: true, force: true });
   });
   return { work: prepareFixture(path.join(parent, 'attempt')), parent };
